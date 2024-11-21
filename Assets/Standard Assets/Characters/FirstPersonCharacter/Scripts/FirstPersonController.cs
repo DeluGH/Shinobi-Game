@@ -10,9 +10,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
     [RequireComponent(typeof(AudioSource))]
     public class FirstPersonController : MonoBehaviour
     {
-        [SerializeField] private Vector3 m_CrouchedCameraPosition;
         [SerializeField] private bool m_IsWalking;
         [SerializeField] private bool m_IsCrouched;
+        [SerializeField] private float m_CrouchHeight;
         [SerializeField] private float m_WalkSpeed;
         [SerializeField] private float m_CrouchSpeed;
         [SerializeField] private float m_RunSpeed;
@@ -45,6 +45,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private bool m_Jumping;
         private AudioSource m_AudioSource;
         private float speed;
+        private float defaultHeight;
+        private Vector3 defaultCenter;
+        private Vector3 m_CrouchedCameraPosition;
 
         // Use this for initialization
         private void Start()
@@ -59,6 +62,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_Jumping = false;
             m_AudioSource = GetComponent<AudioSource>();
             m_MouseLook.Init(transform, m_Camera.transform);
+            defaultHeight = m_CharacterController.height;
+            defaultCenter = m_CharacterController.center;
+            m_CrouchedCameraPosition.y = m_CrouchHeight;
         }
 
 
@@ -266,16 +272,63 @@ namespace UnityStandardAssets.Characters.FirstPerson
             {
                 // Code to enable crouch
                 m_Camera.transform.localPosition = m_CrouchedCameraPosition;
+                ShrinkCollider(defaultHeight / 1.5f);
+
                 Debug.Log("Crouched");
             }
             else
             {
                 // Code to disable crouch
                 m_Camera.transform.localPosition = m_OriginalCameraPosition;
+                EnlargeCollider(defaultHeight);
+
                 Debug.Log("Uncrouched");
             }
             Debug.Log(m_Camera.transform.localPosition);
         }
+
+        private void ShrinkCollider(float targetHeight)
+        {
+            if (m_CharacterController == null) return;
+
+            float heightDifference = m_CharacterController.height - targetHeight;
+            Vector3 newCenter = m_CharacterController.center;
+            newCenter.y -= heightDifference / 2;
+
+            m_CharacterController.height = targetHeight;
+            m_CharacterController.center = newCenter;
+
+            // Temporarily reset the parent position to avoid any movement during the resize
+            Vector3 originalParentPosition = transform.parent.position;
+
+            // Move the GameObject downward
+            transform.position -= new Vector3(0, heightDifference / 2, 0);
+
+            // Optionally re-align parent position
+            transform.parent.position = originalParentPosition;
+        }
+
+        private void EnlargeCollider(float targetHeight)
+        {
+            if (m_CharacterController == null) return;
+
+            float heightDifference = targetHeight - m_CharacterController.height;
+            Vector3 newCenter = m_CharacterController.center;
+            newCenter.y += heightDifference / 2;
+
+            m_CharacterController.height = targetHeight;
+            m_CharacterController.center = newCenter;
+
+            // Temporarily reset the parent position to avoid any movement during the resize
+            Vector3 originalParentPosition = transform.parent.position;
+
+            // Move the GameObject upward
+            transform.position += new Vector3(0, heightDifference / 2, 0);
+
+            // Optionally re-align parent position
+            transform.parent.position = originalParentPosition;
+        }
+
 
         private void RotateView()
         {
