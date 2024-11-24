@@ -303,13 +303,13 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_CharacterController.center = newCenter;
 
             // Temporarily reset the parent position to avoid any movement during the resize
-            Vector3 originalParentPosition = transform.parent.position;
+            Vector3 originalParentPosition = transform.position;
 
             // Move the GameObject downward
             transform.position -= new Vector3(0, heightDifference / 2, 0);
 
             // Optionally re-align parent position
-            transform.parent.position = originalParentPosition;
+            transform.position = originalParentPosition;
         }
 
         private void EnlargeCollider(float targetHeight)
@@ -324,13 +324,13 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_CharacterController.center = newCenter;
 
             // Temporarily reset the parent position to avoid any movement during the resize
-            Vector3 originalParentPosition = transform.parent.position;
+            Vector3 originalParentPosition = transform.position;
 
             // Move the GameObject upward
             transform.position += new Vector3(0, heightDifference / 2, 0);
 
             // Optionally re-align parent position
-            transform.parent.position = originalParentPosition;
+            transform.position = originalParentPosition;
         }
 
 
