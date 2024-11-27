@@ -32,7 +32,7 @@ public class Vaulting : MonoBehaviour
         fpsController = GetComponent<FirstPersonController>();
         isVaulting = false;
         audioSource = GetComponent<AudioSource>();
-        if (vaultingSound != null)
+        if(vaultingSound != null)
             audioSource.clip = vaultingSound;
     }
 

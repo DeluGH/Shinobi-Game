@@ -12,6 +12,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
     {
         [SerializeField] private bool m_IsWalking;
         [SerializeField] private bool m_IsCrouched;
+        public bool m_IsGrappling;
         [SerializeField] private float m_CrouchHeight;
         [SerializeField] private float m_WalkSpeed;
         [SerializeField] private float m_CrouchSpeed;
@@ -77,12 +78,12 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
             RotateView();
             // the jump state needs to read here to make sure it is not missed
-            if (!m_Jump && m_CharacterController.isGrounded)
+            if (!m_Jump && m_CharacterController.isGrounded && !m_IsGrappling)
             {
                 m_Jump = CrossPlatformInputManager.GetButtonDown("Jump");
             }
 
-            if (!m_PreviouslyGrounded && m_CharacterController.isGrounded && !m_IsVaulting)
+            if (!m_PreviouslyGrounded && m_CharacterController.isGrounded && !m_IsVaulting && !m_IsGrappling)
             {
                 StartCoroutine(m_JumpBob.DoBobCycle());
                 PlayLandingSound();
@@ -101,9 +102,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void PlayLandingSound()
         {
-            m_AudioSource.clip = m_LandSound;
-            m_AudioSource.Play();
-            m_NextStep = m_StepCycle + .5f;
+                m_AudioSource.clip = m_LandSound;
+                m_AudioSource.Play();
+                m_NextStep = m_StepCycle + .5f;
 
         }
 
@@ -332,7 +333,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             // Optionally re-align parent position
             transform.position = originalParentPosition;
         }
-
+    
 
         private void RotateView()
         {

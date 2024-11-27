@@ -87,8 +87,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private CapsuleCollider m_Capsule;
         private float m_YRotation;
         private Vector3 m_GroundContactNormal;
-        private bool m_Jump, m_PreviouslyGrounded, m_Jumping, m_IsGrounded;
-
+        private bool m_Jump, m_PreviouslyGrounded, m_Jumping, m_IsGrounded, m_IsCrouched;
+        public float m_CrouchHeight,m_CrouchSpeed;
+        private Vector2 input;
 
         public Vector3 Velocity
         {
@@ -130,6 +131,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
         {
             RotateView();
 
+            input = GetInput();
+
             if (CrossPlatformInputManager.GetButtonDown("Jump") && !m_Jump)
             {
                 m_Jump = true;
@@ -140,7 +143,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private void FixedUpdate()
         {
             GroundCheck();
-            Vector2 input = GetInput();
+            
 
             if ((Mathf.Abs(input.x) > float.Epsilon || Mathf.Abs(input.y) > float.Epsilon) && (advancedSettings.airControl || m_IsGrounded))
             {
