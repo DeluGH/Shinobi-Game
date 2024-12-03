@@ -8,7 +8,7 @@ using UnityStandardAssets.Characters.FirstPerson;
 
 public class Vaulting : MonoBehaviour
 {
-    private int vaultLayer;
+    //public LayerMask vaultLayer;
     private Camera cam;
     private FirstPersonController fpsController;
     private CharacterController characterController;
@@ -25,14 +25,13 @@ public class Vaulting : MonoBehaviour
 
     void Start()
     {
-        vaultLayer = LayerMask.NameToLayer("VaultLayer");
-        vaultLayer = ~vaultLayer;
+        //vaultLayer = ~vaultLayer;
         cam = Camera.main;
         characterController = GetComponent<CharacterController>();
         fpsController = GetComponent<FirstPersonController>();
         isVaulting = false;
         audioSource = GetComponent<AudioSource>();
-        if(vaultingSound != null)
+        if (vaultingSound != null)
             audioSource.clip = vaultingSound;
     }
 
@@ -47,12 +46,16 @@ public class Vaulting : MonoBehaviour
         {
 
             //cast a ray to see if in range to vault and check if its a vaultable object
-            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out var firstHit, vaultRange, vaultLayer))
+            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out var firstHit, vaultRange))
             {
 
                 //cast to a point to go to after vaulting
-                if (Physics.Raycast(firstHit.point + (cam.transform.forward * characterController.radius) + (Vector3.up * vaultHeightLimit * characterController.height), Vector3.down, out var secondHit, characterController.height))
+                if (firstHit.collider.gameObject.tag == "Vaultable"  && Physics.Raycast(firstHit.point + (cam.transform.forward * characterController.radius) + (Vector3.up * vaultHeightLimit * characterController.height), Vector3.down, out var secondHit, characterController.height))
                 {
+                    //  if grappling hook swining, stop it
+                    if (fpsController.m_IsGrappling)
+                        fpsController.GetComponent<GrapplingHookScript>().StopSwing();
+
                     Debug.Log("Vault triggered");
                     isVaulting = true;
                     fpsController.m_MoveDir = Vector3.zero;
