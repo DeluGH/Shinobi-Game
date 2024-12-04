@@ -3,6 +3,14 @@ using UnityEngine.UI;
 
 public class MainMenuController : MonoBehaviour
 {
+    public enum MenuState
+    {
+        MainMenu,
+        PauseMenu,
+        Settings,
+        Gameplay
+    }
+
     public Camera mainMenuCamera; // MainMenuCamera
     public GameObject playerController; // FPSController
     public GameObject mainMenuUI; // MainMenuUI
@@ -12,6 +20,7 @@ public class MainMenuController : MonoBehaviour
     public AudioSource gameAudioSource; // AudioSource
 
     private bool isPaused = false; // Tracks the pause state
+    private MenuState currentMenuState = MenuState.MainMenu; // Tracks the current menu state
 
     // Start game
     public void StartGame()
@@ -20,6 +29,12 @@ public class MainMenuController : MonoBehaviour
         mainMenuCamera.gameObject.SetActive(false);
         playerController.gameObject.SetActive(true);
         mainMenuUI.SetActive(false);
+
+        currentMenuState = MenuState.Gameplay; // Set state to Gameplay
+
+        // Lock and hide the cursor for gameplay
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     // Open settings
@@ -27,15 +42,55 @@ public class MainMenuController : MonoBehaviour
     {
         Debug.Log("Settings menu opened.");
         settingsPanel.SetActive(true);
-        mainMenuUI.SetActive(false);
+
+        if (pauseMenuPanel.activeSelf || isPaused)
+        {
+            pauseMenuPanel.SetActive(false);
+            currentMenuState = MenuState.Settings;
+
+            // Keep the cursor unlocked and visible
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else
+        {
+            mainMenuUI.SetActive(false);
+            currentMenuState = MenuState.Settings;
+
+            // Ensure the cursor is unlocked and visible here as well
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
     }
 
     // Close settings
-    public void CloseSettings()
+    public void BackFromSettings()
     {
-        Debug.Log("Settings menu closed.");
-        settingsPanel.SetActive(false);
-        mainMenuUI.SetActive(true);
+        if (currentMenuState == MenuState.Settings)
+        {
+            if (isPaused)
+            {
+                Debug.Log("Returned to pause menu from settings.");
+                settingsPanel.SetActive(false);
+                pauseMenuPanel.SetActive(true);
+                currentMenuState = MenuState.PauseMenu;
+
+                // Keep the cursor unlocked and visible
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+            else
+            {
+                Debug.Log("Returned to main menu from settings.");
+                settingsPanel.SetActive(false);
+                mainMenuUI.SetActive(true);
+                currentMenuState = MenuState.MainMenu;
+
+                // Keep the cursor visible and unlocked
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+        }
     }
 
     // Quit game
@@ -45,6 +100,7 @@ public class MainMenuController : MonoBehaviour
         Application.Quit();
     }
 
+    // Settings Group
     // Change screen resolution
     public void ChangeResolution(int width, int height)
     {
@@ -80,19 +136,30 @@ public class MainMenuController : MonoBehaviour
 
         if (isPaused)
         {
-            // Pause the game
-            Time.timeScale = 0f; // Stop all in-game movement
+            Time.timeScale = 0f; // Pause game
             pauseMenuPanel.SetActive(true);
+            currentMenuState = MenuState.PauseMenu;
+
+            // Enable and unlock the cursor
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
             Debug.Log("Game paused.");
         }
         else
         {
-            // Resume the game
-            Time.timeScale = 1f; // Resume all in-game movement
+            Time.timeScale = 1f; // Resume game
             pauseMenuPanel.SetActive(false);
+            currentMenuState = MenuState.Gameplay; // Back to gameplay
+
+            // Lock and hide the cursor
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
             Debug.Log("Game resumed.");
         }
     }
+
 
     // Resume game (called by the Resume button)
     public void ResumeGame()
@@ -100,69 +167,62 @@ public class MainMenuController : MonoBehaviour
         isPaused = false;
         Time.timeScale = 1f;
         pauseMenuPanel.SetActive(false);
+
+        currentMenuState = MenuState.Gameplay; // Resumes to Gameplay state
+
+        // Lock and hide the cursor for gameplay
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
         Debug.Log("Game resumed from pause menu.");
-    }
-
-    // Open settings from pause menu
-    public void OpenPauseMenuSettings()
-    {
-        Debug.Log("Settings menu opened from pause menu.");
-        settingsPanel.SetActive(true);
-        pauseMenuPanel.SetActive(false); // Hide pause menu
-    }
-
-    // Back to pause menu from settings
-    public void BackFromSettings()
-    {
-        if (pauseMenuPanel.activeSelf)
-        {
-            // Return to the pause menu if the pause menu is active
-            Debug.Log("Returned to pause menu from settings.");
-            settingsPanel.SetActive(false);
-            pauseMenuPanel.SetActive(true);
-        }
-        else
-        {
-            // Otherwise, return to the main menu
-            Debug.Log("Returned to main menu from settings.");
-            settingsPanel.SetActive(false);
-            mainMenuUI.SetActive(true);
-        }
     }
 
     // Quit to main menu from pause menu
     public void QuitToMainMenu()
     {
         Debug.Log("Returned to main menu from pause menu.");
-
-        // Unpause the game
-        Time.timeScale = 1f;
-
-        // Enable main menu UI and main menu camera
+        Time.timeScale = 1f; // Resume game time
         mainMenuUI.SetActive(true);
         mainMenuCamera.gameObject.SetActive(true);
-
-        // Disable player controller
         playerController.gameObject.SetActive(false);
-
-        // Hide pause menu
         pauseMenuPanel.SetActive(false);
+        settingsPanel.SetActive(false); // Ensure settings panel is hidden
+        currentMenuState = MenuState.MainMenu;
+
+        isPaused = false; // Reset pause state
+
+        // Enable and unlock the cursor
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     void Update()
     {
+        if (currentMenuState == MenuState.MainMenu)
+        {
+            // Disable Escape key during main menu
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (settingsPanel.activeSelf)
+            if (currentMenuState == MenuState.Settings)
             {
-                // If in settings menu, return to pause menu
+                // If in settings menu, return to pause menu or main menu
                 BackFromSettings();
             }
-            else
+            else if (currentMenuState == MenuState.Gameplay || currentMenuState == MenuState.PauseMenu)
             {
                 // Toggle pause menu
                 TogglePauseMenu();
             }
         }
+    }
+
+    // Debugging
+    private void SetMenuState(MenuState newState)
+    {
+        Debug.Log($"Menu state changed from {currentMenuState} to {newState}");
+        currentMenuState = newState;
     }
 }
