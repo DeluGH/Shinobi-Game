@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,6 +19,8 @@ public class MainMenuController : MonoBehaviour
     public GameObject pauseMenuPanel; // PauseMenuPanel
     public Slider audioSlider; // Audio slider
     public AudioSource gameAudioSource; // AudioSource
+    public bool isFullscreen = true;  // Fullscreen boolean
+    public GameObject resolution;   // resolution
 
     private bool isPaused = false; // Tracks the pause state
     private MenuState currentMenuState = MenuState.MainMenu; // Tracks the current menu state
@@ -47,6 +50,7 @@ public class MainMenuController : MonoBehaviour
         {
             pauseMenuPanel.SetActive(false);
             currentMenuState = MenuState.Settings;
+            Debug.Log("Reanimate cursor");
 
             // Keep the cursor unlocked and visible
             Cursor.lockState = CursorLockMode.None;
@@ -56,7 +60,7 @@ public class MainMenuController : MonoBehaviour
         {
             mainMenuUI.SetActive(false);
             currentMenuState = MenuState.Settings;
-
+            Debug.Log("Reanimate cursor");
             // Ensure the cursor is unlocked and visible here as well
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
@@ -102,26 +106,44 @@ public class MainMenuController : MonoBehaviour
 
     // Settings Group
     // Change screen resolution
-    public void ChangeResolution(int width, int height)
+    public void ChangeResolution()
     {
-        Screen.SetResolution(width, height, Screen.fullScreen);
-        Debug.Log($"Resolution changed to {width} x {height}.");
+        TMP_Dropdown dropdown = resolution.GetComponent<TMP_Dropdown>();
+        int option = dropdown.value;
+
+        switch (option)
+        {
+            case 0:
+                Screen.SetResolution(1980, 1080, Screen.fullScreen);
+                Debug.Log($"Resolution changed to 1980x1080.");
+                break;
+            case 1:
+                Screen.SetResolution(1280, 720, Screen.fullScreen);
+                Debug.Log($"Resolution changed to 1280x720.");
+                break;
+            case 2:
+                Screen.SetResolution(800, 600, Screen.fullScreen);
+                Debug.Log($"Resolution changed to 800x600 .");
+                break;
+        }
     }
 
     // Toggle fullscreen mode
-    public void ToggleFullScreen(bool isFullScreen)
+    public void ToggleFullScreen()
     {
-        Screen.fullScreen = isFullScreen;
-        Debug.Log($"Fullscreen mode set to: {isFullScreen}");
+        isFullscreen = !isFullscreen;
+
+        Screen.fullScreen = isFullscreen;
+        Debug.Log($"Fullscreen mode set to: {isFullscreen}");
     }
 
     // Adjust audio volume
-    public void AdjustVolume(float volume)
+    public void AdjustVolume()
     {
-        if (gameAudioSource != null)
+        if (gameAudioSource != null && audioSlider != null)
         {
-            gameAudioSource.volume = volume;
-            Debug.Log($"Audio volume changed to: {volume}");
+            gameAudioSource.volume = audioSlider.value;
+            Debug.Log($"Audio volume changed to: {audioSlider.value}");
         }
         else
         {
@@ -132,6 +154,7 @@ public class MainMenuController : MonoBehaviour
     // Toggle Pause Menu
     public void TogglePauseMenu()
     {
+        
         isPaused = !isPaused;
 
         if (isPaused)
