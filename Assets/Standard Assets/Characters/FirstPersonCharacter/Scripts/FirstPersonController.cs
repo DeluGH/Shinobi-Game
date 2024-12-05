@@ -1,5 +1,7 @@
 using System;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityStandardAssets.CrossPlatformInput;
 using UnityStandardAssets.Utility;
 using Random = UnityEngine.Random;
@@ -279,7 +281,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 // Code to enable crouch
                 m_Camera.transform.localPosition = m_CrouchedCameraPosition;
                 ShrinkCollider(defaultHeight / 1.5f);
-
+                ToggleCrouchingVignette(true);
                 Debug.Log("Crouched");
             }
             else
@@ -287,10 +289,35 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 // Code to disable crouch
                 m_Camera.transform.localPosition = m_OriginalCameraPosition;
                 EnlargeCollider(defaultHeight);
-
+                ToggleCrouchingVignette(false);
                 Debug.Log("Uncrouched");
             }
             Debug.Log(m_Camera.transform.localPosition);
+        }
+
+        private void ToggleCrouchingVignette(bool isOn)
+        {
+            Volume volume = GameObject.Find("Global Volume").GetComponent<Volume>();
+
+            // Check if the Volume has a profile
+            if (volume != null && volume.profile != null)
+            {
+                // Check if the Vignette effect exists in the profile
+                if (volume.profile.TryGet<Vignette>(out Vignette vignette))
+                {
+                    // Enable the Vignette effect
+                    vignette.active = isOn;
+
+                }
+                else
+                {
+                    Debug.LogWarning("Vignette effect not found in the Volume Profile.");
+                }
+            }
+            else
+            {
+                Debug.LogError("Volume or Volume Profile is missing.");
+            }
         }
 
         private void ShrinkCollider(float targetHeight)
