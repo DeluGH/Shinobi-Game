@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityStandardAssets.Characters.FirstPerson;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class MainMenuController : MonoBehaviour
 
     public Camera mainMenuCamera; // MainMenuCamera
     public GameObject playerController; // FPSController
+    public CharacterController characterController; // FPSController character controller
     public GameObject mainMenuUI; // MainMenuUI
     public GameObject settingsPanel; // SettingsPanel
     public GameObject pauseMenuPanel; // PauseMenuPanel
@@ -32,7 +34,8 @@ public class MainMenuController : MonoBehaviour
         mainMenuCamera.gameObject.SetActive(false);
         playerController.gameObject.SetActive(true);
         mainMenuUI.SetActive(false);
-
+        playerController.GetComponent<FirstPersonController>().enabled = true;
+        characterController.enabled = true;
         currentMenuState = MenuState.Gameplay; // Set state to Gameplay
 
         // Lock and hide the cursor for gameplay
@@ -43,6 +46,8 @@ public class MainMenuController : MonoBehaviour
     // Open settings
     public void OpenSettings()
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         Debug.Log("Settings menu opened.");
         settingsPanel.SetActive(true);
 
@@ -154,32 +159,38 @@ public class MainMenuController : MonoBehaviour
     // Toggle Pause Menu
     public void TogglePauseMenu()
     {
-        
-        isPaused = !isPaused;
-
-        if (isPaused)
+        if (!isPaused && playerController.GetComponent<Rigidbody>().isKinematic && characterController.isGrounded && playerController.GetComponent<FirstPersonController>().m_IsGrappling == false)
         {
-            Time.timeScale = 0f; // Pause game
-            pauseMenuPanel.SetActive(true);
-            currentMenuState = MenuState.PauseMenu;
+            isPaused = !isPaused;
 
-            // Enable and unlock the cursor
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            if (isPaused)
+            {
+                Time.timeScale = 0f; // Pause game
+                playerController.GetComponent<FirstPersonController>().enabled = false;
+                characterController.enabled = false;
+                pauseMenuPanel.SetActive(true);
+                currentMenuState = MenuState.PauseMenu;
 
-            Debug.Log("Game paused.");
-        }
-        else
-        {
-            Time.timeScale = 1f; // Resume game
-            pauseMenuPanel.SetActive(false);
-            currentMenuState = MenuState.Gameplay; // Back to gameplay
+                // Enable and unlock the cursor
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
 
-            // Lock and hide the cursor
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+                Debug.Log("Game paused.");
+            }
+            else
+            {
+                Time.timeScale = 1f; // Resume game
+                pauseMenuPanel.SetActive(false);
+                playerController.GetComponent<FirstPersonController>().enabled = true;
+                characterController.enabled = true;
+                currentMenuState = MenuState.Gameplay; // Back to gameplay
 
-            Debug.Log("Game resumed.");
+                // Lock and hide the cursor
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+
+                Debug.Log("Game resumed.");
+            }
         }
     }
 
@@ -190,7 +201,8 @@ public class MainMenuController : MonoBehaviour
         isPaused = false;
         Time.timeScale = 1f;
         pauseMenuPanel.SetActive(false);
-
+        playerController.GetComponent<FirstPersonController>().enabled = true;
+        characterController.enabled = true;
         currentMenuState = MenuState.Gameplay; // Resumes to Gameplay state
 
         // Lock and hide the cursor for gameplay
