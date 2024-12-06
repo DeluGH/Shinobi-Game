@@ -16,10 +16,10 @@ TagManager:
   - UI
   - VaultLayer
   - GrappleableLayer
-  - 
-  - 
-  - 
-  - 
+  - Player
+  - Enemy
+  - Smoke
+  - Surfaces
   - 
   - 
   - 
