@@ -9,7 +9,6 @@ public class GrapplingHookScript : MonoBehaviour
     public KeyCode swingKey = KeyCode.Mouse1;
     public KeyCode climbKey = KeyCode.Space;
     public KeyCode descendKey = KeyCode.LeftControl;
-    public LayerMask grappleableLayer;
     public ObiRope rope; // Reference to the Obi Rope for rendering
     public FirstPersonController fpsController;
     public CharacterController characterController;
@@ -115,12 +114,16 @@ public class GrapplingHookScript : MonoBehaviour
     private void ThrowGrapplingHook()
     {
         RaycastHit hit;
-        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, hookRange, grappleableLayer))
+        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, hookRange))
         {
-            startPosition = grapplingHook.transform.position = fpsController.transform.position;
+            if (hit.collider.gameObject.tag == "Grappable") 
+            {
+                startPosition = grapplingHook.transform.position = fpsController.transform.position;
 
-            StartCoroutine(LerpGrapplingHookTravel(hit.point, hookReachTime));
-            RenderGrapplingHook(true);
+                StartCoroutine(LerpGrapplingHookTravel(hit.point, hookReachTime));
+                RenderGrapplingHook(true);
+            }
+
         }
     }
 

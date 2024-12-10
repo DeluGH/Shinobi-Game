@@ -13,6 +13,10 @@ GameObject:
   - component: {fileID: 11400000}
   - component: {fileID: 5400000}
   - component: {fileID: 8200000}
+  - component: {fileID: 7697938410488673884}
+  - component: {fileID: 439589083097121339}
+  - component: {fileID: 7435302451620342592}
+  - component: {fileID: 6441850401646717122}
   m_Layer: 0
   m_Name: FPSController
   m_TagString: Untagged
@@ -52,12 +56,12 @@ CharacterController:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Height: 1.8
   m_Radius: 0.5
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
+  m_StepOffset: 0.5
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 0, z: 0}
@@ -68,16 +72,17 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 100000}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 05ec5cf00ca181d45a42ba1870e148c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_IsWalking: 0
   m_IsCrouched: 0
+  m_IsGrappling: 0
   m_CrouchHeight: 0
   m_WalkSpeed: 5
-  m_CrouchSpeed: 0
+  m_CrouchSpeed: 3
   m_RunSpeed: 10
   m_RunstepLenghten: 0.7
   m_JumpSpeed: 10
@@ -188,6 +193,10 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 8bc94ec6ed537e743b481638bdcd503d, type: 3}
   m_JumpSound: {fileID: 8300000, guid: 5897aeed9b676024fbb8c694b421a861, type: 3}
   m_LandSound: {fileID: 8300000, guid: 3b09d59f4499d45428baa7a21e954296, type: 3}
+  m_MoveDir: {x: 0, y: 0, z: 0}
+  m_PreviouslyGrounded: 0
+  m_Jumping: 0
+  m_IsVaulting: 0
 --- !u!54 &5400000
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -312,6 +321,100 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!114 &7697938410488673884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19077ce3474553e409a0548d6b9cafbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  swingKey: 324
+  climbKey: 32
+  descendKey: 306
+  grappleableLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  rope: {fileID: 0}
+  fpsController: {fileID: 11400000}
+  characterController: {fileID: 14300000}
+  grapplingHook: {fileID: 0}
+  hookReachTime: 0.25
+  hookRange: 25
+  swingJumpForce: 1000
+  climbSpeed: 5.04
+  maxSwingSpeed: 10
+  swingControlForce: 1
+  grapplingCollider: {fileID: 439589083097121339}
+--- !u!136 &439589083097121339
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7435302451620342592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73c49918ccfe6f645a9c6e4f7b6d7710, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vaultRange: 0.5
+  vaultHeightLimit: 0.6
+  vaultDuration: 0.7
+  vaultingSound: {fileID: 0}
+  playAudioWhilstVaulting: 0
+--- !u!114 &6441850401646717122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23fc4be2795bac4428f3428d9130b775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chargeStartTime: 0
+  player: {fileID: 100000}
+  inventorySlots:
+  - item: {fileID: 11400000, guid: c3f31c3a045697a49b579c75b8f4cb95, type: 2}
+    count: 5
+  - item: {fileID: 0}
+    count: 0
+  - item: {fileID: 0}
+    count: 0
+  - item: {fileID: 0}
+    count: 0
+  onHand: {fileID: 0}
+  onBack: {fileID: 0}
 --- !u!1 &100002
 GameObject:
   m_ObjectHideFlags: 0
@@ -437,7 +540,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0

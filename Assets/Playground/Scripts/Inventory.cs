@@ -1,21 +1,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class InventorySlot
+{
+    public Item item;
+    public int count;
+}
+
 public class Inventory : MonoBehaviour
 {
+    [Header("Debug (Reference)")]
     public float chargeStartTime;
+    public Item utilHand; // swaps with Inventory Items
+    public Item mainHand; // For holding sword or swapping with back items
+    public Item onBack; // Item currently stored on the back
 
-    [System.Serializable]
-    public class InventorySlot
-    {
-        public Item item;
-        public int count;
-    }
-
+    [Header("References (Auto)")]
     public GameObject player; // This game object
     public List<InventorySlot> inventorySlots = new List<InventorySlot>();
-    public Item onHand; // Item currently held in hand
-    public Item onBack; // Item currently stored on the back
+   
 
     private void Awake()
     {
@@ -30,47 +34,54 @@ public class Inventory : MonoBehaviour
     void HandleInput()
     {
         // Check for holding left click
-        if (Input.GetKeyDown(KeyCode.Mouse0) && onHand != null && onHand.canHoldCharge)
+        if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Use Utility"]) && utilHand != null && utilHand.canHoldCharge)
         {
             chargeStartTime = Time.time; // Record when charging started
         }
-        if (Input.GetKey(KeyCode.Mouse0) && onHand != null && onHand.canHoldCharge)
+        if (Input.GetKey(KeybindManager.Instance.keybinds["Use Utility"]) && utilHand != null && utilHand.canHoldCharge)
         {
             float chargeTime = Time.time - chargeStartTime;
-            onHand.Charge(player, chargeTime); // charging - change values within smoke bomb
+            utilHand.Charge(player, chargeTime); // charging - change values within smoke bomb
         }
+
 
         // Equip items based on number keys 1-4
         for (int i = 0; i < inventorySlots.Count; i++)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1 + i) && i < inventorySlots.Count)
             {
-                EquipFromSlot(i);
+                EquipFromInventorySlot(i);
             }
         }
 
         // Lift left-click, handle Use or Charge
-        if (Input.GetKeyUp(KeyCode.Mouse0))
+        if (Input.GetKeyUp(KeybindManager.Instance.keybinds["Use Utility"]))
         {
-            if (onHand != null)
+            if (utilHand != null)
             {
                 UseEquippedItem();
             }
+        }
+
+        // Check if unequipUtilHand key is pressed
+        if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Unequip Offhand"]))
+        {
+            UnequipUtilHand();
         }
     }
 
     void UseEquippedItem() // Left clicking or Fire1
     {
-        if (onHand != null)
+        if (utilHand != null)
         {
             try
             {
-                onHand.Use(player); // Call the Use method on the equipped item
+                utilHand.Use(player); // Call the Use method on the equipped item
                 RemoveHandObject();
             }
             catch (System.Exception ex)
             {
-                Debug.LogError($"Error while using {onHand.itemName}: {ex.Message}\nCould be player null reference.");
+                Debug.LogError($"Error while using {utilHand.itemName}: {ex.Message}\nCould be player null reference.");
             }
         }
         else
@@ -81,14 +92,14 @@ public class Inventory : MonoBehaviour
 
     void RemoveHandObject()
     {
-        if (onHand != null && onHand.minusOnUse)
+        if (utilHand != null && utilHand.minusOnUse)
         {
-            onHand = null; // Remove from hand
+            utilHand = null; // Remove from hand
         }
     }
 
 
-    void EquipFromSlot(int slotIndex) // Equip when using keys 1-4
+    void EquipFromInventorySlot(int slotIndex) // Equip when using keys 1-4
     {
         if (slotIndex < 0 || slotIndex >= inventorySlots.Count) return;
 
@@ -100,34 +111,34 @@ public class Inventory : MonoBehaviour
         if (slot.item.storeType == StoreType.Back)
         {
             // If item can go on the back, switch the onHand item to onBack
-            if (onHand != null)
+            if (utilHand != null)
             {
-                if (onHand.storeType == StoreType.Inventory)
+                if (utilHand.storeType == StoreType.Inventory)
                 {
-                    AddToInventory(onHand);
+                    AddToInventory(utilHand);
                 }
-                else if (onHand.storeType == StoreType.Back)
+                else if (utilHand.storeType == StoreType.Back)
                 {
-                    onBack = onHand; // Place the current onHand item on the back
+                    onBack = utilHand; // Place the current onHand item on the back
                 }
             }
 
-            onHand = slot.item; // Equip the new item to onHand
+            utilHand = slot.item; // Equip the new item to onHand
         }
         else if (slot.item.storeType == StoreType.Inventory)
         {
             // Items restricted to inventory go directly to onHand
-            AddToInventory(onHand); // Put the current onHand item back into inventory
-            onHand = slot.item;
+            AddToInventory(utilHand); // Put the current onHand item back into inventory
+            utilHand = slot.item;
         }
 
         RemoveFromSlot(slotIndex); // Remove item from inventory
     }
 
     // Putting things back into inventory when swapping items
-    void AddToInventory(Item item)
+    bool AddToInventory(Item item)
     {
-        if (item == null) return;
+        if (item == null) return false;
 
         // Check if item already exists in inventory
         foreach (var slot in inventorySlots)
@@ -135,22 +146,23 @@ public class Inventory : MonoBehaviour
             if (slot.item == item && slot.count < item.maxStackCount)
             {
                 slot.count++;
-                return;
+                return true;
             }
         }
 
-        // Add to first empty slot
+        // Add to the first empty slot if the item doesn't already exist in the inventory
         foreach (var slot in inventorySlots)
         {
             if (slot.item == null)
             {
                 slot.item = item;
                 slot.count = 1;
-                return;
+                return true;
             }
         }
 
         Debug.Log("Inventory full!");
+        return false;
     }
 
     // Removal from inventory when swapping items
@@ -164,6 +176,28 @@ public class Inventory : MonoBehaviour
         {
             inventorySlots[slotIndex].item = null;
             inventorySlots[slotIndex].count = 0;
+        }
+    }
+
+    void UnequipUtilHand()
+    {
+        if (utilHand != null)
+        {
+            // Attempt to add the utilHand item back into the inventory
+            bool addedToInventory = AddToInventory(utilHand);
+
+            if (addedToInventory)
+            {
+                utilHand = null; // Unequip the item if successfully added to the inventory
+            }
+            else
+            {
+                Debug.Log("No space in inventory to unequip the item!");
+            }
+        }
+        else
+        {
+            Debug.Log("No item equipped in the util hand!");
         }
     }
 }

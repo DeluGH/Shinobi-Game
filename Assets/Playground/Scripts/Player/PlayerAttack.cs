@@ -21,6 +21,13 @@ public class PlayerAttack : MonoBehaviour
     public float behindEnemyThreshold = -0.4f; // Negative value = behind,
                                                // so -1: Player must be directly behind
                                                // -0.9: 40° Arc // -0.7: 100° Arc  // -0.5: 120° Arc
+                                               // Ass Animation
+
+    public GameObject currentAssEnemyTarget;    // Different from assEnemyTarget, what if during animation assEnemyTarget moves away/changes target
+    public bool isAssing = false;               // If True, shouldn't receive player input, is playing Animation
+    public float assAnimTime = 0.4f;            // Time taken to assassinate enemy after reaching it
+    public float assLerpMinDistance = 0.15f;    // Min. Distance player will be from the AI after assassinating it
+    public float assLerpTime = 0.25f;           // Time taken for player to lerp/reach the AI
 
     [Header("References (Auto)")]
     public float maxRaycastRange = 10f;
@@ -40,7 +47,7 @@ public class PlayerAttack : MonoBehaviour
         canAssassinate = isEnemyAssable(); // Check for any assable enemies
 
         if (meleeTimer < meleeCooldown) meleeTimer += Time.deltaTime;
-        if (Input.GetButtonDown("Fire1") && meleeTimer >= meleeCooldown)
+        if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Attack"]) && meleeTimer >= meleeCooldown)
         {
             meleeTimer = 0f;
             Attack();
@@ -77,15 +84,16 @@ public class PlayerAttack : MonoBehaviour
         if (isFacingEnemy() && lookingAtEnemy != null)
         {
             Enemy enemyScript = lookingAtEnemy.GetComponent<Enemy>();
-            // 1. Need to be BEHIND to give backshots
+            // 1. Need to be BEHIND to give backshots OR Enemy is Stunned
             // 2. Need to be within Range
             // 3. Enemy can't be dead
             if (enemyScript != null)
             {
-                if (!enemyScript.isDead && //3
-                    enemyScript.playerInDetectionArea == false //1
+                if (!enemyScript.isDead //3
                     && Vector3.Distance(transform.position, lookingAtEnemy.transform.position) <= assRange // 2
-                    && IsPlayerBehindEnemy(lookingAtEnemy.transform)) //1
+                    && (IsPlayerBehindEnemy(lookingAtEnemy.transform) //1
+                    && enemyScript.playerInDetectionArea == false //1
+                    || enemyScript.isChoking))
                 {
                     assEnemyTarget = lookingAtEnemy;
                         
@@ -108,6 +116,9 @@ public class PlayerAttack : MonoBehaviour
 
     private void Attack()
     {
+        // Return if currently assassinating someone
+        if (isAssing) return;
+
         if (canAssassinate && assEnemyTarget != null)
         {
             Assassinate();
@@ -122,12 +133,68 @@ public class PlayerAttack : MonoBehaviour
     public void Assassinate()
     {
         Debug.Log("ASS");
+        isAssing = true;
 
         if (assEnemyTarget != null)
         {
-            Enemy enemyScript = assEnemyTarget.GetComponent<Enemy>();
+            currentAssEnemyTarget = assEnemyTarget;
+
+            Enemy enemyScript = currentAssEnemyTarget.GetComponent<Enemy>();
+            if (enemyScript != null)
+            {
+                enemyScript.PauseActivity();
+                enemyScript.agent.isStopped = true;
+            }
+
+            //"Animation"
+            StartCoroutine(MoveToEnemy());
+        }
+        else Debug.LogWarning("NO ENEMY SCRIPT!!");
+    }
+
+    public IEnumerator MoveToEnemy()
+    {
+        Vector3 startPosition = transform.position;
+        Vector3 endPosition = currentAssEnemyTarget.transform.position;
+
+        //Distance/Position Player will be
+        float playerColliderRadius = transform.GetComponent<CharacterController>().radius;
+        float enemyColliderRadius = currentAssEnemyTarget.GetComponent<CapsuleCollider>().radius;
+        float stoppingDistance = assLerpMinDistance + playerColliderRadius + enemyColliderRadius;
+        Vector3 directionToEnemy = (endPosition - startPosition).normalized;
+        Vector3 targetPosition = endPosition - directionToEnemy * stoppingDistance;
+
+        // Calculate distance to cover and speed (we'll use the time to get there)
+        float journeyLength = Vector3.Distance(startPosition, targetPosition);  // Total distance to target position
+        float startTime = Time.time;
+
+        while (Vector3.Distance(transform.position, targetPosition) > assLerpMinDistance)
+        {
+            // Calculate the distance moved so far as a fraction of the total journey
+            float distanceCovered = (Time.time - startTime) * (journeyLength / assLerpTime);
+            float fractionOfJourney = distanceCovered / journeyLength;
+
+            // Lerp player position towards enemy
+            transform.position = Vector3.Lerp(startPosition, targetPosition, fractionOfJourney);
+
+            yield return null;
+        }
+
+        // Reached, stab
+        StartCoroutine(AssassinateStab());
+    }
+
+    public IEnumerator AssassinateStab()
+    {
+        yield return new WaitForSeconds(assAnimTime);
+
+        Enemy enemyScript = currentAssEnemyTarget.GetComponent<Enemy>();
+        if (enemyScript)
+        {
+            isAssing = false;
             enemyScript.Die();
         }
+        else Debug.LogWarning("NO ENEMY SCRIPT!!");
     }
 
     public void Swing()
@@ -138,7 +205,7 @@ public class PlayerAttack : MonoBehaviour
         foreach (Collider enemy in hitEnemies)
         {
             Enemy enemyScript = enemy.GetComponent<Enemy>();
-            if (enemyScript != null && !hitEnemySet.Contains(enemyScript))
+            if (enemyScript != null && !hitEnemySet.Contains(enemyScript) && !enemyScript.isDead)
             {
                 Vector3 toEnemy = (enemy.transform.position - transform.position).normalized;
                 if (Vector3.Angle(transform.forward, toEnemy) <= meleeAngle / 2)

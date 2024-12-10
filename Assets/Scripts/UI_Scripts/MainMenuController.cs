@@ -23,6 +23,7 @@ public class MainMenuController : MonoBehaviour
     public AudioSource gameAudioSource; // AudioSource
     public bool isFullscreen = true;  // Fullscreen boolean
     public GameObject resolution;   // resolution
+    public GameObject gameplayPanel;    // gameplay
 
     private bool isPaused = false; // Tracks the pause state
     private MenuState currentMenuState = MenuState.MainMenu; // Tracks the current menu state
@@ -36,6 +37,7 @@ public class MainMenuController : MonoBehaviour
         mainMenuUI.SetActive(false);
         playerController.GetComponent<FirstPersonController>().enabled = true;
         characterController.enabled = true;
+        gameplayPanel.SetActive(true);
         currentMenuState = MenuState.Gameplay; // Set state to Gameplay
 
         // Lock and hide the cursor for gameplay
@@ -169,6 +171,7 @@ public class MainMenuController : MonoBehaviour
                 playerController.GetComponent<FirstPersonController>().enabled = false;
                 characterController.enabled = false;
                 pauseMenuPanel.SetActive(true);
+                gameplayPanel.SetActive(false);
                 currentMenuState = MenuState.PauseMenu;
 
                 // Enable and unlock the cursor
@@ -183,6 +186,7 @@ public class MainMenuController : MonoBehaviour
                 pauseMenuPanel.SetActive(false);
                 playerController.GetComponent<FirstPersonController>().enabled = true;
                 characterController.enabled = true;
+                gameplayPanel.SetActive(true);
                 currentMenuState = MenuState.Gameplay; // Back to gameplay
 
                 // Lock and hide the cursor
@@ -201,6 +205,7 @@ public class MainMenuController : MonoBehaviour
         isPaused = false;
         Time.timeScale = 1f;
         pauseMenuPanel.SetActive(false);
+        gameplayPanel.SetActive(true);
         playerController.GetComponent<FirstPersonController>().enabled = true;
         characterController.enabled = true;
         currentMenuState = MenuState.Gameplay; // Resumes to Gameplay state
@@ -218,6 +223,7 @@ public class MainMenuController : MonoBehaviour
         Debug.Log("Returned to main menu from pause menu.");
         Time.timeScale = 1f; // Resume game time
         mainMenuUI.SetActive(true);
+        gameplayPanel.SetActive(false);
         mainMenuCamera.gameObject.SetActive(true);
         playerController.gameObject.SetActive(false);
         pauseMenuPanel.SetActive(false);

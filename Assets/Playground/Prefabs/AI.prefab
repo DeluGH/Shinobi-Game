@@ -53,16 +53,20 @@ MonoBehaviour:
   baseHealth: 4
   baseMovementSpeed: 5
   baseRotationSpeed: 120
-  maxDistanceFromNodes: 3.5
+  maxDistanceFromNodes: 2.5
   despawnTime: 300
   hitCauseAlert: 1
   canBlock: 0
   blockPeriod: 1
   blockInterval: 7.5
+  inSmoke: 0
+  smokeChokeAfterDisappear: 2
   currentHealth: 0
   movementSpeed: 5
   rotationSpeed: 120
-  inSmoke: 0
+  isChoking: 0
+  chokingDuration: 0
+  chokingTimer: 0
   isDead: 0
   isBlocking: 0
   isExecutingActivity: 0
@@ -81,6 +85,7 @@ MonoBehaviour:
   smokeLayer:
     serializedVersion: 2
     m_Bits: 0
+  overlappingSmokes: 0
 --- !u!114 &3452266272270466010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -116,11 +121,13 @@ MonoBehaviour:
   currentDetectDistance: 0
   currentGreenAngle: 0
   currentYellowAngle: 0
-  detectDistance: 15
+  detectDistance: 16.5
   greenAngle: 110
-  yellowAngle: 60
+  yellowAngle: 65
   corpseInDetectionArea: 0
   corpseMultiplier: 1.4
+  smokeInDetectionArea: 0
+  smokeMultiplier: 1.2
   smokeDetectDistanceMult: 0.3
   smokeGreenAngleMult: 0.3
   smokeYellowAngleMult: 0.3
@@ -155,7 +162,7 @@ MonoBehaviour:
   alertGreenAngleInc: 45
   alertModePeriod: 20
   alertMoveSpeedMult: 1.7
-  alertModeSpread: 20
+  alertModeSpread: 21
   alertLookInterval: 1.2
   alertLookAngle: 300
   alertRotationSpeedMult: 1.8
@@ -166,7 +173,7 @@ MonoBehaviour:
   buffSusMultiplier: 1.4
   buffMoveSpeedInc: 1.2
   buffRotationSpeedMult: 1.2
-  alertedSpread: 10
+  alertedSpread: 14
   enemyScript: {fileID: 0}
   outOfSightTimer: 0
   lastKnownPosition: {x: 0, y: 0, z: 0}

@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 606483409401822307}
   - component: {fileID: 6242184891302392920}
   - component: {fileID: 5845581740893991163}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: GrapplingHitBox
-  m_TagString: Vaultable
+  m_TagString: Grappable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

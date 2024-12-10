@@ -31,11 +31,11 @@ public class DetectionAI : MonoBehaviour
 
     [Header("Detection Settings")]
     [Tooltip("Default detection range.\nAffectable by invDetectDistanceInc and alertDetectionDistanceInc.\nDefault: 15")]
-    public float detectDistance = 15f;   // Detection range
+    public float detectDistance = 16.5f;   // Detection range
     [Tooltip("Green zone angle.\nAffectable by inveGreenAngleInc and alertGreenAngleInc\nDefault: 110")]
     public float greenAngle = 110f;          // Green zone angle
     [Tooltip("Yellow zone angle.\nAffectable by inveYellowAngleInc and alertYellowAngleInc\nDefault: 60")]
-    public float yellowAngle = 60f;         // Yellow zone angle
+    public float yellowAngle = 65f;         // Yellow zone angle
 
     [Header("Corpse Detection Settings")]
     [Tooltip("True: Corpse is in Vision\nFalse: No Corpse is in AI Vision.")]
@@ -120,7 +120,7 @@ public class DetectionAI : MonoBehaviour
     [Tooltip("Time taken before every LookAround() during Investigation Mode\nwhen AI reaches it's destination (Either the player or lastKnownPosition).\nDefault: 3")]
     public float inveLookInterval = 3f;     // Time to wait before looking around
     [Tooltip("The positive and negative value determining the angle for looking around in Investigation Mode.\nDefault: 180")]
-    public float inveLookAngle = 180;       // Value for look around angle 
+    public float inveLookAngle = 120;       // Value for look around angle 
     // Other
     [Tooltip("Multiplier for Rotation Speed in ActivityAI Script during Investigation Mode\nDefault: 1.5")]
     public float inveRotationSpeedMult = 1.5f; // Rotation speed MULTIPLIER
@@ -140,13 +140,13 @@ public class DetectionAI : MonoBehaviour
     public float alertModePeriod = 20f;    // Time before suspicion starts to DECREASE after enter Alert mode
     [Tooltip("Multiplier for AI movement speed after the alert mode is triggerd.\nDefault: 1.7")]
     public float alertMoveSpeedMult = 1.7f;    // Multiplies movement speed by this amount
-    [Tooltip("Radius which other AI around this one will be instantly alerted as well.\nDefault: 15")]
-    public float alertModeSpread = 20f;    // Radius to alert other AI.
+    [Tooltip("Radius which other AI around this one will be instantly alerted as well.\nDefault: 21")]
+    public float alertModeSpread = 21f;    // Radius to alert other AI.
     // Alert Look Around
     [Tooltip("Time taken before every LookAround() during Alert Mode\nwhen AI reaches it's destination (Either the player or lastKnownPosition).\nDefault: 1.2")]
     public float alertLookInterval = 1.2f;     // Time to wait before looking around
     [Tooltip("The positive and negative value determining the angle for looking around in Alert Mode.\nDefault: 300")]
-    public float alertLookAngle = 300;       // Value for look around angle 
+    public float alertLookAngle = 200;       // Value for look around angle 
     // Other
     [Tooltip("Multiplier for Rotation Speed in ActivityAI Script during Investigation Mode\nDefault: 1.8")]
     public float alertRotationSpeedMult = 1.8f; // Rotation speed MULTIPLIER
@@ -168,8 +168,8 @@ public class DetectionAI : MonoBehaviour
     [Tooltip("Multiplier for Rotation Speed in ActivityAI Script after Alert Mode is triggered. (Permanent).\nIncrements other multipliers.\nDefault: 1.2")]
     public float buffRotationSpeedMult = 1.2f; // Rotation speed MULTIPLIER
     // Other
-    [Tooltip("Radius which other AI around this one will be instantly alerted as well. (permanent)\nDefault: 7")]
-    public float alertedSpread = 10f;    // Radius to alert other AI.
+    [Tooltip("Radius which other AI around this one will be instantly alerted as well. (permanent)\nDefault: 14")]
+    public float alertedSpread = 14f;    // Radius to alert other AI.
 
     [Header("References (Auto)")]       // Should auto assign itself, but just to be safe, assign it yourself
     public Enemy enemyScript;           // Reference to Enemy Script in AI game Object
@@ -518,21 +518,24 @@ public class DetectionAI : MonoBehaviour
         Collider[] hits = Physics.OverlapSphere(transform.position, GetCurrentAlertSpreadDistance(), enemyScript.enemyLayer);
         foreach (var hit in hits)
         {
-            DetectionAI hitDetectionScript = hit.GetComponent<DetectionAI>();
-            if (hit.gameObject != gameObject && hitDetectionScript != null)
+            if (HasLineOfSight(hit.transform))
             {
-                //Player Chase Behavior - When this AI is alert, alert other AI
-                if (enemyScript.playerInDetectionArea && susMeter >= alertMeter)
+                DetectionAI hitDetectionScript = hit.GetComponent<DetectionAI>();
+                if (hit.gameObject != gameObject && hitDetectionScript != null)
                 {
-                    hitDetectionScript.susMeter = 150f;
-                    //pass on knowledge
-                    hitDetectionScript.lastKnownPosition = enemyScript.player.position;
-                    hitDetectionScript.GoTo(lastKnownPosition);
-                }
-                else //Not alert, but has been alerted
-                {
-                    //pass on knowledge
-                    hitDetectionScript.alertBuffs = true;
+                    //Player Chase Behavior - When this AI is alert, alert other AI
+                    if (enemyScript.playerInDetectionArea && susMeter >= alertMeter)
+                    {
+                        hitDetectionScript.susMeter = 150f;
+                        //pass on knowledge
+                        hitDetectionScript.lastKnownPosition = enemyScript.player.position;
+                        hitDetectionScript.GoTo(lastKnownPosition);
+                    }
+                    else //Not alert, but has been alerted
+                    {
+                        //pass on knowledge
+                        hitDetectionScript.alertBuffs = true;
+                    }
                 }
             }
         }
@@ -574,11 +577,13 @@ public class DetectionAI : MonoBehaviour
     }
 
     private void CorpseDetected(Collider hit)
-    {
-        corpsesSeen.Add(hit.gameObject);
+    {        
         lastKnownPosition = hit.transform.position;
         corpseInDetectionArea = true;
         alertTimer = 0f;
+
+        // Only add corpse to corpse seen if alerted
+        if (susMeter >= alertMeter) corpsesSeen.Add(hit.gameObject);
     }
 
     public void ClearCorpsesSeen()
@@ -635,8 +640,6 @@ public class DetectionAI : MonoBehaviour
 
     private void IncreaseSuspicion(float rate)
     {
-        Debug.DrawRay(transform.position, (enemyScript.player.position - transform.position).normalized * GetCurrentDetectionDistance(), Color.red, 0.1f);
-
         if (!isSusPause)
         {
             float multiplier = 1;
@@ -801,10 +804,10 @@ public class DetectionAI : MonoBehaviour
     private bool HasLineOfSight(Transform target)
     {
         RaycastHit hit;
-        Vector3 directionToPlayer = (target.position - transform.position).normalized;
-        if (Physics.Raycast(transform.position, directionToPlayer, out hit, GetCurrentDetectionDistance()))
+        Vector3 directionToTarget = (target.position - transform.position).normalized;
+        if (Physics.Raycast(transform.position, directionToTarget, out hit, GetCurrentDetectionDistance()))
         {
-            Debug.DrawRay(transform.position, directionToPlayer * GetCurrentDetectionDistance(), Color.gray, 0.01f); // DISABLE-ABLE disable disablable
+            Debug.DrawRay(transform.position, directionToTarget * GetCurrentDetectionDistance(), Color.red, 0.01f); // DISABLE-ABLE disable disablable
             return hit.transform == target;
         }
         return false;

@@ -10,7 +10,7 @@ public class Enemy : MonoBehaviour
     public int baseHealth = 4;
     public float baseMovementSpeed = 5f;
     public float baseRotationSpeed = 120f;
-    public float maxDistanceFromNodes = 3.5f; //Default: 3 to 4
+    public float maxDistanceFromNodes = 2.5f; //Default: 3
     public float despawnTime = 300f;
     [Header("Combat Settings")]
     public bool hitCauseAlert = true; //melee hits cause aggro
@@ -167,6 +167,7 @@ public class Enemy : MonoBehaviour
     {
         currentHealth = 0; // Make sure health is ded
         isDead = true;
+
         agent.isStopped = true;
         isActivityPaused = true;
         isExecutingActivity = false;
@@ -219,6 +220,8 @@ public class Enemy : MonoBehaviour
     public void EnteredSmoke(Collider collider)
     {
         PauseActivity();
+        if (agent.enabled) agent.isStopped = true; // fix while moving, they get somked
+
         inSmoke = true;
         isChoking = true; // start choke in smoke
         chokingTimer = 0f; // Reset timer jic
@@ -243,6 +246,7 @@ public class Enemy : MonoBehaviour
     {
         if ((smokeLayer.value & (1 << collider.gameObject.layer)) != 0) // Code for checking if collider layer is smoke layer
         {
+            if (agent.enabled) agent.isStopped = false; // fix while moving, they get smoked
             overlappingSmokes--;
 
             if (overlappingSmokes <= 0)
@@ -255,6 +259,7 @@ public class Enemy : MonoBehaviour
 
     public void OnSmokeDisabled()
     {
+        if (agent.enabled) agent.isStopped = false; // fix while moving, they get smoked
         overlappingSmokes--;
 
         if (overlappingSmokes <= 0)

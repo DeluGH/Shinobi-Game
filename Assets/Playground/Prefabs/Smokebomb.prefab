@@ -167,7 +167,7 @@ MonoBehaviour:
   durationRemaining: 0
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 512
 --- !u!2083052967 &8949290815052637388
 VisualEffect:
   m_ObjectHideFlags: 0
