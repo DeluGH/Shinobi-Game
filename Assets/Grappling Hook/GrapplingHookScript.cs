@@ -68,14 +68,17 @@ public class GrapplingHookScript : MonoBehaviour
 
     public void StopSwing()
     {
-        RenderGrapplingHook(false);
-        Destroy(joint);
+        if (fpsController.m_IsGrappling)
+        {
+            RenderGrapplingHook(false);
+            Destroy(joint);
 
-        var rb = fpsController.GetComponent<Rigidbody>();
-        rb.AddForce(cam.transform.forward.normalized * swingJumpForce);
+            var rb = fpsController.GetComponent<Rigidbody>();
+            rb.AddForce(cam.transform.forward.normalized * swingJumpForce);
 
-        fpsController.m_IsGrappling = false;
-        joint = null;
+            fpsController.m_IsGrappling = false;
+            joint = null;
+        }
     }
 
     private void StartSwing(Vector3 swingPoint)
@@ -84,9 +87,9 @@ public class GrapplingHookScript : MonoBehaviour
         var rb = fpsController.GetComponent<Rigidbody>();
 
         // Disable CharacterController and enable Rigidbody physics
-        characterController.enabled = false;
         rb.isKinematic = false;
         rb.linearVelocity = characterController.velocity;
+        characterController.enabled = false;
         inPhysicsMovementState = true;
 
         joint = fpsController.gameObject.AddComponent<ConfigurableJoint>();
@@ -114,6 +117,7 @@ public class GrapplingHookScript : MonoBehaviour
     private void ThrowGrapplingHook()
     {
         RaycastHit hit;
+
         if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, hookRange))
         {
             if (hit.collider.gameObject.tag == "Grappable") 
