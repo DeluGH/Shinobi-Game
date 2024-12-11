@@ -9,35 +9,52 @@ public class GrapplingHookScript : MonoBehaviour
     public KeyCode swingKey = KeyCode.Mouse1;
     public KeyCode climbKey = KeyCode.Space;
     public KeyCode descendKey = KeyCode.LeftControl;
+    [Header("Game Objects")]
     public ObiRope rope; // Reference to the Obi Rope for rendering
     public FirstPersonController fpsController;
     public CharacterController characterController;
     public GameObject grapplingHook; // Reference to the grappling hook
+    [Header("Values")]
     public float hookReachTime = 2f; // Time for the hook to reach the target
     public float hookRange = 10f;
     public float swingJumpForce = 300f;
     public float climbSpeed = 2f;
     public float maxSwingSpeed = 10f;
+    public float grapplingHookCooldown = .5f;
     [Tooltip("Force applied when moving swing direction")]
     public float swingControlForce = 1f;
     [Tooltip("Used to detect collisions to turn back on Character Controller")]
     public CapsuleCollider grapplingCollider;
+    [Header("Aim Prediction")]
+    public float predictionSphereCastRadius;
 
-
+    private string grappleTag = "Grappable";
     private Camera cam;
     private Vector3 startPosition;
     private ConfigurableJoint joint;
     private float currentRopeLength;
     private bool inPhysicsMovementState = false;
+    private RaycastHit predictionHit;
+    private Vector3 predictionPoint;
+    private bool isHooking;
+    private float timer;
 
     void Start()
     {
         cam = Camera.main;
+        isHooking = false;
+        timer = 0f;
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(swingKey)) ThrowGrapplingHook();
+        timer += Time.deltaTime;
+        if (timer > grapplingHookCooldown)
+            timer = grapplingHookCooldown;  //  to prevent incrementing over max range of float
+
+        CheckForSwingPoints();  // todo : do when grappling hook is equipped or put it to to the start of ThrowGrapplingHook()
+
+        if (Input.GetKeyDown(swingKey) && timer >= grapplingHookCooldown) ThrowGrapplingHook();
         if (Input.GetKeyUp(swingKey)) StopSwing();
 
         if (joint != null)
@@ -72,17 +89,30 @@ public class GrapplingHookScript : MonoBehaviour
         {
             RenderGrapplingHook(false);
             Destroy(joint);
+            joint = null;
 
-            var rb = fpsController.GetComponent<Rigidbody>();
-            rb.AddForce(cam.transform.forward.normalized * swingJumpForce);
+            if (!isHooking) 
+            {
+                var rb = fpsController.GetComponent<Rigidbody>();
+                rb.AddForce(cam.transform.forward.normalized * swingJumpForce);
+            }
+
 
             fpsController.m_IsGrappling = false;
-            joint = null;
+            timer = 0f;
         }
     }
 
     private void StartSwing(Vector3 swingPoint)
     {
+        isHooking = false;
+
+        if (joint != null) // in case of rogue joints
+        {
+            Destroy(joint);
+            joint = null;
+        }
+
         fpsController.m_IsGrappling = true;
         var rb = fpsController.GetComponent<Rigidbody>();
 
@@ -116,25 +146,53 @@ public class GrapplingHookScript : MonoBehaviour
 
     private void ThrowGrapplingHook()
     {
-        RaycastHit hit;
 
-        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, hookRange))
+        if (predictionHit.point != Vector3.zero && predictionHit.collider.gameObject.tag.Equals(grappleTag) && !isHooking)
         {
-            if (hit.collider.gameObject.tag == "Grappable") 
-            {
                 startPosition = grapplingHook.transform.position = fpsController.transform.position;
 
-                StartCoroutine(LerpGrapplingHookTravel(hit.point, hookReachTime));
+                StartCoroutine(LerpGrapplingHookTravel(predictionHit.point, hookReachTime));
                 RenderGrapplingHook(true);
-            }
 
         }
+    }
+
+    private void CheckForSwingPoints() 
+    {
+        if (joint != null) return;
+
+        RaycastHit sphereCastHit;
+        Physics.SphereCast(cam.transform.position, predictionSphereCastRadius, cam.transform.forward, out sphereCastHit, hookRange);
+        
+        RaycastHit raycastHit;
+        Physics.Raycast(cam.transform.position, cam.transform.forward, out raycastHit, hookRange);
+
+        Vector3 realHitPoint;
+
+        //opt 1 - direct hit
+        if (raycastHit.point != Vector3.zero && raycastHit.collider.gameObject.tag.Equals(grappleTag))
+        {
+            realHitPoint = raycastHit.point;
+        }
+        //opt 2 - indirect (predict) hit
+        else if (sphereCastHit.point != Vector3.zero && sphereCastHit.collider.gameObject.tag.Equals(grappleTag))
+        {
+            realHitPoint = sphereCastHit.point;
+        }
+        //opt 3 - miss
+        else
+            realHitPoint = Vector3.zero;
+
+        if (realHitPoint != Vector3.zero) 
+            predictionPoint = realHitPoint;
+
+        predictionHit = raycastHit.point == Vector3.zero ? sphereCastHit : raycastHit;
     }
 
     IEnumerator LerpGrapplingHookTravel(Vector3 targetPosition, float duration)
     {
         float timePassed = 0;
-
+        isHooking = true;
         while (timePassed < duration)
         {
             float t = timePassed / duration;
@@ -145,7 +203,6 @@ public class GrapplingHookScript : MonoBehaviour
             timePassed += Time.deltaTime;
             yield return null;
         }
-
         // Ensure final position
         grapplingHook.transform.position = targetPosition;
 
