@@ -77,16 +77,16 @@ public class DetectionAI : MonoBehaviour
 
     [Header("Hearing Settings")]
     [Tooltip("Increase Sus Meter by this value whenever Player walks.\nAffectable by awareSusMultiplier and inveSusMultiplier.\nDefault: 6")]
-    public float noiseWalkSusInc = 20f;      // Walk
+    public float noiseWalkSusInc = 18f;      // Walk
     [Tooltip("Increase Sus Meter by this value whenever Player runs.\nAffectable by awareSusMultiplier and inveSusMultiplier.\nDefault: 12")]
-    public float noiseRunSusInc = 46f;      // Run
+    public float noiseRunSusInc = 42f;      // Run
     [Tooltip("Time taken before suspicion decreases after hearing Suspicios Noises from Player.\nDefault: 2.5")]
     public float noiseHeardDecay = 3f;
     [Tooltip("True: Closer player is from AI, the higher the suspicion increment.\nFalse: Distance between AI and Player do not affect suspicion increment values at all.")]
     public bool noiseAffectedByDistance = true;
     [Tooltip("The maximum value of which suspicion increments are multiplied by.\nExample:\t100% at max detectionDistance value." +
         "\n\t300% if player is at current position of the AI.\nBeing directly infront would be lesser than 300%.\nDefault: 300")]
-    public float noiseMaxSusDistancePercent = 700f;
+    public float noiseMaxSusDistancePercent = 600f;
 
     [Header("Aware Settings")]
     [Tooltip("Value suspicion meter needs to be to trigger Aware Mode.\n(Default: 50)")]
@@ -723,7 +723,7 @@ public class DetectionAI : MonoBehaviour
             susMeter = Mathf.Min(susMeter + rate * Time.deltaTime, alertMeter);
         }
 
-        Debug.Log($"Increased Sus By {rate * Time.deltaTime} | Mutliplier: {multiplier}");
+        Debug.Log($"Increased Sus By {rate} | Mutliplier: {multiplier}");
     }
     private void IncreaseSuspicionLooking(float multiplier, float rate)
     {
@@ -765,7 +765,7 @@ public class DetectionAI : MonoBehaviour
             susMeter = Mathf.Min(susMeter + rate * Time.deltaTime, alertMeter);
         }
 
-        //Debug.Log($"Increased Sus By {rate * Time.deltaTime} | Mutliplier: {multiplier}");
+        //Debug.Log($"Increased Sus By {rate} | Mutliplier: {multiplier}");
     }
 
     private void DecreaseSuspicion()
@@ -904,11 +904,6 @@ public class DetectionAI : MonoBehaviour
     {
         lastKnownPosition = transform.position;
         susMeter = alertMeter;
-    }
-
-    public void DistractionToolAttract()
-    {
-
     }
 
     private void OnDrawGizmosSelected() // DISABLE-ABLE disable disablable

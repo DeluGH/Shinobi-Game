@@ -38,7 +38,7 @@ public class PlayerNoise : MonoBehaviour
 
     void OnDrawGizmos() // DISABLE-ABLE disableable
     {
-        if (playerScript != null && playerScript.isWalking)
+        if (playerScript.isWalking)
         {
             Gizmos.color = Color.green;
             Gizmos.DrawWireSphere(transform.position, walkNoiseRadius);
