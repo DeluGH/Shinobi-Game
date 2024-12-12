@@ -20,9 +20,7 @@ public class KeybindManager : MonoBehaviour // Saving, Loading Keybinds
         { "Interact", KeyCode.E },
         { "Crouch", KeyCode.LeftControl },
         { "Unequip Offhand", KeyCode.X },
-        { "Meow", KeyCode.P },  // Left Click
-        { "Cum", KeyCode.C },  // Right Click
-        { "Pizza", KeyCode.Q }
+        { "Swap Back/Hand", KeyCode.Q },
     };
 
     // Current keybindings

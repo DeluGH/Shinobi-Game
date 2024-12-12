@@ -116,18 +116,18 @@ public class Enemy : MonoBehaviour
         if (colliders.Length > 0)
         {
             player = colliders[0].transform; //get first player found
-            Debug.Log($"Player found: {player.name}");
+            //Debug.Log($"Player found: {player.name}");
         }
         else
         {
-            Debug.Log("No player detected within the specified range.");
+            //Debug.Log("No player detected within the specified range.");
         }
     }
 
-    public void DamangeTaken(int hitPoints)
+    public void DamangeTaken(int hitPoints, bool penetratingAttack)
     {
         // No Minus if blocking
-        if (!isBlocking)
+        if (!isBlocking || penetratingAttack)
         {
             currentHealth -= hitPoints;
         }
@@ -141,22 +141,29 @@ public class Enemy : MonoBehaviour
 
     public void HitByMelee(int hitPoints)
     {
-        // Getting hit causes aggro (make sure not dead)
-        if (hitCauseAlert && currentHealth > 0) detectionScript.InstantAggroMelee();
-
-        DamangeTaken(hitPoints);
+        if (hitCauseAlert && currentHealth > 0) detectionScript.InstantAggroMelee(); //pass player location and alert
+        DamangeTaken(hitPoints, false);
     }
     public void HitByMelee()
     {
         HitByMelee(1);
     }
 
+    public void HitByHeavyMelee(int hitPoints)
+    {
+        if (hitCauseAlert && currentHealth > 0) detectionScript.InstantAggroMelee(); //pass player location and alert
+        DamangeTaken(hitPoints, true);
+    }
+    public void HitByHeavyMelee()
+    {
+        HitByHeavyMelee(1);
+    }
+
     public void HitByRange(int hitPoints)
     {
-        // Getting hit causes aggro (make sure not dead)
-        if (hitCauseAlert && currentHealth > 0) detectionScript.InstantAggroRange();
-
-        DamangeTaken(hitPoints);
+        if (hitCauseAlert && currentHealth > 0) detectionScript.InstantAggroRange(); // AggroRange is different
+        //InstantAggroRange alerts enemies but doesn't pass player info
+        DamangeTaken(hitPoints, true);
     }
     public void HitByRange()
     {
@@ -173,8 +180,13 @@ public class Enemy : MonoBehaviour
         isExecutingActivity = false;
 
         agent.enabled = false;
+
+        // Death anim
         transform.position = new Vector3(transform.position.x, transform.position.y - 1f, transform.position.z);
         transform.Rotate(0, 0, 90f);
+
+        //Disable collider
+        GetComponent<Collider>().excludeLayers = LayerMask.GetMask("Player");
 
         Destroy(gameObject, despawnTime);
     }

@@ -307,7 +307,7 @@ public class DetectionAI : MonoBehaviour
                 enemyScript.PauseActivity();
                 rotationMult += (inveRotationSpeedMult - 1);
                 if (enemyScript.playerInDetectionArea && HasLineOfSight(enemyScript.player)) GoTo(enemyScript.player.position); // Follow player if in vision
-                else GoTo(lastKnownPosition); // If player disappears, go to last known location
+                else if (!enemyScript.inSmoke) GoTo(lastKnownPosition); // If player disappears, go to last known location
                 break;
             case DetectionState.Aware:
                 enemyScript.PauseActivity();
@@ -635,7 +635,7 @@ public class DetectionAI : MonoBehaviour
         }
 
         smokeInDetectionArea = true;
-        Debug.Log($"Smoke seen! {susMeter}");
+        //Debug.Log($"Smoke seen! {susMeter}");
     }
 
     private void IncreaseSuspicion(float rate)
@@ -821,6 +821,7 @@ public class DetectionAI : MonoBehaviour
 
     public void InstantAggroRange()
     {
+        lastKnownPosition = transform.position;
         susMeter = alertMeter;
     }
 

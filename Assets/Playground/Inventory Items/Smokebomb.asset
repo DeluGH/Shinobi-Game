@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Smokebomb
   m_EditorClassIdentifier: 
   itemName: SmokeBomb
-  storeType: 0
-  maxStackCount: 5
+  maxStackCount: 2
   minusOnUse: 1
   canHoldCharge: 1
+  itemHoldModel: {fileID: 3511712228393649475, guid: 8ba035344739677408f08144f6c7065e, type: 3}
   smokeEffectPrefab: {fileID: 3630025784223747243, guid: 8a2e739c7423381448f19fea18446a4b, type: 3}
   minCharge: 1
   maxCharge: 20
-  chargePerSecond: 20
+  chargePerSecond: 10
   chargeForce: 1

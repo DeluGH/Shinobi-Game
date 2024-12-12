@@ -38,17 +38,10 @@ public class SmokeBomb : MonoBehaviour
     }
 
     // Call this function to activate the smoke bomb
-    public void ActivateSmokeBomb(float force, Vector3 direction)
+    public void ActivateSmokeBomb()
     {
         //VFX Duration
         effect.SetFloat("smokeBombLifetime", duration);
-
-        // Add force to the smoke bomb's rigidbody (if you have one)
-        Rigidbody rb = GetComponent<Rigidbody>();
-        if (rb != null)
-        {
-            rb.AddForce(direction * force, ForceMode.Impulse);
-        }
 
         // Start the smoke deployment
         StartCoroutine(DeploySmoke());

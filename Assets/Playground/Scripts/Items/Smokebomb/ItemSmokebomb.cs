@@ -3,6 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewSmokeBomb", menuName = "Items/SmokeBomb")]
 public class ItemSmokebomb : Item
 {
+    [Header("SmokeBomb Settings")]
     public GameObject smokeEffectPrefab;
     public float minCharge = 1f;
     public float maxCharge = 20f;
@@ -15,11 +16,18 @@ public class ItemSmokebomb : Item
 
         if (smokeEffectPrefab != null && player != null)
         {
-            GameObject smokeBomb = Instantiate(smokeEffectPrefab, player.transform.position, Quaternion.identity);
+            GameObject smokeBomb = Instantiate(smokeEffectPrefab, player.GetComponent<Inventory>().instantitatePosition.position, Quaternion.identity);
             SmokeBomb smokeBombScript = smokeBomb.GetComponent<SmokeBomb>();
             if (smokeBombScript != null)
             {
-                smokeBombScript.ActivateSmokeBomb(chargeForce, player.transform.forward);
+                smokeBombScript.ActivateSmokeBomb();
+
+                //Applu velocity
+                Rigidbody rb = smokeBomb.GetComponent<Rigidbody>();
+                if (rb != null)
+                {
+                    rb.AddForce(player.GetComponent<Inventory>().instantitatePosition.forward * chargeForce, ForceMode.Impulse);
+                }
             }
 
             // Reset chargeForce after use

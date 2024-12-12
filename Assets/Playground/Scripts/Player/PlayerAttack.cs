@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityStandardAssets.Characters.FirstPerson;
+using UnityStandardAssets.Utility;
 
 public class PlayerAttack : MonoBehaviour
 {
@@ -10,9 +12,15 @@ public class PlayerAttack : MonoBehaviour
     public GameObject lookingAtEnemy; // Enemy player is looking at
 
     [Header("Swinging with Sword")]
+    public float attackCooldown = 0.75f;           // Time taken to attack + assassinate after Swing
+    [Header("Light")]
     public float meleeRange = 4f;
     public float meleeAngle = 100f;
-    public float meleeCooldown = 1f;
+    public float meleeWindUpTime = 0.3f;        // Time taken to Swing after attack is called
+    public bool isSwinging = false;
+
+    [Header("Heavy")]
+    public float heavyMeleeChargeTime = 1.2f;   // Time taken to complete charge heavy
 
     [Header("Assassinate")]
     public float assRange = 2.75f;
@@ -30,6 +38,7 @@ public class PlayerAttack : MonoBehaviour
     public float assLerpTime = 0.25f;           // Time taken for player to lerp/reach the AI
 
     [Header("References (Auto)")]
+    public Player playerScript;
     public float maxRaycastRange = 10f;
     public LayerMask enemyLayer;
     public bool drawSwingGizmo = false; // Flag to draw swing gizmo
@@ -37,6 +46,9 @@ public class PlayerAttack : MonoBehaviour
 
     void Start()
     {
+        playerScript = GetComponentInParent<Player>();
+        if (!playerScript) Debug.LogWarning("Player Script reference is missing!");
+
         enemyLayer = LayerMask.GetMask("Enemy");
         if (enemyLayer == 0) Debug.LogWarning("Enemy layer reference is missing!");
     }
@@ -46,8 +58,9 @@ public class PlayerAttack : MonoBehaviour
     {
         canAssassinate = isEnemyAssable(); // Check for any assable enemies
 
-        if (meleeTimer < meleeCooldown) meleeTimer += Time.deltaTime;
-        if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Attack"]) && meleeTimer >= meleeCooldown)
+        // !! Set attackCooldown to 0 in Frenzy, or just change attackCooldown for anything
+        if (meleeTimer < attackCooldown && !isSwinging && !isAssing) meleeTimer += Time.deltaTime;
+        if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Attack"]) && meleeTimer >= attackCooldown)
         {
             meleeTimer = 0f;
             Attack();
@@ -132,9 +145,6 @@ public class PlayerAttack : MonoBehaviour
 
     public void Assassinate()
     {
-        Debug.Log("ASS");
-        isAssing = true;
-
         if (assEnemyTarget != null)
         {
             currentAssEnemyTarget = assEnemyTarget;
@@ -142,40 +152,43 @@ public class PlayerAttack : MonoBehaviour
             Enemy enemyScript = currentAssEnemyTarget.GetComponent<Enemy>();
             if (enemyScript != null)
             {
+                //Ass
+                Debug.Log("ASS");
+                isAssing = true;
+                playerScript.DoingAss(); // Disables fpscontroller and charcontroller
+
                 enemyScript.PauseActivity();
                 enemyScript.agent.isStopped = true;
             }
+            else Debug.LogWarning("NO ENEMY SCRIPT!!");
 
             //"Animation"
             StartCoroutine(MoveToEnemy());
         }
-        else Debug.LogWarning("NO ENEMY SCRIPT!!");
+        else Debug.LogWarning("NO assEnemyTarget!!");
     }
 
     public IEnumerator MoveToEnemy()
     {
-        Vector3 startPosition = transform.position;
+        Vector3 startPosition = playerScript.transform.position;
         Vector3 endPosition = currentAssEnemyTarget.transform.position;
 
         //Distance/Position Player will be
-        float playerColliderRadius = transform.GetComponent<CharacterController>().radius;
-        float enemyColliderRadius = currentAssEnemyTarget.GetComponent<CapsuleCollider>().radius;
-        float stoppingDistance = assLerpMinDistance + playerColliderRadius + enemyColliderRadius;
         Vector3 directionToEnemy = (endPosition - startPosition).normalized;
-        Vector3 targetPosition = endPosition - directionToEnemy * stoppingDistance;
+        Vector3 targetPosition = endPosition - directionToEnemy * (assLerpMinDistance + 1f); //+1f cuz of playerRadius and enemyRadius
 
         // Calculate distance to cover and speed (we'll use the time to get there)
         float journeyLength = Vector3.Distance(startPosition, targetPosition);  // Total distance to target position
         float startTime = Time.time;
 
-        while (Vector3.Distance(transform.position, targetPosition) > assLerpMinDistance)
+        while (Vector3.Distance(playerScript.transform.position, targetPosition) > assLerpMinDistance)
         {
             // Calculate the distance moved so far as a fraction of the total journey
             float distanceCovered = (Time.time - startTime) * (journeyLength / assLerpTime);
             float fractionOfJourney = distanceCovered / journeyLength;
 
             // Lerp player position towards enemy
-            transform.position = Vector3.Lerp(startPosition, targetPosition, fractionOfJourney);
+            playerScript.transform.position = Vector3.Lerp(startPosition, targetPosition, fractionOfJourney);
 
             yield return null;
         }
@@ -188,17 +201,30 @@ public class PlayerAttack : MonoBehaviour
     {
         yield return new WaitForSeconds(assAnimTime);
 
+        isAssing = false;
+        playerScript.DoneAss();
+
         Enemy enemyScript = currentAssEnemyTarget.GetComponent<Enemy>();
         if (enemyScript)
         {
-            isAssing = false;
             enemyScript.Die();
         }
         else Debug.LogWarning("NO ENEMY SCRIPT!!");
     }
 
+
     public void Swing()
     {
+        // Animate swinging here
+
+        isSwinging = true;
+        StartCoroutine(StartSwing());
+    }
+    public IEnumerator StartSwing()
+    {
+        yield return new WaitForSeconds(meleeWindUpTime);
+        isSwinging = false;
+
         Collider[] hitEnemies = Physics.OverlapSphere(transform.position, meleeRange, enemyLayer);
         HashSet<Enemy> hitEnemySet = new HashSet<Enemy>(); // Prevent duplicate hits
 
