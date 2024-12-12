@@ -90,6 +90,8 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
+        if (player == null) { FindPlayer(); return; }
+
         if (isChoking)
         {
             chokingTimer += Time.deltaTime;

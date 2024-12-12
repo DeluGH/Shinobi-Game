@@ -76,6 +76,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
             //Lex's code
             playerScript = GetComponent<Player>();
+            if (playerScript == null) Debug.LogWarning("No playerScript reference!");
         }
 
 
@@ -110,10 +111,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void PlayLandingSound()
         {
-                m_AudioSource.clip = m_LandSound;
-                m_AudioSource.Play();
-                m_NextStep = m_StepCycle + .5f;
-
+            m_AudioSource.clip = m_LandSound;
+            m_AudioSource.Play();
+            m_NextStep = m_StepCycle + .5f;
         }
 
 
@@ -147,6 +147,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
             else
             {
                 m_MoveDir += Physics.gravity * m_GravityMultiplier * Time.fixedDeltaTime;
+
+
             }
            if (!m_IsGrappling && m_CharacterController.enabled!=false)
             m_CollisionFlags = m_CharacterController.Move(m_MoveDir * Time.fixedDeltaTime);

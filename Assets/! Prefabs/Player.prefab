@@ -19,7 +19,7 @@ GameObject:
   - component: {fileID: 5400000}
   m_Layer: 8
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -59,7 +59,7 @@ CharacterController:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_Height: 1.8
   m_Radius: 0.5
@@ -106,12 +106,15 @@ MonoBehaviour:
   fpsController: {fileID: 0}
   charController: {fileID: 0}
   noiseScript: {fileID: 0}
+  rb: {fileID: 0}
   isAssassinating: 0
   isWalking: 0
   isCrouching: 0
+  isFalling: 0
   enemyLayer:
     serializedVersion: 2
     m_Bits: 0
+  fallHeight: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -119,7 +122,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 100000}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 05ec5cf00ca181d45a42ba1870e148c3, type: 3}
   m_Name: 
@@ -915,15 +918,19 @@ MonoBehaviour:
   meleeWindUpTime: 0.3
   isSwinging: 0
   heavyMeleeChargeTime: 1.2
-  assRange: 2.75
-  assScanAngle: 10
+  assRange: 3
+  assScanAngle: 35
   behindEnemyThreshold: -0.4
   assAnimTime: 0.4
   assLerpMinDistance: 0.15
   assLerpTime: 0.25
-  airAssRange: 7.5
-  airAssScanAngle: 15
-  highlightPrefab: {fileID: 0}
+  airAssRange: 8.5
+  airAssScanAngle: 65
+  fallHeightRequired: 3
+  airAssAnimTime: 0.1
+  airAssLerpMinDistance: 0.15
+  airAssLerpTime: 0.1
+  highlightPrefab: {fileID: 6741813466830848338, guid: ed0312782665d9b46b6b165a95dd9a4a, type: 3}
   currentHighlight: {fileID: 0}
   playerScript: {fileID: 0}
   maxRaycastRange: 10

@@ -26,19 +26,23 @@ public class PlayerAttack : MonoBehaviour
     public float heavyMeleeChargeTime = 1.2f;   // Time taken to complete charge heavy
 
     [Header("Land Assassinate Settings")]
-    public float assRange = 2.75f;
-    public float assScanAngle = 10f;
+    public float assRange = 3f;
+    public float assScanAngle = 35f;
     public float behindEnemyThreshold = -0.4f; // Negative value = behind,
                                                // so -1: Player must be directly behind
                                                // -0.9: 40° Arc // -0.7: 100° Arc  // -0.5: 120° Arc
                                                // Ass Animation
-    public float assAnimTime = 0.4f;            // Time taken to assassinate enemy after reaching it
-    public float assLerpMinDistance = 0.15f;    // Min. Distance player will be from the AI after assassinating it
-    public float assLerpTime = 0.25f;           // Time taken for player to lerp/reach the AI
+    public float assAnimTime = 0.4f;                // Time taken to assassinate enemy after reaching it (Animation Length) 
+    public float assLerpMinDistance = 0.15f;        // Min. Distance player will be from the AI after assassinating it  // Default: 0.15
+    public float assLerpTime = 0.25f;               // Time taken for player to lerp/reach the AI                       // Default: 0.25
 
     [Header("Air Assassinate")]
-    public float airAssRange = 7.5f; // When falling (playerScript.isFalling = true), distance can ass
-    public float airAssScanAngle = 15f;
+    public float airAssRange = 8.5f;                // When falling (playerScript.isFalling = true), distance can ass
+    public float airAssScanAngle = 65f;
+    public float fallHeightRequired = 3f;           // Fall this long to assassinate
+    public float airAssAnimTime = 0.1f;             // Time taken to assassinate enemy after reaching it (Animation Length)
+    public float airAssLerpMinDistance = 0.15f;     // Min. Distance player will be from the AI after assassinating it  // Default: 0.15
+    public float airAssLerpTime = 0.1f;             // Time taken for player to lerp/reach the AI                       // Default: 0.1
 
     [Header("Ass Highlighter (Assign!)")]
     public GameObject highlightPrefab;
@@ -68,7 +72,7 @@ public class PlayerAttack : MonoBehaviour
     void Update()
     {
         canAssassinate = isEnemyAssable(); // Check for any assable enemies
-        if (canAssassinate) HighlightEnemy(assEnemyTarget);
+        if (canAssassinate && assEnemyTarget && !isAssing) HighlightEnemy(assEnemyTarget);
         else RemoveHighlight();
 
 
@@ -83,30 +87,31 @@ public class PlayerAttack : MonoBehaviour
 
     public bool isFacingEnemy() // Closest/First rayhit enemy is Target
     {
+        //is falling? use wider angle
+        float scanAngle = isAirAss() ? airAssScanAngle : assScanAngle;
+
         Collider[] hitColliders = Physics.OverlapSphere(cameraFacing.position, maxRaycastRange, playerScript.enemyLayer);
         float closestDistance = float.MaxValue;
         GameObject closestEnemy = null;
 
         foreach (Collider collider in hitColliders)
         {
-            Vector3 directionToEnemy = (collider.transform.position - cameraFacing.position).normalized;
-            float angleToEnemy = Vector3.Angle(cameraFacing.forward, directionToEnemy);
+            Vector3 closestPointOnCollider = collider.ClosestPoint(cameraFacing.position);
+            Vector3 directionToPoint = (closestPointOnCollider - cameraFacing.position).normalized;
 
-            // Check if the enemy is within the cone of vision
-            if (angleToEnemy <= assScanAngle / 2)
+            float angleToPoint = Vector3.Angle(cameraFacing.forward, directionToPoint);
+            if (angleToPoint <= scanAngle / 2)
             {
-                float distanceToEnemy = Vector3.Distance(cameraFacing.position, collider.transform.position);
+                float distanceToPoint = Vector3.Distance(cameraFacing.position, closestPointOnCollider);
 
-                // Update the closest enemy
-                if (distanceToEnemy < closestDistance)
+                if (distanceToPoint < closestDistance)
                 {
-                    closestDistance = distanceToEnemy;
+                    closestDistance = distanceToPoint;
                     closestEnemy = collider.gameObject;
                 }
             }
         }
 
-        // Assign the closest enemy if one was found
         if (closestEnemy != null)
         {
             lookingAtEnemy = closestEnemy;
@@ -131,16 +136,33 @@ public class PlayerAttack : MonoBehaviour
 
         Enemy enemyScript = lookingAtEnemy.GetComponent<Enemy>();
 
-        // LAND ASSASSINATION
-        if (IsValidTarget(enemyScript) && // not dead
+        if (isAirAss())
+        {
+            // AIR ASSASSINATION
+            if (IsValidTarget(enemyScript) && // not dead
+                Vector3.Distance(transform.position, lookingAtEnemy.transform.position) <= airAssRange && //within AIR ass range
+                (!enemyScript.playerInDetectionArea || enemyScript.isChoking)) // not in view OR enemy is busy choking
+            {
+                assEnemyTarget = lookingAtEnemy;
+                Debug.Log("AIR ASS");
+                Debug.DrawLine(transform.position, lookingAtEnemy.transform.position, Color.magenta, 1f);
+                return true;
+            }
+        }
+        else // NOT FALLING
+        {
+            // LAND ASSASSINATION
+            if (IsValidTarget(enemyScript) && // not dead
             Vector3.Distance(transform.position, lookingAtEnemy.transform.position) <= assRange && //within ass range
             (IsPlayerBehindEnemy(lookingAtEnemy.transform) && !enemyScript.playerInDetectionArea || enemyScript.isChoking)) // is behind & not in view OR enemy is busy choking
-        {
-            assEnemyTarget = lookingAtEnemy;
-            Debug.Log("Can Assassinate");
-            Debug.DrawLine(transform.position, lookingAtEnemy.transform.position, Color.green, 1f);
-            return true;
+            {
+                assEnemyTarget = lookingAtEnemy;
+                Debug.Log("LAND ASS");
+                Debug.DrawLine(transform.position, lookingAtEnemy.transform.position, Color.magenta, 1f);
+                return true;
+            }
         }
+            
 
         assEnemyTarget = null;
         return false;
@@ -159,7 +181,7 @@ public class PlayerAttack : MonoBehaviour
 
         if (canAssassinate && assEnemyTarget != null)
         {
-            Assassinate();
+            Assassinate(isAirAss());
         }
         else
         {
@@ -167,8 +189,14 @@ public class PlayerAttack : MonoBehaviour
         }
 
     }
+    
+    public bool isAirAss()
+    {
+        if (playerScript.isFalling && playerScript.fallHeight >= fallHeightRequired) return true;
+        else return false;
+    }
 
-    public void Assassinate()
+    public void Assassinate(bool isAirAssassinate)
     {
         if (assEnemyTarget != null)
         {
@@ -184,38 +212,62 @@ public class PlayerAttack : MonoBehaviour
 
                 enemyScript.PauseActivity();
                 enemyScript.agent.isStopped = true;
+                enemyScript.agent.ResetPath();
             }
             else Debug.LogWarning("NO ENEMY SCRIPT!!");
 
             //"Animation"
-            StartCoroutine(MoveToEnemy());
+            StartCoroutine(MoveToEnemy(isAirAssassinate));
         }
         else Debug.LogWarning("NO assEnemyTarget!!");
     }
 
-    public IEnumerator MoveToEnemy()
+    public IEnumerator MoveToEnemy(bool isAirAssassinate)
     {
         Vector3 startPosition = playerScript.transform.position;
         Vector3 endPosition = currentAssEnemyTarget.transform.position;
 
-        //Distance/Position Player will be
-        Vector3 directionToEnemy = (endPosition - startPosition).normalized;
-        Vector3 targetPosition = endPosition - directionToEnemy * (assLerpMinDistance + 1f); //+1f cuz of playerRadius and enemyRadius
-
-        // Calculate distance to cover and speed (we'll use the time to get there)
-        float journeyLength = Vector3.Distance(startPosition, targetPosition);  // Total distance to target position
-        float startTime = Time.time;
-
-        while (Vector3.Distance(playerScript.transform.position, targetPosition) > assLerpMinDistance)
+        if (isAirAssassinate)
         {
-            // Calculate the distance moved so far as a fraction of the total journey
-            float distanceCovered = (Time.time - startTime) * (journeyLength / assLerpTime);
-            float fractionOfJourney = distanceCovered / journeyLength;
+            // Air assassination uses air-specific parameters
+            Vector3 directionToEnemy = (endPosition - startPosition).normalized;
+            Vector3 targetPosition = endPosition - directionToEnemy * (airAssLerpMinDistance + 1f); //+value cuz of playerRadius and enemyRadius
 
-            // Lerp player position towards enemy
-            playerScript.transform.position = Vector3.Lerp(startPosition, targetPosition, fractionOfJourney);
+            // Calculate the distance to cover and speed based on air parameters
+            float journeyLength = Vector3.Distance(startPosition, targetPosition);
+            float startTime = Time.time;
 
-            yield return null;
+            while (Vector3.Distance(playerScript.transform.position, targetPosition) > airAssLerpMinDistance)
+            {
+                float distanceCovered = (Time.time - startTime) * (journeyLength / airAssLerpTime);
+                float fractionOfJourney = distanceCovered / journeyLength;
+
+                playerScript.transform.position = Vector3.Lerp(startPosition, targetPosition, fractionOfJourney);
+
+                yield return null;
+            }
+        }
+        else
+        {
+            //Distance/Position Player will be
+            Vector3 directionToEnemy = (endPosition - startPosition).normalized;
+            Vector3 targetPosition = endPosition - directionToEnemy * (assLerpMinDistance + 0.75f); //+value cuz of playerRadius and enemyRadius
+
+            // Calculate distance to cover and speed (we'll use the time to get there)
+            float journeyLength = Vector3.Distance(startPosition, targetPosition);  // Total distance to target position
+            float startTime = Time.time;
+
+            while (Vector3.Distance(playerScript.transform.position, targetPosition) > assLerpMinDistance)
+            {
+                // Calculate the distance moved so far as a fraction of the total journey
+                float distanceCovered = (Time.time - startTime) * (journeyLength / assLerpTime);
+                float fractionOfJourney = distanceCovered / journeyLength;
+
+                // Lerp player position towards enemy
+                playerScript.transform.position = Vector3.Lerp(startPosition, targetPosition, fractionOfJourney);
+
+                yield return null;
+            }
         }
 
         // Reached, stab
@@ -275,12 +327,15 @@ public class PlayerAttack : MonoBehaviour
 
     public void HighlightEnemy(GameObject target)
     {
+        if (currentHighlight == null) currentHighlight = Instantiate(highlightPrefab, target.transform.position, Quaternion.identity);
 
+        AssassinateIndicatorHighlight highlightScript = currentHighlight.GetComponent<AssassinateIndicatorHighlight>();
+        highlightScript.SetTarget(target);
     }
 
     public void RemoveHighlight()
     {
-
+        Destroy(currentHighlight);
     }
 
     private IEnumerator ResetSwingGizmo() //DISABLE-ABLE disableable disable
@@ -291,6 +346,8 @@ public class PlayerAttack : MonoBehaviour
 
     private void OnDrawGizmos() //DISABLE-ABLE disableable disable
     {
+        drawFacingGizmos();
+
         if (drawSwingGizmo)
         {
             Gizmos.color = Color.yellow;
@@ -303,6 +360,32 @@ public class PlayerAttack : MonoBehaviour
             Gizmos.color = Color.gray;
             Gizmos.DrawLine(transform.position, transform.position + leftBoundary);
             Gizmos.DrawLine(transform.position, transform.position + rightBoundary);
+
         }
     }
+
+    private void drawFacingGizmos()
+    {
+        if (cameraFacing == null) return;
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(cameraFacing.position, maxRaycastRange); // Draw the detection sphere
+
+        // Draw cone boundaries
+        Vector3 leftBoundary = Quaternion.Euler(0, -assScanAngle / 2, 0) * cameraFacing.forward * maxRaycastRange;
+        Vector3 rightBoundary = Quaternion.Euler(0, assScanAngle / 2, 0) * cameraFacing.forward * maxRaycastRange;
+
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawLine(cameraFacing.position, cameraFacing.position + leftBoundary);
+        Gizmos.DrawLine(cameraFacing.position, cameraFacing.position + rightBoundary);
+
+        // Draw a line to the closest enemy, if any
+        if (lookingAtEnemy != null)
+        {
+            Gizmos.color = Color.black;
+            Gizmos.DrawLine(cameraFacing.position, lookingAtEnemy.transform.position); // Line to closest enemy
+            Gizmos.DrawSphere(lookingAtEnemy.transform.position, 0.2f); // Mark closest enemy
+        }
+    }
+
 }

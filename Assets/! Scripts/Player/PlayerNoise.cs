@@ -29,7 +29,7 @@ public class PlayerNoise : MonoBehaviour
         foreach (Collider collider in hitColliders)
         {
             Enemy enemy = collider.GetComponent<Enemy>();
-            if (enemy != null)
+            if (enemy != null && !enemy.isDead)
             {
                 enemy.HeardNoise(playerTransform, isWalking);
             }

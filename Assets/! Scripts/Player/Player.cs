@@ -7,24 +7,36 @@ public class Player : MonoBehaviour
     public FirstPersonController fpsController;
     public CharacterController charController;
     public PlayerNoise noiseScript;
+    public Rigidbody rb;
 
     [Header("Debug References")]
     public bool isAssassinating = false;
     public bool isWalking = false;
     public bool isCrouching = false;
+    public bool isFalling = false;
     public LayerMask enemyLayer;
+
+    public float fallHeight = 0f;
+    private float startFallHeight = 0f;
+    private float lastPositionY = 0f;
 
     private void Start()
     {
         fpsController = GetComponent<FirstPersonController>();
         charController = GetComponent<CharacterController>();
         noiseScript = GetComponentInChildren<PlayerNoise>();
+
         if (fpsController == null) Debug.LogWarning("No fpsController reference!!");
         if (charController == null) Debug.LogWarning("No charController reference!!");
         if (noiseScript == null) Debug.LogWarning("No noiseScript reference!!");
 
         enemyLayer = LayerMask.GetMask("Enemy");
         if (enemyLayer == 0) Debug.LogWarning("Enemy layer reference is missing!");
+    }
+
+    private void Update()
+    {
+        CheckFalling();
     }
 
     public void DoingAss()
@@ -56,5 +68,41 @@ public class Player : MonoBehaviour
         Debug.Log("Player Made Noise!");
 
         noiseScript.NotifyEnemies(isWalking);
+    }
+
+    private void CheckFalling()
+    {
+        float currentY = transform.position.y;
+
+        if (!charController.isGrounded)
+        {
+            // Check if we are now falling (we started moving down from the peak)
+            if (!isFalling && currentY < lastPositionY)
+            {
+                //Debug.Log("Player started falling!");
+                isFalling = true;
+                startFallHeight = lastPositionY; // Save the height when fall starts
+            }
+
+            // Calculate fall height if falling
+            if (isFalling)
+            {
+                fallHeight = startFallHeight - currentY; // Calculate the height fallen
+                //Debug.Log("Height fallen: " + fallHeight);
+            }
+        }
+        else
+        {
+            // Player has landed
+            if (isFalling)
+            {
+                //Debug.Log("Player landed!");
+                isFalling = false;
+                fallHeight = 0f; // Reset fall height after landing
+            }
+        }
+
+        // Update last known Y position
+        lastPositionY = currentY;
     }
 }

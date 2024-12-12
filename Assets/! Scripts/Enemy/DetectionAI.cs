@@ -203,7 +203,7 @@ public class DetectionAI : MonoBehaviour
 
     private void Update()
     {
-        if (enemyScript && enemyScript.canEnemyPerform()) // canEnemyPerform - isDead? isChoking? isStunned?
+        if (enemyScript && enemyScript.canEnemyPerform() && enemyScript.player) // canEnemyPerform - isDead? isChoking? isStunned?
         {
             HandleDetection();
             HandleCurrentState();
@@ -723,7 +723,7 @@ public class DetectionAI : MonoBehaviour
             susMeter = Mathf.Min(susMeter + rate * Time.deltaTime, alertMeter);
         }
 
-        Debug.Log($"Increased Sus By {rate} | Mutliplier: {multiplier}");
+        Debug.Log($"Increased Sus By {rate * Time.deltaTime} | Mutliplier: {multiplier}");
     }
     private void IncreaseSuspicionLooking(float multiplier, float rate)
     {
@@ -765,7 +765,7 @@ public class DetectionAI : MonoBehaviour
             susMeter = Mathf.Min(susMeter + rate * Time.deltaTime, alertMeter);
         }
 
-        //Debug.Log($"Increased Sus By {rate} | Mutliplier: {multiplier}");
+        //Debug.Log($"Increased Sus By {rate * Time.deltaTime} | Mutliplier: {multiplier}");
     }
 
     private void DecreaseSuspicion()
