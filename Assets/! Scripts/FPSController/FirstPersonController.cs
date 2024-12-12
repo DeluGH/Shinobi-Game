@@ -53,6 +53,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private Vector3 defaultCenter;
         private Vector3 m_CrouchedCameraPosition;
 
+        [Header("Player Reference")]
+        public Player playerScript;
+
         // Use this for initialization
         private void Start()
         {
@@ -70,6 +73,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
             defaultHeight = m_CharacterController.height;
             defaultCenter = m_CharacterController.center;
             m_CrouchedCameraPosition.y = m_CrouchHeight;
+
+            //Lex's code
+            playerScript = GetComponent<Player>();
         }
 
 
@@ -192,8 +198,10 @@ namespace UnityStandardAssets.Characters.FirstPerson
             // move picked sound to index 0 so it's not picked next time
             m_FootstepSounds[n] = m_FootstepSounds[0];
             m_FootstepSounds[0] = m_AudioSource.clip;
-        }
 
+            //Lex's Code
+            playerScript.FPSControllerNoiseHandler(m_IsWalking, m_IsCrouched); // m_IsWalking false = Running, NO SOUND IF CROUCHED
+        }
 
         private void UpdateCameraPosition(float speed)
         {

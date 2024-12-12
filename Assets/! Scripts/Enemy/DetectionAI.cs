@@ -21,7 +21,6 @@ public class DetectionAI : MonoBehaviour
     [Tooltip("True:AI is rotating towards the randomDirection generated in LookAround()\nFalse:Not Looking Around or waiting to be idle during Investigation Mode.")]
     public bool isLookingAround = false; // Flag to track if the AI is currently looking around
 
-
     [Tooltip("Display current Detect Distance value.")] // DISABLE-ABLE disable disablable
     public float currentDetectDistance = 0f;
     [Tooltip("Display current Green Angle Zone value.")] // DISABLE-ABLE disable disablable
@@ -75,6 +74,19 @@ public class DetectionAI : MonoBehaviour
         "\n\t300% if player is at current position of the AI.\nBeing directly infront would be lesser than 300%.\nDefault: 300")]
     public float maxSusDistancePercent = 300f;  // The percentage increase for all suspicion increments depending on distance between Player and AI
                                                 // (100% is current value, 200% would x2 the current value if player is insanely close to the AI)
+
+    [Header("Hearing Settings")]
+    [Tooltip("Increase Sus Meter by this value whenever Player walks.\nAffectable by awareSusMultiplier and inveSusMultiplier.\nDefault: 6")]
+    public float noiseWalkSusInc = 18f;      // Walk
+    [Tooltip("Increase Sus Meter by this value whenever Player runs.\nAffectable by awareSusMultiplier and inveSusMultiplier.\nDefault: 12")]
+    public float noiseRunSusInc = 42f;      // Run
+    [Tooltip("Time taken before suspicion decreases after hearing Suspicios Noises from Player.\nDefault: 2.5")]
+    public float noiseHeardDecay = 3f;
+    [Tooltip("True: Closer player is from AI, the higher the suspicion increment.\nFalse: Distance between AI and Player do not affect suspicion increment values at all.")]
+    public bool noiseAffectedByDistance = true;
+    [Tooltip("The maximum value of which suspicion increments are multiplied by.\nExample:\t100% at max detectionDistance value." +
+        "\n\t300% if player is at current position of the AI.\nBeing directly infront would be lesser than 300%.\nDefault: 300")]
+    public float noiseMaxSusDistancePercent = 600f;
 
     [Header("Aware Settings")]
     [Tooltip("Value suspicion meter needs to be to trigger Aware Mode.\n(Default: 50)")]
@@ -181,6 +193,7 @@ public class DetectionAI : MonoBehaviour
     public Quaternion randomLookDirection;
     public float alertTimer = 0f;
     public List<GameObject> corpsesSeen = new List<GameObject>();
+    public float noiseHeardTimer = 0f;
 
     private void Start()
     {
@@ -190,7 +203,7 @@ public class DetectionAI : MonoBehaviour
 
     private void Update()
     {
-        if (enemyScript && enemyScript.canEnemyPerform())
+        if (enemyScript && enemyScript.canEnemyPerform()) // canEnemyPerform - isDead? isChoking? isStunned?
         {
             HandleDetection();
             HandleCurrentState();
@@ -267,9 +280,13 @@ public class DetectionAI : MonoBehaviour
 
         //BEHAVIORS
         // Rotate towards the player during Aware if they are in the green or yellow zones
-        if (susMeter >= awareMeter && enemyScript.playerInDetectionArea && HasLineOfSight(enemyScript.player)) //aware++
+        if (susMeter >= awareMeter && enemyScript.playerInDetectionArea && HasLineOfSight(enemyScript.player))
         {
-            RotateTowardsPlayer();
+            RotateTowardsPlayer(); //Aware ++
+        }
+        else if (susMeter >= awareMeter && susMeter <= inveMeter && !enemyScript.playerInDetectionArea && !HasLineOfSight(enemyScript.player))
+        {
+            RotateTowardsLastKnown(); //Aware, but no sight of Player
         }
         //Tell other AI to be alert too, give the other AIs lastKnownLocation, alertBuff true, isAlert true, susMeter 150
         if (alertBuffs) //alertbuffs means has been alerted which is also isAlert
@@ -492,19 +509,18 @@ public class DetectionAI : MonoBehaviour
             // Check for yellow zone
             if (angleToPlayer <= GetCurrentYellowAngle() / 2 && HasLineOfSight(hit.transform))
             {
-                IncreaseSuspicion(yellowSusInc);
+                IncreaseSuspicion(yellowSusInc, false);
                 PlayerDetected(hit);
             }
             // Check for green zone
             else if (angleToPlayer <= GetCurrentGreenAngle() / 2 && HasLineOfSight(hit.transform))
             {
-                IncreaseSuspicion(greenSusInc);
+                IncreaseSuspicion(greenSusInc, false);
                 PlayerDetected(hit);
             }
             else enemyScript.playerInDetectionArea = false;
         }
     }
-
     private void PlayerDetected(Collider hit)
     {
         lastKnownPosition = hit.transform.position;
@@ -560,14 +576,14 @@ public class DetectionAI : MonoBehaviour
                 // Check for yellow zone
                 if (angleToCorpse <= GetCurrentYellowAngle() / 2 && HasLineOfSight(hit.transform)) //sight of corpse
                 {
-                    IncreaseSuspicion(yellowSusInc * corpseMultiplier);
+                    IncreaseSuspicion(yellowSusInc * corpseMultiplier, false);
                     CorpseDetected(hit);
                     
                 }
                 // Check for green zone
                 else if (angleToCorpse <= GetCurrentGreenAngle() / 2 && HasLineOfSight(hit.transform)) //sight of corpse
                 {
-                    IncreaseSuspicion(greenSusInc * corpseMultiplier);
+                    IncreaseSuspicion(greenSusInc * corpseMultiplier, false);
                     CorpseDetected(hit);
                 }
                 else corpseInDetectionArea = false;
@@ -575,7 +591,6 @@ public class DetectionAI : MonoBehaviour
             
         }
     }
-
     private void CorpseDetected(Collider hit)
     {        
         lastKnownPosition = hit.transform.position;
@@ -585,7 +600,6 @@ public class DetectionAI : MonoBehaviour
         // Only add corpse to corpse seen if alerted
         if (susMeter >= alertMeter) corpsesSeen.Add(hit.gameObject);
     }
-
     public void ClearCorpsesSeen()
     {
         corpsesSeen.Clear();
@@ -604,21 +618,20 @@ public class DetectionAI : MonoBehaviour
             if (angleToSmoke <= GetCurrentYellowAngle() / 2 && HasLineOfSight(hit.transform)) //sight of corpse
             {
                 //let susMeter hang around mid point between alert and inve
-                if (susMeter < alertMeter - 1f) IncreaseSuspicion(yellowSusInc * corpseMultiplier);
+                if (susMeter < alertMeter - 1f) IncreaseSuspicion(yellowSusInc * corpseMultiplier, false);
                 SmokeDetected(hit);
             }
             // Check for green zone
             else if (angleToSmoke <= GetCurrentGreenAngle() / 2 && HasLineOfSight(hit.transform)) //sight of corpse
             {
                 //let susMeter hang around mid point between alert and inve
-                if (susMeter < alertMeter - 1f) IncreaseSuspicion(greenSusInc * corpseMultiplier);
+                if (susMeter < alertMeter - 1f) IncreaseSuspicion(greenSusInc * corpseMultiplier, false);
                 SmokeDetected(hit);
             }
             else smokeInDetectionArea = false;
 
         }
     }
-
     public void SmokeDetected(Collider hit)
     {
         SmokeBomb smokeScript = hit.GetComponent<SmokeBomb>();
@@ -638,7 +651,29 @@ public class DetectionAI : MonoBehaviour
         //Debug.Log($"Smoke seen! {susMeter}");
     }
 
-    private void IncreaseSuspicion(float rate)
+
+    public void HeardNoise(Transform playerTransform, bool isWalking) // Called by Enemy Script
+    {
+        float baseRate = isWalking ? noiseWalkSusInc : noiseRunSusInc;
+
+        // If player isn't spotted, but hears the player, increase
+        // Fixes: Doubling suspicion increase if player is getting chased
+        if (!enemyScript.playerInDetectionArea) IncreaseSuspicion(baseRate, isTypeNoise: true);
+        
+        noiseHeardTimer = 0f;
+
+        // Only pass Player Position
+        // 1) if Player isn't already being seen 
+        // 2) AI is > Aware
+        if (!enemyScript.playerInDetectionArea && susMeter >= awareMeter)
+        {
+            lastKnownPosition = playerTransform.position;
+        }
+
+        //Debug.Log($"Heard noise from player! Walking: {isWalking}, Base Rate: {baseRate}");
+    }
+
+    private void IncreaseSuspicion(float rate, bool isTypeNoise)
     {
         if (!isSusPause)
         {
@@ -658,46 +693,79 @@ public class DetectionAI : MonoBehaviour
                     break;
             }
 
-            if (susAffectedByDistance && enemyScript.playerInDetectionArea)
-            {
-                // Distance
-                float distanceToPlayer = Vector3.Distance(transform.position, enemyScript.player.position);
-                // Clamp
-                float clampedDistance = Mathf.Clamp(distanceToPlayer, 0, GetCurrentDetectionDistance());
-                // Calculate the distance-based multiplier (1.0 at max distance, 2.0 at the AI's position)
-                float distanceMultiplier = 1 + (maxSusDistancePercent / 100f - 1) * (1 - clampedDistance / GetCurrentDetectionDistance());
-
-                multiplier += (distanceMultiplier - 1);
-
-                // Calculate the suspicion increase, factoring in the distance multiplier
-                rate *= multiplier;
-
-                susMeter = Mathf.Min(susMeter + rate * Time.deltaTime, alertMeter);
-            }
-            else if (susAffectedByDistance && corpseInDetectionArea)
-            {
-                // Distance
-                float distanceToPlayer = Vector3.Distance(transform.position, lastKnownPosition);
-                // Clamp
-                float clampedDistance = Mathf.Clamp(distanceToPlayer, 0, GetCurrentDetectionDistance());
-                // Calculate the distance-based multiplier (1.0 at max distance, 2.0 at the AI's position)
-                float distanceMultiplier = 1 + (maxSusDistancePercent / 100f - 1) * (1 - clampedDistance / GetCurrentDetectionDistance());
-
-                multiplier += (distanceMultiplier - 1);
-
-                // Calculate the suspicion increase, factoring in the distance multiplier
-                rate *= multiplier;
-
-                susMeter = Mathf.Min(susMeter + rate * Time.deltaTime, alertMeter);
-            }
-            else // Not affected by distance is false
-            {
-                rate *= multiplier;
-                susMeter = Mathf.Min(susMeter + rate * Time.deltaTime, alertMeter);
-            }
+            if (!isTypeNoise) IncreaseSuspicionLooking(multiplier, rate);
+            else if (isTypeNoise) IncreaseSuspicionNoise(multiplier, rate);
 
             //Debug.Log($"Suspicion Increased: {susMeter} | Rate: {rate} | Multiplier: {multiplier}");
         }
+    }
+    private void IncreaseSuspicionNoise(float multiplier, float rate)
+    {
+        if (noiseAffectedByDistance)
+        {
+            // Distance
+            float distanceToPlayer = Vector3.Distance(transform.position, enemyScript.player.position);
+            // Clamp
+            float clampedDistance = Mathf.Clamp(distanceToPlayer, 0, GetCurrentDetectionDistance());
+            // Calculate the distance-based multiplier (1.0 at max distance, 2.0 at the AI's position)
+            float distanceMultiplier = 1 + (noiseMaxSusDistancePercent / 100f - 1) * (1 - clampedDistance / GetCurrentDetectionDistance());
+
+            multiplier += (distanceMultiplier - 1);
+
+            // Calculate the suspicion increase, factoring in the distance multiplier
+            rate *= multiplier;
+
+            susMeter = Mathf.Min(susMeter + rate * Time.deltaTime, alertMeter);
+        }
+        else // Not affected by distance is false
+        {
+            rate *= multiplier;
+            susMeter = Mathf.Min(susMeter + rate * Time.deltaTime, alertMeter);
+        }
+
+        Debug.Log($"Increased Sus By {rate} | Mutliplier: {multiplier}");
+    }
+    private void IncreaseSuspicionLooking(float multiplier, float rate)
+    {
+        if (susAffectedByDistance && enemyScript.playerInDetectionArea)
+        {
+            // Distance
+            float distanceToPlayer = Vector3.Distance(transform.position, enemyScript.player.position);
+            // Clamp
+            float clampedDistance = Mathf.Clamp(distanceToPlayer, 0, GetCurrentDetectionDistance());
+            // Calculate the distance-based multiplier (1.0 at max distance, 2.0 at the AI's position)
+            float distanceMultiplier = 1 + (maxSusDistancePercent / 100f - 1) * (1 - clampedDistance / GetCurrentDetectionDistance());
+
+            multiplier += (distanceMultiplier - 1);
+
+            // Calculate the suspicion increase, factoring in the distance multiplier
+            rate *= multiplier;
+
+            susMeter = Mathf.Min(susMeter + rate * Time.deltaTime, alertMeter);
+        }
+        else if (susAffectedByDistance && corpseInDetectionArea)
+        {
+            // Distance
+            float distanceToPlayer = Vector3.Distance(transform.position, lastKnownPosition);
+            // Clamp
+            float clampedDistance = Mathf.Clamp(distanceToPlayer, 0, GetCurrentDetectionDistance());
+            // Calculate the distance-based multiplier (1.0 at max distance, 2.0 at the AI's position)
+            float distanceMultiplier = 1 + (maxSusDistancePercent / 100f - 1) * (1 - clampedDistance / GetCurrentDetectionDistance());
+
+            multiplier += (distanceMultiplier - 1);
+
+            // Calculate the suspicion increase, factoring in the distance multiplier
+            rate *= multiplier;
+
+            susMeter = Mathf.Min(susMeter + rate * Time.deltaTime, alertMeter);
+        }
+        else // Not affected by distance is false
+        {
+            rate *= multiplier;
+            susMeter = Mathf.Min(susMeter + rate * Time.deltaTime, alertMeter);
+        }
+
+        //Debug.Log($"Increased Sus By {rate} | Mutliplier: {multiplier}");
     }
 
     private void DecreaseSuspicion()
@@ -705,7 +773,9 @@ public class DetectionAI : MonoBehaviour
         if (!isSusPause)
         {
             outOfSightTimer += Time.deltaTime;
-            if (outOfSightTimer >= CurrentDecayDelay && susMeter > 0)
+            noiseHeardTimer += Time.deltaTime;
+
+            if (outOfSightTimer >= CurrentDecayDelay && noiseHeardTimer >= noiseHeardDecay && susMeter > 0)
             {
                 float decrementAmount = 0f;
 
@@ -755,7 +825,6 @@ public class DetectionAI : MonoBehaviour
             enemyScript.agent.SetDestination(target);
         }
     }
-
     private void LookAround()
     {
         if (enemyScript.canEnemyPerform() == false) return;
@@ -786,7 +855,6 @@ public class DetectionAI : MonoBehaviour
             }
         }
     }
-
     private void RotateTowardsPlayer()
     {   
         if (enemyScript.canEnemyPerform() == false) return;
@@ -797,6 +865,20 @@ public class DetectionAI : MonoBehaviour
         if (angleToPlayer <= GetCurrentGreenAngle() / 2 || angleToPlayer <= GetCurrentYellowAngle() / 2)
         {
             Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, enemyScript.rotationSpeed * Time.deltaTime); // Smooth rotation
+        }
+    }
+
+    private void RotateTowardsLastKnown()
+    {
+        if (enemyScript.canEnemyPerform() == false) return;
+
+        Vector3 direction = (lastKnownPosition - transform.position).normalized;
+        float angle = Vector3.Angle(transform.forward, direction);
+
+        if (angle <= GetCurrentGreenAngle() / 2 || angle <= GetCurrentYellowAngle() / 2)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, enemyScript.rotationSpeed * Time.deltaTime); // Smooth rotation
         }
     }
@@ -818,7 +900,6 @@ public class DetectionAI : MonoBehaviour
         lastKnownPosition = enemyScript.player.position;
         susMeter = alertMeter;
     }
-
     public void InstantAggroRange()
     {
         lastKnownPosition = transform.position;
@@ -847,7 +928,6 @@ public class DetectionAI : MonoBehaviour
         // Draw the detection sphere
         Gizmos.DrawWireSphere(transform.position, GetCurrentAlertSpreadDistance());
     }
-
     private void DrawDetectionCone(float angle)
     {
         Vector3 forward = transform.forward * GetCurrentDetectionDistance();

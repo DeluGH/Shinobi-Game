@@ -280,4 +280,9 @@ public class Enemy : MonoBehaviour
             Debug.Log("Smoke disabled, inSmoke reset.");
         }
     }
+
+    public void HeardNoise(Transform playerTransform, bool isWalking)
+    {
+        detectionScript.HeardNoise(playerTransform, isWalking);
+    }
 }

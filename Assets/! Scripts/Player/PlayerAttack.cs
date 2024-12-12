@@ -40,7 +40,6 @@ public class PlayerAttack : MonoBehaviour
     [Header("References (Auto)")]
     public Player playerScript;
     public float maxRaycastRange = 10f;
-    public LayerMask enemyLayer;
     public bool drawSwingGizmo = false; // Flag to draw swing gizmo
     public float meleeTimer = 0f;
 
@@ -48,9 +47,6 @@ public class PlayerAttack : MonoBehaviour
     {
         playerScript = GetComponentInParent<Player>();
         if (!playerScript) Debug.LogWarning("Player Script reference is missing!");
-
-        enemyLayer = LayerMask.GetMask("Enemy");
-        if (enemyLayer == 0) Debug.LogWarning("Enemy layer reference is missing!");
     }
 
     // Update is called once per frame
@@ -71,7 +67,7 @@ public class PlayerAttack : MonoBehaviour
     {
         // Perform a raycast in the forward direction
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, maxRaycastRange, enemyLayer))
+        if (Physics.Raycast(transform.position, transform.forward, out hit, maxRaycastRange, playerScript.enemyLayer))
         {
             lookingAtEnemy = hit.collider.gameObject;
             return true;
@@ -225,7 +221,7 @@ public class PlayerAttack : MonoBehaviour
         yield return new WaitForSeconds(meleeWindUpTime);
         isSwinging = false;
 
-        Collider[] hitEnemies = Physics.OverlapSphere(transform.position, meleeRange, enemyLayer);
+        Collider[] hitEnemies = Physics.OverlapSphere(transform.position, meleeRange, playerScript.enemyLayer);
         HashSet<Enemy> hitEnemySet = new HashSet<Enemy>(); // Prevent duplicate hits
 
         foreach (Collider enemy in hitEnemies)
