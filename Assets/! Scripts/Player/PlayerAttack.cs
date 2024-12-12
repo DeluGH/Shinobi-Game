@@ -8,6 +8,9 @@ using UnityStandardAssets.Utility;
 
 public class PlayerAttack : MonoBehaviour
 {
+    [Header("Camera Reference")]
+    public Transform cameraFacing; // IMPORTANT
+
     [Header("Debug References")]
     public GameObject lookingAtEnemy; // Enemy player is looking at
 
@@ -22,29 +25,41 @@ public class PlayerAttack : MonoBehaviour
     [Header("Heavy")]
     public float heavyMeleeChargeTime = 1.2f;   // Time taken to complete charge heavy
 
-    [Header("Assassinate")]
+    [Header("Land Assassinate Settings")]
     public float assRange = 2.75f;
-    public GameObject assEnemyTarget; // Enemy within assRange & looking at
-    public bool canAssassinate = false; // use this to change UI (add ass UI on screen)
+    public float assScanAngle = 10f;
     public float behindEnemyThreshold = -0.4f; // Negative value = behind,
                                                // so -1: Player must be directly behind
                                                // -0.9: 40° Arc // -0.7: 100° Arc  // -0.5: 120° Arc
                                                // Ass Animation
-
-    public GameObject currentAssEnemyTarget;    // Different from assEnemyTarget, what if during animation assEnemyTarget moves away/changes target
-    public bool isAssing = false;               // If True, shouldn't receive player input, is playing Animation
     public float assAnimTime = 0.4f;            // Time taken to assassinate enemy after reaching it
     public float assLerpMinDistance = 0.15f;    // Min. Distance player will be from the AI after assassinating it
     public float assLerpTime = 0.25f;           // Time taken for player to lerp/reach the AI
+
+    [Header("Air Assassinate")]
+    public float airAssRange = 7.5f; // When falling (playerScript.isFalling = true), distance can ass
+    public float airAssScanAngle = 15f;
+
+    [Header("Ass Highlighter (Assign!)")]
+    public GameObject highlightPrefab;
+    public GameObject currentHighlight; // Only highlights if currentHighlight = null, currentHighlight changes parents and follows above them
 
     [Header("References (Auto)")]
     public Player playerScript;
     public float maxRaycastRange = 10f;
     public bool drawSwingGizmo = false; // Flag to draw swing gizmo
     public float meleeTimer = 0f;
+    [Space(5f)]
+    public GameObject assEnemyTarget; // Enemy within assRange & looking at
+    public bool canAssassinate = false; // use this to change UI (add ass UI on screen)
+    public GameObject currentAssEnemyTarget;    // Different from assEnemyTarget, what if during animation assEnemyTarget moves away/changes target
+    public bool isAssing = false;               // If True, shouldn't receive player input, is playing Animation
 
     void Start()
     {
+        if (cameraFacing == null) cameraFacing = GameObject.FindGameObjectWithTag("MainCamera").transform;
+        if (cameraFacing == null) Debug.LogWarning("Unable to Find Main Camera!");
+
         playerScript = GetComponentInParent<Player>();
         if (!playerScript) Debug.LogWarning("Player Script reference is missing!");
     }
@@ -53,6 +68,9 @@ public class PlayerAttack : MonoBehaviour
     void Update()
     {
         canAssassinate = isEnemyAssable(); // Check for any assable enemies
+        if (canAssassinate) HighlightEnemy(assEnemyTarget);
+        else RemoveHighlight();
+
 
         // !! Set attackCooldown to 0 in Frenzy, or just change attackCooldown for anything
         if (meleeTimer < attackCooldown && !isSwinging && !isAssing) meleeTimer += Time.deltaTime;
@@ -63,22 +81,42 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
-    public bool isFacingEnemy()
+    public bool isFacingEnemy() // Closest/First rayhit enemy is Target
     {
-        // Perform a raycast in the forward direction
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, maxRaycastRange, playerScript.enemyLayer))
+        Collider[] hitColliders = Physics.OverlapSphere(cameraFacing.position, maxRaycastRange, playerScript.enemyLayer);
+        float closestDistance = float.MaxValue;
+        GameObject closestEnemy = null;
+
+        foreach (Collider collider in hitColliders)
         {
-            lookingAtEnemy = hit.collider.gameObject;
+            Vector3 directionToEnemy = (collider.transform.position - cameraFacing.position).normalized;
+            float angleToEnemy = Vector3.Angle(cameraFacing.forward, directionToEnemy);
+
+            // Check if the enemy is within the cone of vision
+            if (angleToEnemy <= assScanAngle / 2)
+            {
+                float distanceToEnemy = Vector3.Distance(cameraFacing.position, collider.transform.position);
+
+                // Update the closest enemy
+                if (distanceToEnemy < closestDistance)
+                {
+                    closestDistance = distanceToEnemy;
+                    closestEnemy = collider.gameObject;
+                }
+            }
+        }
+
+        // Assign the closest enemy if one was found
+        if (closestEnemy != null)
+        {
+            lookingAtEnemy = closestEnemy;
             return true;
         }
-        else
-        {
-            lookingAtEnemy = null;
-            assEnemyTarget = null;
-            canAssassinate = false;
-            return false;
-        }
+
+        lookingAtEnemy = null;
+        assEnemyTarget = null;
+        canAssassinate = false;
+        return false;
     }
 
     private bool IsPlayerBehindEnemy(Transform enemyTransform)
@@ -89,38 +127,29 @@ public class PlayerAttack : MonoBehaviour
 
     public bool isEnemyAssable() // Ass-ass-inatable?
     {
-        // Find looking at enemy
-        if (isFacingEnemy() && lookingAtEnemy != null)
-        {
-            Enemy enemyScript = lookingAtEnemy.GetComponent<Enemy>();
-            // 1. Need to be BEHIND to give backshots OR Enemy is Stunned
-            // 2. Need to be within Range
-            // 3. Enemy can't be dead
-            if (enemyScript != null)
-            {
-                if (!enemyScript.isDead //3
-                    && Vector3.Distance(transform.position, lookingAtEnemy.transform.position) <= assRange // 2
-                    && (IsPlayerBehindEnemy(lookingAtEnemy.transform) //1
-                    && enemyScript.playerInDetectionArea == false //1
-                    || enemyScript.isChoking))
-                {
-                    assEnemyTarget = lookingAtEnemy;
-                        
-                    Debug.Log("Can Ass");
-                    Debug.DrawLine(transform.position, lookingAtEnemy.transform.position, Color.green, 1f); //DISABLE-ABLE disableable disable
+        if (!isFacingEnemy() || lookingAtEnemy == null) return false;
 
-                    return true;
-                }
-                else
-                {
-                    assEnemyTarget = null;
-                    return false;
-                }
-            }
+        Enemy enemyScript = lookingAtEnemy.GetComponent<Enemy>();
+
+        // LAND ASSASSINATION
+        if (IsValidTarget(enemyScript) && // not dead
+            Vector3.Distance(transform.position, lookingAtEnemy.transform.position) <= assRange && //within ass range
+            (IsPlayerBehindEnemy(lookingAtEnemy.transform) && !enemyScript.playerInDetectionArea || enemyScript.isChoking)) // is behind & not in view OR enemy is busy choking
+        {
+            assEnemyTarget = lookingAtEnemy;
+            Debug.Log("Can Assassinate");
+            Debug.DrawLine(transform.position, lookingAtEnemy.transform.position, Color.green, 1f);
+            return true;
         }
 
         assEnemyTarget = null;
         return false;
+    }
+
+    private bool IsValidTarget(Enemy enemyScript)
+    {
+        // NOT DEAD
+        return enemyScript != null && !enemyScript.isDead;
     }
 
     private void Attack()
@@ -241,6 +270,17 @@ public class PlayerAttack : MonoBehaviour
 
         drawSwingGizmo = true;
         StartCoroutine(ResetSwingGizmo()); //DISABLE-ABLE disableable disable
+    }
+
+
+    public void HighlightEnemy(GameObject target)
+    {
+
+    }
+
+    public void RemoveHighlight()
+    {
+
     }
 
     private IEnumerator ResetSwingGizmo() //DISABLE-ABLE disableable disable
