@@ -4,7 +4,7 @@ public class PlayerNoise : MonoBehaviour
 {
     [Header("Noise Settings")]
     public float walkNoiseRadius = 5f;
-    public float runNoiseRadius = 12f;
+    public float runNoiseRadius = 10f;
 
     [Header("References (Auto)")]
     public Player playerScript;
@@ -38,12 +38,15 @@ public class PlayerNoise : MonoBehaviour
 
     void OnDrawGizmos() // DISABLE-ABLE disableable
     {
-        // Draw a wire sphere for visualization (walking noise)
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, walkNoiseRadius);
-
-        // Draw a wire sphere for visualization (running noise)
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, runNoiseRadius);
+        if (playerScript.isWalking)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(transform.position, walkNoiseRadius);
+        }
+        else
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(transform.position, runNoiseRadius);
+        }
     }
 }
