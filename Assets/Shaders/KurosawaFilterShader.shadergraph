@@ -654,8 +654,8 @@
     "m_ObjectId": "462d523af6934540a4e42cad424c8e18",
     "m_Title": "Black and White Filter",
     "m_Position": {
-        "x": -1101.9998779296875,
-        "y": 173.00001525878907
+        "x": -1102.0,
+        "y": 172.99993896484376
     }
 }
 
@@ -1061,7 +1061,7 @@
     "overrideHLSLDeclaration": false,
     "hlslDeclarationOverride": 0,
     "m_Hidden": false,
-    "m_Value": 2.0,
+    "m_Value": 1.0299999713897706,
     "m_FloatType": 0,
     "m_RangeValues": {
         "x": 0.0,
@@ -1525,7 +1525,7 @@
     "m_Title": "Contrast",
     "m_Position": {
         "x": -2239.0,
-        "y": 173.0
+        "y": 172.99993896484376
     }
 }
 
