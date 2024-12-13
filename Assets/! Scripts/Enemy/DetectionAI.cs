@@ -197,7 +197,7 @@ public class DetectionAI : MonoBehaviour
 
     private void Start()
     {
-        if (enemyScript == null) enemyScript = GetComponent<Enemy>();
+        if (enemyScript == null) enemyScript = GetComponentInParent<Enemy>();
         if (enemyScript == null) Debug.LogWarning("Enemy Script reference is missing!");
     }
 
@@ -317,8 +317,20 @@ public class DetectionAI : MonoBehaviour
                 if (alertTimer < alertModePeriod) AlertMode();
                 speedMult += (alertMoveSpeedMult - 1);
                 rotationMult += alertRotationSpeedMult;
-                if (enemyScript.playerInDetectionArea && HasLineOfSight(enemyScript.player)) GoTo(enemyScript.player.position); // Follow player if in vision
-                else GoTo(lastKnownPosition); // If player disappears, go to last known location
+                if (Vector3.Distance(transform.position, enemyScript.player.position) <= enemyScript.combatModeProximity && !enemyScript.combatMode) enemyScript.EnterCombatMode(); // Combat Proximity?
+                else if (Vector3.Distance(transform.position, enemyScript.player.position) > enemyScript.combatModeProximity && enemyScript.combatMode)
+                {
+                    enemyScript.combatModeTimer += Time.deltaTime;
+                    if (enemyScript.combatModeTimer >= enemyScript.combatModeOutDecayTime)
+                    {
+                        enemyScript.DisableCombatMode();
+                    }
+                }
+                else if (!enemyScript.combatMode)
+                {
+                    if (enemyScript.playerInDetectionArea && HasLineOfSight(enemyScript.player)) GoTo(enemyScript.player.position); // Follow player if in vision
+                    else GoTo(lastKnownPosition); // If player disappears, go to last known location
+                }
                 break;
             case DetectionState.Investigating:
                 enemyScript.PauseActivity();
@@ -534,24 +546,21 @@ public class DetectionAI : MonoBehaviour
         Collider[] hits = Physics.OverlapSphere(transform.position, GetCurrentAlertSpreadDistance(), enemyScript.enemyLayer);
         foreach (var hit in hits)
         {
-            if (HasLineOfSight(hit.transform))
+            Enemy enemyScript = hit.GetComponent<Enemy>();
+            if (hit.gameObject != gameObject && enemyScript.detectionScript != null)
             {
-                DetectionAI hitDetectionScript = hit.GetComponent<DetectionAI>();
-                if (hit.gameObject != gameObject && hitDetectionScript != null)
+                //Player Chase Behavior - When this AI is alert, alert other AI
+                if (enemyScript.playerInDetectionArea && susMeter >= alertMeter)
                 {
-                    //Player Chase Behavior - When this AI is alert, alert other AI
-                    if (enemyScript.playerInDetectionArea && susMeter >= alertMeter)
-                    {
-                        hitDetectionScript.susMeter = 150f;
-                        //pass on knowledge
-                        hitDetectionScript.lastKnownPosition = enemyScript.player.position;
-                        hitDetectionScript.GoTo(lastKnownPosition);
-                    }
-                    else //Not alert, but has been alerted
-                    {
-                        //pass on knowledge
-                        hitDetectionScript.alertBuffs = true;
-                    }
+                    enemyScript.detectionScript.susMeter = enemyScript.detectionScript.alertMeter;
+                    //pass on knowledge
+                    enemyScript.detectionScript.lastKnownPosition = enemyScript.player.position;
+                    enemyScript.detectionScript.GoTo(lastKnownPosition);
+                }
+                else //Not alert, but has been alerted
+                {
+                    //pass on knowledge
+                    enemyScript.detectionScript.alertBuffs = true;
                 }
             }
         }
@@ -855,7 +864,7 @@ public class DetectionAI : MonoBehaviour
             }
         }
     }
-    private void RotateTowardsPlayer()
+    public void RotateTowardsPlayer()
     {   
         if (enemyScript.canEnemyPerform() == false) return;
 

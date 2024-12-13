@@ -1,15 +1,27 @@
+using System.Collections;
 using UnityEngine;
 
 public class AssassinateIndicatorHighlight : MonoBehaviour
 {
     public GameObject target;
     public float hoverDistance = 2f;
+    public float updateInterval = 0.1f; // Time in seconds between updates
 
-    private void Update()
+    private void Start()
     {
-        if (target != null)
+        // Start the coroutine to periodically update the hover position
+        StartCoroutine(HoverUpdate());
+    }
+
+    private IEnumerator HoverUpdate()
+    {
+        while (true)
         {
-            HoverAboveTarget();
+            if (target != null)
+            {
+                HoverAboveTarget();
+            }
+            yield return new WaitForSeconds(updateInterval);
         }
     }
 

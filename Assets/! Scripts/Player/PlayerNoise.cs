@@ -36,17 +36,17 @@ public class PlayerNoise : MonoBehaviour
         }
     }
 
-    void OnDrawGizmos() // DISABLE-ABLE disableable
-    {
-        if (playerScript != null && playerScript.isWalking)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(transform.position, walkNoiseRadius);
-        }
-        else
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(transform.position, runNoiseRadius);
-        }
-    }
+    //void OnDrawGizmos() // DISABLE-ABLE disableable
+    //{
+    //    if (playerScript != null && playerScript.isWalking)
+    //    {
+    //        Gizmos.color = Color.green;
+    //        Gizmos.DrawWireSphere(transform.position, walkNoiseRadius);
+    //    }
+    //    else
+    //    {
+    //        Gizmos.color = Color.yellow;
+    //        Gizmos.DrawWireSphere(transform.position, runNoiseRadius);
+    //    }
+    //}
 }

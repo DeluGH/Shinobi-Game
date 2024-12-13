@@ -17,7 +17,7 @@ public class ActivityAI : MonoBehaviour
 
     private void Start()
     {
-        enemyScript = GetComponent<Enemy>();
+        enemyScript = GetComponentInParent<Enemy>();
         if (enemyScript == null) Debug.LogWarning("No Enemy Script found!");
     }
 

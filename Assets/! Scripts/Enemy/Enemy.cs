@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
@@ -12,11 +13,25 @@ public class Enemy : MonoBehaviour
     public float baseRotationSpeed = 120f;
     public float maxDistanceFromNodes = 2.5f; //Default: 3
     public float despawnTime = 300f;
+
     [Header("Combat Settings")]
     public bool hitCauseAlert = true; //melee hits cause aggro
-    public bool canBlock = false; //allow enemy to block
-    public float blockPeriod = 1f; //block duration, how long the player's attack is deflected
-    public float blockInterval = 7.5f; //block cooldown, how often the enemy can block
+    public bool canBlock = true;
+    public bool isBlocking = false;
+    public bool isAttacking = false;
+
+    public float combatModeProximity = 5.5f; // Prefered distance from player
+    public float combatModeOutDecayTime = 0.5f; // If player steps out, wait for this amount of time before continuing chase
+    public bool combatMode = false;
+
+    [Header("Smart Position Settings")]
+    public bool smartReposition = true;
+    public float enemySpacing = 3f;
+    [Space(5f)]
+    public bool canStrafe = true;
+    public bool strafingRight = false;
+    public float strafeSpeed = 4f;
+
     [Header("Smoked Settings")]
     public bool inSmoke = false;
     public float smokeChokeAfterDisappear = 2f; // Extra choking time after smoke disappears
@@ -34,7 +49,6 @@ public class Enemy : MonoBehaviour
     public float stunnedTimer = 0f;
     [Space(5f)]
     public bool isDead = false; //Should stop ALL functions (KILL SWITCH)
-    public bool isBlocking = false; // Flag for if enemy is blocking or not
     [Space(5f)]
     public bool isExecutingActivity = false; // Prevents multiple activities from running simultaneously
     public bool isActivityPaused = false; // Pause activity when player is detected/chased/investigated
@@ -47,14 +61,15 @@ public class Enemy : MonoBehaviour
 
     public DetectionAI detectionScript;
     public ActivityAI activityScript;
+    public EnemyAttack attackScript;
 
     public LayerMask playerLayer;       // Layer mask for detecting players
     public LayerMask enemyLayer;       // Layer mask for detecting enemies
     public LayerMask smokeLayer;
 
     public int overlappingSmokes = 0; // Fix bug with overlapping smokes,
-                                       // if 1 ends, shouldn't "unsmoke" the enemy
-    
+                                      // if 1 ends, shouldn't "unsmoke" the enemy
+    public float combatModeTimer = 0f;
 
     private void Awake()
     {
@@ -69,11 +84,13 @@ public class Enemy : MonoBehaviour
         if (player == null) FindPlayer();
         if (player == null) Debug.LogWarning("Player reference is missing! Unable to FindPlayer()");
         // Others
-        if (detectionScript == null) detectionScript = GetComponent<DetectionAI>();
+        if (detectionScript == null) detectionScript = GetComponentInChildren<DetectionAI>();
         if (detectionScript == null) Debug.LogError("This Enemy is Missing detectionScript!");
-        if (activityScript == null) activityScript = GetComponent<ActivityAI>();
+        if (activityScript == null) activityScript = GetComponentInChildren<ActivityAI>();
         if (activityScript == null) Debug.LogError("This Enemy is Missing activityScript!");
-        if (agent == null) agent = GetComponent<NavMeshAgent>();
+        if (attackScript == null) attackScript = GetComponentInChildren<EnemyAttack>();
+        if (attackScript == null) Debug.LogError("This Enemy is Missing attackScript!");
+        if (agent == null) agent = GetComponentInChildren<NavMeshAgent>();
         if (agent == null) Debug.LogError("This Enemy is Missing NavMeshAgent! Other AI Scripts will not be able to run!");
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -120,7 +137,7 @@ public class Enemy : MonoBehaviour
 
     public bool canEnemyPerform()
     {
-        if (isDead || isChoking || isStunned) return false;
+        if (isDead || isChoking || isStunned || isBlocking || isAttacking) return false;
         else return true;
     }
 
@@ -138,6 +155,31 @@ public class Enemy : MonoBehaviour
         {
             //Debug.Log("No player detected within the specified range.");
         }
+    }
+
+    public void EnterCombatMode()
+    {
+        Debug.Log("Combat ON");
+        agent.isStopped = true; //Stop moving
+        agent.updateRotation = false;
+
+        agent.isStopped = false; //Reenable to reposition
+        Reposition();
+
+        combatMode = true;
+        combatModeTimer = 0f;
+    }
+
+    public void DisableCombatMode()
+    {
+        Debug.Log("Combat OFF");
+        combatMode = false;
+        agent.updateRotation = true;
+    }
+
+    public void SeeAttack()
+    {
+        attackScript.TryToBlock();
     }
 
     public void DamangeTaken(int hitPoints, bool penetratingAttack)
@@ -311,5 +353,114 @@ public class Enemy : MonoBehaviour
     public void HeardNoise(Transform playerTransform, bool isWalking)
     {
         detectionScript.HeardNoise(playerTransform, isWalking);
+    }
+
+    // COMBAT REPOSITIONING ====================================================================
+    public void Reposition()
+    {
+        // Find nearby enemies
+        List<Vector3> enemyPositions = GetNearbyEnemyPositions();
+
+        // Find a free position around the player
+        Vector3 freePosition = FindFreePosition(enemyPositions);
+
+        // If a valid free position is found, move there
+        if (freePosition != Vector3.zero)
+        {
+            Debug.Log("Repositioning!");
+            agent.SetDestination(freePosition);
+        }
+        else
+        {
+            Debug.Log("Failed to find position!");
+        }
+    }
+
+    private List<Vector3> GetNearbyEnemyPositions()
+    {
+        List<Vector3> positions = new List<Vector3>();
+
+        // Use OverlapSphere to find nearby enemies
+        Collider[] colliders = Physics.OverlapSphere(player.position, combatModeProximity, enemyLayer);
+        foreach (var collider in colliders)
+        {
+            // Exclude this enemy
+            if (collider.gameObject != gameObject)
+            {
+                positions.Add(collider.transform.position);
+            }
+        }
+
+        return positions;
+    }
+
+    private Vector3 FindFreePosition(List<Vector3> enemyPositions)
+    {
+        // Try multiple positions around the player
+        int numSamples = 36; // Divide the circle into 36 segments
+        for (int i = 0; i < numSamples; i++)
+        {
+            float angle = (360f / numSamples) * i;
+            Vector3 candidatePosition = CalculatePositionOnCircle(player.position, combatModeProximity, angle);
+
+            // Check if this position is far enough from other enemies
+            if (IsPositionFree(candidatePosition, enemyPositions))
+            {
+                return candidatePosition;
+            }
+        }
+
+        // No valid position found
+        return Vector3.zero;
+    }
+
+    private Vector3 CalculatePositionOnCircle(Vector3 center, float radius, float angle)
+    {
+        // Convert the angle from degrees to radians
+        float radians = angle * Mathf.Deg2Rad;
+
+        // Calculate the position on the circle
+        float x = center.x + radius * Mathf.Cos(radians);
+        float z = center.z + radius * Mathf.Sin(radians);
+        return new Vector3(x, center.y, z); // Assume y-coordinate remains the same
+    }
+
+    private bool IsPositionFree(Vector3 position, List<Vector3> enemyPositions)
+    {
+        foreach (var enemyPos in enemyPositions)
+        {
+            if (Vector3.Distance(position, enemyPos) < enemySpacing)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // STRAFING
+    public void Strafe()
+    {
+        Debug.Log("Strafe!");
+        // Calculate the direction perpendicular to the player
+        Vector3 directionToPlayer = (player.position - transform.position).normalized;
+        Vector3 strafeDirection = Vector3.Cross(directionToPlayer, Vector3.up).normalized;
+
+        // Decide whether to strafe left or right
+        if (!strafingRight)
+        {
+            strafeDirection = -strafeDirection;
+        }
+
+        // Calculate the target position
+        Vector3 targetPosition = transform.position + strafeDirection * strafeSpeed;
+
+        // Use NavMeshAgent to move to the target position
+        agent.SetDestination(targetPosition);
+    }
+
+    public void ToggleStrafeDirection()
+    {
+        // Toggle strafing direction
+        strafingRight = !strafingRight;
     }
 }
