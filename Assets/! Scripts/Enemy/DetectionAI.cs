@@ -546,21 +546,21 @@ public class DetectionAI : MonoBehaviour
         Collider[] hits = Physics.OverlapSphere(transform.position, GetCurrentAlertSpreadDistance(), enemyScript.enemyLayer);
         foreach (var hit in hits)
         {
-            Enemy enemyScript = hit.GetComponent<Enemy>();
-            if (hit.gameObject != gameObject && enemyScript.detectionScript != null)
+            Enemy enemy = hit.GetComponent<Enemy>();
+            if (hit.gameObject != gameObject && enemy.detectionScript != null)
             {
                 //Player Chase Behavior - When this AI is alert, alert other AI
                 if (enemyScript.playerInDetectionArea && susMeter >= alertMeter)
                 {
-                    enemyScript.detectionScript.susMeter = enemyScript.detectionScript.alertMeter;
+                    enemy.detectionScript.susMeter = enemy.detectionScript.alertMeter;
                     //pass on knowledge
-                    enemyScript.detectionScript.lastKnownPosition = enemyScript.player.position;
-                    enemyScript.detectionScript.GoTo(lastKnownPosition);
+                    enemy.detectionScript.lastKnownPosition = enemy.player.position;
+                    enemy.detectionScript.GoTo(lastKnownPosition);
                 }
                 else //Not alert, but has been alerted
                 {
                     //pass on knowledge
-                    enemyScript.detectionScript.alertBuffs = true;
+                    enemy.detectionScript.alertBuffs = true;
                 }
             }
         }

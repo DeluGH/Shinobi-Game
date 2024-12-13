@@ -11,7 +11,9 @@ public class EnemyAttack : MonoBehaviour
     public float attackAnimTime = 0.3f; // Wind Up before the swing time
     public float minAttackInterval = 3f; // Random time between attacks
     public float maxAttackInterval = 8f; // Random time between attacks
+
     public float blockTime = 2f; // Block duration, how long the player's attack is deflected
+    // NO BLOCK ANIM TIME - supposed to react to player's attack, so i dont think we should put a anim Time here
 
     public float minRepositionInterval = 10f; // How often should enemies attempt to reposition?
     public float maxRepositionInterval = 20f; // How often should enemies attempt to reposition?
