@@ -10,6 +10,11 @@ public class InventorySlot
 
 public class Inventory : MonoBehaviour
 {
+    [Header("Inventory Wheel Settings")]
+    public float openWheelKeyPressTime = 0.1f; // Hold inventory button for this long to open
+    public float inventoryPressStartTime = 0f;
+    public float inventoryPressTime = 0f;
+
     [Header("Item Throw Transform")]
     public Transform instantitatePosition;
 
@@ -20,20 +25,22 @@ public class Inventory : MonoBehaviour
     [Header("Debug (Reference)")]
     public float chargeStartTime;
     public Item utilHand; // swaps with Inventory Items
-    public Item mainHand; // For holding sword or swapping with back items
-    public Item onBack; // Item currently stored on the back
+    public GameObject mainHand; // For holding sword or swapping with back items
+    public GameObject onBack; // Item currently stored on the back
 
     [Header("References (Auto)")]
     public GameObject player; // This game object
     public List<InventorySlot> inventorySlots = new List<InventorySlot>();
    
 
-    private void Awake()
+    private void Start()
     {
         player = gameObject ?? GameObject.FindWithTag("Player");
 
         if (utilHandPos == null) utilHandPos = GameObject.FindWithTag("Util Hand").transform;
         if (mainHandPos == null) mainHandPos = GameObject.FindWithTag("Main Hand").transform;
+
+        UpdateItemPositions();
     }
 
     private void Update()
@@ -43,7 +50,7 @@ public class Inventory : MonoBehaviour
 
     void HandleInput()
     {
-        // Check for holding left click
+        // Check for holding right click
         //CHARGING ONLY
         if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Use Utility"]) && utilHand != null && utilHand.canHoldCharge)
         {
@@ -53,17 +60,6 @@ public class Inventory : MonoBehaviour
         {
             float chargeTime = Time.time - chargeStartTime;
             utilHand.Charge(player, chargeTime); // charging - change values within smoke bomb
-        }
-
-        // Equip Items (keys: 1-4)
-        for (int i = 0; i < inventorySlots.Count; i++)
-        {
-            if (Input.GetKeyDown(KeyCode.Alpha1 + i) && i < inventorySlots.Count)
-            {
-                EquipFromInventorySlot(i);
-
-                UpdateItemPositions(); // Update Model Hand
-            }
         }
 
         //Lift Use Util key
@@ -85,18 +81,49 @@ public class Inventory : MonoBehaviour
             UpdateItemPositions(); // Update Model Hand
         }
 
-        //Swap Back w Hand / Hand w Back
-        if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Swap Back/Hand"]))
+        // INVENTORY HANDLING
+        // Wheel or Swap??
+        // Quick swap?
+        if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Inventory"]))
         {
-            SwapBackAndMain();
+            inventoryPressStartTime = Time.time;
+        }
+        if (Input.GetKey(KeybindManager.Instance.keybinds["Inventory"]))
+        {
+            inventoryPressTime = Time.time - inventoryPressStartTime;
+
+            // Open wheel
+            if (inventoryPressTime >= openWheelKeyPressTime)
+            {
+                WeaponWheelController.Instance.OpenInventoryWheel();
+            }
+        }
+        //Swap Back w Hand / Hand w Back
+        if (Input.GetKeyUp(KeybindManager.Instance.keybinds["Inventory"]))
+        {
+            if (inventoryPressTime < openWheelKeyPressTime) SwapBackAndMain();
+            
+            // Close Wheel
+            if (WeaponWheelController.Instance.isOpen) WeaponWheelController.Instance.CloseInventoryWheel();
 
             UpdateItemPositions(); // Update Model Hand
+        }
+
+        // Equip Items (keys: 1-4)
+        for (int i = 0; i < inventorySlots.Count; i++)
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1 + i) && i < inventorySlots.Count)
+            {
+                EquipFromInventorySlot(i);
+
+                UpdateItemPositions(); // Update Model Hand
+            }
         }
     }
 
     void SwapBackAndMain()
     {
-        Item temp;
+        GameObject temp;
         temp = mainHand;
 
         mainHand = onBack;
@@ -125,18 +152,8 @@ public class Inventory : MonoBehaviour
 
     void RemoveUtilHandObject()
     {
-        if (utilHand != null && utilHand.minusOnUse)
+        if (utilHand != null && utilHand.removeOnUse) 
         {
-            foreach (var slot in inventorySlots)
-            {
-                if (slot.item == utilHand && slot.count > 0)
-                {
-                    slot.count--;
-                    if (slot.count == 0) slot.item = null;
-                    utilHand = null;
-                    return;
-                }
-            }
             utilHand = null;
         }
     }
@@ -246,10 +263,10 @@ public class Inventory : MonoBehaviour
             Destroy(child.gameObject);
         }
         //MAIN HAND
-        if (mainHand != null && mainHand.itemHoldModel != null)
+        if (mainHand != null && mainHand != null)
         {
             // Spawning
-            GameObject itemModel = Instantiate(mainHand.itemHoldModel, mainHandPos.position, mainHandPos.rotation);
+            GameObject itemModel = Instantiate(mainHand, mainHandPos.position, mainHandPos.rotation);
             itemModel.transform.SetParent(mainHandPos);
         }
     }

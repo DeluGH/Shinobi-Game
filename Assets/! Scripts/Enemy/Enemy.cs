@@ -26,9 +26,12 @@ public class Enemy : MonoBehaviour
     public float movementSpeed = 5f;
     public float rotationSpeed = 120f;
     [Space(5f)]
-    public bool isChoking = false; // Stunned
+    public bool isChoking = false; // Stunned - Choking
     public float chokingDuration = 0f;
     public float chokingTimer = 0f;
+    public bool isStunned = false; // Stunned - Confused?
+    public float stunnedDuration = 0f;
+    public float stunnedTimer = 0f;
     [Space(5f)]
     public bool isDead = false; //Should stop ALL functions (KILL SWITCH)
     public bool isBlocking = false; // Flag for if enemy is blocking or not
@@ -102,11 +105,22 @@ public class Enemy : MonoBehaviour
                 chokingDuration = 0f;
             }
         }
+        
+        if (isStunned)
+        {
+            stunnedTimer += Time.deltaTime;
+            if (stunnedTimer >= stunnedDuration)
+            {
+                isStunned = false;
+                stunnedTimer = 0f;
+                stunnedDuration = 0f;
+            }
+        }
     }
 
     public bool canEnemyPerform()
     {
-        if (isDead || isChoking) return false;
+        if (isDead || isChoking || isStunned) return false;
         else return true;
     }
 
@@ -151,14 +165,18 @@ public class Enemy : MonoBehaviour
         HitByMelee(1);
     }
 
-    public void HitByHeavyMelee(int hitPoints)
+    public void HitByHeavyMelee(int hitPoints, float stunDuration) //+ STUNNED
     {
         if (hitCauseAlert && currentHealth > 0) detectionScript.InstantAggroMelee(); //pass player location and alert
+
+        Debug.Log("IM STUNNED"!);
+
+        Stun(stunDuration);
         DamangeTaken(hitPoints, true);
     }
     public void HitByHeavyMelee()
     {
-        HitByHeavyMelee(1);
+        HitByHeavyMelee(1, 1);
     }
 
     public void HitByRange(int hitPoints)
@@ -170,6 +188,18 @@ public class Enemy : MonoBehaviour
     public void HitByRange()
     {
         HitByRange(1);
+    }
+
+    public void Stun(float duration)
+    {
+        PauseActivity();
+        if (agent.enabled) agent.isStopped = true; // fix while moving, they get stunned, stops them from moving
+
+        isStunned = true;
+        
+        if (duration >= stunnedDuration) stunnedDuration = duration; // Overwrite if its a stronger stun
+        
+        stunnedTimer = 0f;
     }
 
     public void Die()
@@ -200,7 +230,6 @@ public class Enemy : MonoBehaviour
         if (agent == null) Debug.LogWarning("No NavMesh Agent found! Can't update Agent Speed");
         else agent.speed = movementSpeed;
     }
-
     public void RotationMult(float rate)
     {
         rotationSpeed = baseRotationSpeed * rate;
@@ -216,7 +245,6 @@ public class Enemy : MonoBehaviour
         isExecutingActivity = false;
         isActivityPaused = false;
     }
-
     public void PauseActivity()
     {
         isActivityPaused = true;
@@ -230,7 +258,6 @@ public class Enemy : MonoBehaviour
             Debug.Log("Enemy entered smoke.");
         }
     }
-
     public void EnteredSmoke(Collider collider)
     {
         PauseActivity();
@@ -254,7 +281,6 @@ public class Enemy : MonoBehaviour
 
         overlappingSmokes++;
     }
-
     // Either exit trigger, or smoke ends, calls OnSmokeDisabled()
     private void OnTriggerExit(Collider collider)
     {
@@ -270,7 +296,6 @@ public class Enemy : MonoBehaviour
             }
         }
     }
-
     public void OnSmokeDisabled()
     {
         if (agent.enabled) agent.isStopped = false; // fix while moving, they get smoked

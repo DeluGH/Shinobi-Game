@@ -8,22 +8,35 @@ using UnityStandardAssets.Utility;
 
 public class PlayerAttack : MonoBehaviour
 {
-    [Header("Camera Reference")]
-    public Transform cameraFacing; // IMPORTANT
+    [Header("Ass Highlighter (Assign!)")]
+    public GameObject highlightPrefab;
+    public GameObject currentHighlight; // Only highlights if currentHighlight = null, currentHighlight changes parents and follows above them
+
+    [Header("Camera Reference (Auto)")]
+    public Transform cameraFacing; // Important for aiming
 
     [Header("Debug References")]
     public GameObject lookingAtEnemy; // Enemy player is looking at
 
     [Header("Swinging with Sword")]
     public float attackCooldown = 0.75f;           // Time taken to attack + assassinate after Swing
+    public bool isSwinging = false;
     [Header("Light")]
     public float meleeRange = 4f;
     public float meleeAngle = 100f;
-    public float meleeWindUpTime = 0.3f;        // Time taken to Swing after attack is called
-    public bool isSwinging = false;
+    public float meleeAnimTime = 0.2f;        // Time taken to Swing after attack is called
 
-    [Header("Heavy")]
-    public float heavyMeleeChargeTime = 1.2f;   // Time taken to complete charge heavy
+    [Header("Heavy")] // Destroys blocks, stuns, damage them if not blocking, no damage if their blocking
+    public int heavyDamage = 2;
+    public float heavyRange = 4.5f;
+    public float heavyAngle = 70f;
+    public float heavyAnimTime = 0.1f;     // Time taken to Swing after attack is called
+
+    public float heavyStunTime = 1.5f;
+
+    public float heavyChargeTime = 1f;   // Time taken to complete charge heavy
+    public float chargeTime = 0f;
+    public float chargeStartTime = 0f;
 
     [Header("Land Assassinate Settings")]
     public float assRange = 3f;
@@ -37,16 +50,12 @@ public class PlayerAttack : MonoBehaviour
     public float assLerpTime = 0.25f;               // Time taken for player to lerp/reach the AI                       // Default: 0.25
 
     [Header("Air Assassinate")]
-    public float airAssRange = 8.5f;                // When falling (playerScript.isFalling = true), distance can ass
+    public float airAssRange = 11.5f;                // When falling (playerScript.isFalling = true), distance can ass
     public float airAssScanAngle = 65f;
     public float fallHeightRequired = 3f;           // Fall this long to assassinate
     public float airAssAnimTime = 0.1f;             // Time taken to assassinate enemy after reaching it (Animation Length)
     public float airAssLerpMinDistance = 0.15f;     // Min. Distance player will be from the AI after assassinating it  // Default: 0.15
     public float airAssLerpTime = 0.1f;             // Time taken for player to lerp/reach the AI                       // Default: 0.1
-
-    [Header("Ass Highlighter (Assign!)")]
-    public GameObject highlightPrefab;
-    public GameObject currentHighlight; // Only highlights if currentHighlight = null, currentHighlight changes parents and follows above them
 
     [Header("References (Auto)")]
     public Player playerScript;
@@ -78,11 +87,42 @@ public class PlayerAttack : MonoBehaviour
 
         // !! Set attackCooldown to 0 in Frenzy, or just change attackCooldown for anything
         if (meleeTimer < attackCooldown && !isSwinging && !isAssing) meleeTimer += Time.deltaTime;
-        if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Attack"]) && meleeTimer >= attackCooldown)
+        // Check for holding left click
+        //CHARGING ONLY
+        if (meleeTimer >= attackCooldown)
         {
-            meleeTimer = 0f;
-            Attack();
+            if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Attack"]))
+            {
+                chargeStartTime = Time.time; // Record when charging started
+            }
+            if (Input.GetKey(KeybindManager.Instance.keybinds["Attack"]))
+            {
+                chargeTime = Time.time - chargeStartTime;
+
+                //if (chargeTime < heavyChargeTime) Debug.Log($"Charging... {chargeTime}");
+                //else Debug.Log($"Heavy Ready!");
+            }
+            if (Input.GetKeyUp(KeybindManager.Instance.keybinds["Attack"]))
+            {
+                //ATTACK
+                if (canAssassinate && assEnemyTarget != null)
+                {
+                    Assassinate(isAirAss());
+                }
+                else if (chargeTime >= heavyChargeTime) // Heavy
+                {
+                    Swing(true); //isHeavy
+                }
+                else
+                {
+                    Swing(false);
+                }
+
+                chargeTime = 0f;
+                meleeTimer = 0f;
+            }
         }
+        
     }
 
     public bool isFacingEnemy() // Closest/First rayhit enemy is Target
@@ -141,7 +181,7 @@ public class PlayerAttack : MonoBehaviour
             // AIR ASSASSINATION
             if (IsValidTarget(enemyScript) && // not dead
                 Vector3.Distance(transform.position, lookingAtEnemy.transform.position) <= airAssRange && //within AIR ass range
-                (!enemyScript.playerInDetectionArea || enemyScript.isChoking)) // not in view OR enemy is busy choking
+                (!enemyScript.playerInDetectionArea || enemyScript.isChoking || enemyScript.isStunned)) // not in view OR enemy is busy choking
             {
                 assEnemyTarget = lookingAtEnemy;
                 Debug.Log("AIR ASS");
@@ -154,7 +194,7 @@ public class PlayerAttack : MonoBehaviour
             // LAND ASSASSINATION
             if (IsValidTarget(enemyScript) && // not dead
             Vector3.Distance(transform.position, lookingAtEnemy.transform.position) <= assRange && //within ass range
-            (IsPlayerBehindEnemy(lookingAtEnemy.transform) && !enemyScript.playerInDetectionArea || enemyScript.isChoking)) // is behind & not in view OR enemy is busy choking
+            (IsPlayerBehindEnemy(lookingAtEnemy.transform) && !enemyScript.playerInDetectionArea || enemyScript.isChoking || enemyScript.isStunned)) // is behind & not in view OR enemy is busy choking
             {
                 assEnemyTarget = lookingAtEnemy;
                 Debug.Log("LAND ASS");
@@ -174,21 +214,7 @@ public class PlayerAttack : MonoBehaviour
         return enemyScript != null && !enemyScript.isDead;
     }
 
-    private void Attack()
-    {
-        // Return if currently assassinating someone
-        if (isAssing) return;
-
-        if (canAssassinate && assEnemyTarget != null)
-        {
-            Assassinate(isAirAss());
-        }
-        else
-        {
-            Swing();
-        }
-
-    }
+    
     
     public bool isAirAss()
     {
@@ -290,19 +316,33 @@ public class PlayerAttack : MonoBehaviour
     }
 
 
-    public void Swing()
+    public void Swing(bool isHeavy)
     {
+        Debug.Log($"Swing! Heavy: {isHeavy}");
         // Animate swinging here
+        if (isHeavy)
+        {
+            //animate heavy
+        }
+        else if (!isHeavy)
+        {
+            //animate normal attack
+        }
 
         isSwinging = true;
-        StartCoroutine(StartSwing());
+        StartCoroutine(StartSwing(isHeavy));
     }
-    public IEnumerator StartSwing()
+    public IEnumerator StartSwing(bool isHeavy)
     {
-        yield return new WaitForSeconds(meleeWindUpTime);
+        float waitTime = isHeavy ? heavyAnimTime : meleeAnimTime;
+        float attackRange = isHeavy ? heavyRange : meleeRange;
+        float attackAngle = isHeavy ? heavyAngle : meleeAngle;
+
+        yield return new WaitForSeconds(waitTime);
+
         isSwinging = false;
 
-        Collider[] hitEnemies = Physics.OverlapSphere(transform.position, meleeRange, playerScript.enemyLayer);
+        Collider[] hitEnemies = Physics.OverlapSphere(transform.position, attackRange, playerScript.enemyLayer);
         HashSet<Enemy> hitEnemySet = new HashSet<Enemy>(); // Prevent duplicate hits
 
         foreach (Collider enemy in hitEnemies)
@@ -311,10 +351,16 @@ public class PlayerAttack : MonoBehaviour
             if (enemyScript != null && !hitEnemySet.Contains(enemyScript) && !enemyScript.isDead)
             {
                 Vector3 toEnemy = (enemy.transform.position - transform.position).normalized;
-                if (Vector3.Angle(transform.forward, toEnemy) <= meleeAngle / 2)
+                if (Vector3.Angle(transform.forward, toEnemy) <= attackAngle / 2)
                 {
                     hitEnemySet.Add(enemyScript);
-                    enemyScript.HitByMelee(); // HIT
+
+                    if (isHeavy)
+                    {
+                        enemyScript.HitByHeavyMelee(heavyDamage, heavyStunTime); // HIT AND STUN
+                    }
+                    else if (!isHeavy) enemyScript.HitByMelee(); // HIT
+
                     Debug.Log($"Hit enemy: {enemyScript.name}");
                 }
             }

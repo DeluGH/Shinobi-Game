@@ -20,7 +20,12 @@ public class KeybindManager : MonoBehaviour // Saving, Loading Keybinds
         { "Interact", KeyCode.E },
         { "Crouch", KeyCode.LeftControl },
         { "Unequip Offhand", KeyCode.X },
-        { "Swap Back/Hand", KeyCode.Q },
+        { "Block", KeyCode.Q },
+        { "Inventory", KeyCode.Tab },
+        { "Inventory Slot 1", KeyCode.Alpha1 },
+        { "Inventory Slot 2", KeyCode.Alpha2 },
+        { "Inventory Slot 3", KeyCode.Alpha3 },
+        { "Inventory Slot 4", KeyCode.Alpha4 },
     };
 
     // Current keybindings

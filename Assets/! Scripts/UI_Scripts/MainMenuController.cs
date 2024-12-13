@@ -40,6 +40,9 @@ public class MainMenuController : MonoBehaviour
         gameplayPanel.SetActive(true);
         currentMenuState = MenuState.Gameplay; // Set state to Gameplay
 
+        // Lex's Code
+        playerController.GetComponentInChildren<Inventory>().enabled = true;
+
         // Lock and hide the cursor for gameplay
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;

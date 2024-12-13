@@ -948,6 +948,9 @@ MonoBehaviour:
   isChoking: 0
   chokingDuration: 0
   chokingTimer: 0
+  isStunned: 0
+  stunnedDuration: 0
+  stunnedTimer: 0
   isDead: 0
   isBlocking: 0
   isExecutingActivity: 0
@@ -1400,38 +1403,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 11400000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 14300000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: assRange
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: airAssRange
-      value: 8.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: assScanAngle
-      value: 35
-      objectReference: {fileID: 0}
-    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: cameraFacing
+    - target: {fileID: 5399441641840452582, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
+      propertyPath: mainHand
       value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: airAssScanAngle
-      value: 65
-      objectReference: {fileID: 0}
-    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: highlightPrefab
-      value: 
-      objectReference: {fileID: 6741813466830848338, guid: ed0312782665d9b46b6b165a95dd9a4a, type: 3}
+      objectReference: {fileID: 5207085083445899772, guid: 42e75c57dd5b3ce42802a703a6049353, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2243,6 +2218,9 @@ MonoBehaviour:
   isChoking: 0
   chokingDuration: 0
   chokingTimer: 0
+  isStunned: 0
+  stunnedDuration: 0
+  stunnedTimer: 0
   isDead: 0
   isBlocking: 0
   isExecutingActivity: 0
@@ -4174,6 +4152,9 @@ MonoBehaviour:
   isChoking: 0
   chokingDuration: 0
   chokingTimer: 0
+  isStunned: 0
+  stunnedDuration: 0
+  stunnedTimer: 0
   isDead: 0
   isBlocking: 0
   isExecutingActivity: 0
@@ -6404,6 +6385,9 @@ MonoBehaviour:
   isChoking: 0
   chokingDuration: 0
   chokingTimer: 0
+  isStunned: 0
+  stunnedDuration: 0
+  stunnedTimer: 0
   isDead: 0
   isBlocking: 0
   isExecutingActivity: 0
@@ -9400,6 +9384,9 @@ MonoBehaviour:
   isChoking: 0
   chokingDuration: 0
   chokingTimer: 0
+  isStunned: 0
+  stunnedDuration: 0
+  stunnedTimer: 0
   isDead: 0
   isBlocking: 0
   isExecutingActivity: 0
@@ -14978,6 +14965,9 @@ MonoBehaviour:
   isChoking: 0
   chokingDuration: 0
   chokingTimer: 0
+  isStunned: 0
+  stunnedDuration: 0
+  stunnedTimer: 0
   isDead: 0
   isBlocking: 0
   isExecutingActivity: 0
@@ -15268,6 +15258,9 @@ MonoBehaviour:
   isChoking: 0
   chokingDuration: 0
   chokingTimer: 0
+  isStunned: 0
+  stunnedDuration: 0
+  stunnedTimer: 0
   isDead: 0
   isBlocking: 0
   isExecutingActivity: 0
@@ -17641,6 +17634,9 @@ MonoBehaviour:
   isChoking: 0
   chokingDuration: 0
   chokingTimer: 0
+  isStunned: 0
+  stunnedDuration: 0
+  stunnedTimer: 0
   isDead: 0
   isBlocking: 0
   isExecutingActivity: 0
@@ -19062,6 +19058,9 @@ MonoBehaviour:
   isChoking: 0
   chokingDuration: 0
   chokingTimer: 0
+  isStunned: 0
+  stunnedDuration: 0
+  stunnedTimer: 0
   isDead: 0
   isBlocking: 0
   isExecutingActivity: 0
@@ -19284,6 +19283,9 @@ MonoBehaviour:
   isChoking: 0
   chokingDuration: 0
   chokingTimer: 0
+  isStunned: 0
+  stunnedDuration: 0
+  stunnedTimer: 0
   isDead: 0
   isBlocking: 0
   isExecutingActivity: 0

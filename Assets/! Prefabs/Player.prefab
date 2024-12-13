@@ -59,12 +59,12 @@ CharacterController:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Height: 1.8
   m_Radius: 0.5
   m_SlopeLimit: 45
-  m_StepOffset: 0.5
+  m_StepOffset: 0.7
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 0, z: 0}
@@ -122,7 +122,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 100000}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 05ec5cf00ca181d45a42ba1870e148c3, type: 3}
   m_Name: 
@@ -696,17 +696,20 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3664646841798865027}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 23fc4be2795bac4428f3428d9130b775, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  openWheelKeyPressTime: 0.1
+  inventoryPressStartTime: 0
+  inventoryPressTime: 0
   instantitatePosition: {fileID: 5721080469858891614}
   utilHandPos: {fileID: 0}
   mainHandPos: {fileID: 0}
   chargeStartTime: 0
   utilHand: {fileID: 0}
-  mainHand: {fileID: 0}
+  mainHand: {fileID: 5207085083445899772, guid: 42e75c57dd5b3ce42802a703a6049353, type: 3}
   onBack: {fileID: 0}
   player: {fileID: 0}
   inventorySlots:
@@ -910,28 +913,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81530c3061b1e694abb2b845eb136ec9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  highlightPrefab: {fileID: 6741813466830848338, guid: ed0312782665d9b46b6b165a95dd9a4a, type: 3}
+  currentHighlight: {fileID: 0}
   cameraFacing: {fileID: 0}
   lookingAtEnemy: {fileID: 0}
   attackCooldown: 0.75
+  isSwinging: 0
   meleeRange: 4
   meleeAngle: 100
-  meleeWindUpTime: 0.3
-  isSwinging: 0
-  heavyMeleeChargeTime: 1.2
+  meleeAnimTime: 0.2
+  heavyDamage: 2
+  heavyRange: 4.5
+  heavyAngle: 70
+  heavyAnimTime: 0.1
+  heavyStunTime: 1.5
+  heavyChargeTime: 1
+  chargeTime: 0
+  chargeStartTime: 0
   assRange: 3
   assScanAngle: 35
   behindEnemyThreshold: -0.4
   assAnimTime: 0.4
   assLerpMinDistance: 0.15
   assLerpTime: 0.25
-  airAssRange: 8.5
+  airAssRange: 11.5
   airAssScanAngle: 65
   fallHeightRequired: 3
   airAssAnimTime: 0.1
   airAssLerpMinDistance: 0.15
   airAssLerpTime: 0.1
-  highlightPrefab: {fileID: 6741813466830848338, guid: ed0312782665d9b46b6b165a95dd9a4a, type: 3}
-  currentHighlight: {fileID: 0}
   playerScript: {fileID: 0}
   maxRaycastRange: 10
   drawSwingGizmo: 0

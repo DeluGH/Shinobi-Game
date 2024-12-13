@@ -4,8 +4,9 @@ public abstract class Item : ScriptableObject
 {
     public string itemName;
     public int maxStackCount = 0;
-    public bool minusOnUse = true;
+    public bool removeOnUse = true;
     public bool canHoldCharge = false;
+    public bool isDoubleHanded = false;
 
     public GameObject itemHoldModel;
 
