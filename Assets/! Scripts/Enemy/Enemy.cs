@@ -20,17 +20,9 @@ public class Enemy : MonoBehaviour
     public bool isBlocking = false;
     public bool isAttacking = false;
 
-    public float combatModeProximity = 5.5f; // Prefered distance from player
+    public float combatModeProximity = 8f; // Prefered distance from player
     public float combatModeOutDecayTime = 0.5f; // If player steps out, wait for this amount of time before continuing chase
     public bool combatMode = false;
-
-    [Header("Smart Position Settings")]
-    public bool smartReposition = true;
-    public float enemySpacing = 3f;
-    [Space(5f)]
-    public bool canStrafe = true;
-    public bool strafingRight = false;
-    public float strafeSpeed = 4f;
 
     [Header("Smoked Settings")]
     public bool inSmoke = false;
@@ -66,6 +58,7 @@ public class Enemy : MonoBehaviour
     public LayerMask playerLayer;       // Layer mask for detecting players
     public LayerMask enemyLayer;       // Layer mask for detecting enemies
     public LayerMask smokeLayer;
+    public LayerMask surfacesLayer;
 
     public int overlappingSmokes = 0; // Fix bug with overlapping smokes,
                                       // if 1 ends, shouldn't "unsmoke" the enemy
@@ -80,17 +73,19 @@ public class Enemy : MonoBehaviour
         if (enemyLayer == 0) Debug.LogWarning("Enemy Layer reference is missing!");
         if (smokeLayer == 0) smokeLayer = LayerMask.GetMask("Smoke");
         if (smokeLayer == 0) Debug.LogWarning("Smoke Layer reference is missing!");
+        if (surfacesLayer == 0) surfacesLayer = LayerMask.GetMask("Surfaces");
+        if (surfacesLayer == 0) Debug.LogWarning("Surfaces Layer reference is missing!");
         // Find Player w Layer
         if (player == null) FindPlayer();
         if (player == null) Debug.LogWarning("Player reference is missing! Unable to FindPlayer()");
         // Others
-        if (detectionScript == null) detectionScript = GetComponentInChildren<DetectionAI>();
+        if (detectionScript == null) detectionScript = GetComponent<DetectionAI>();
         if (detectionScript == null) Debug.LogError("This Enemy is Missing detectionScript!");
-        if (activityScript == null) activityScript = GetComponentInChildren<ActivityAI>();
+        if (activityScript == null) activityScript = GetComponent<ActivityAI>();
         if (activityScript == null) Debug.LogError("This Enemy is Missing activityScript!");
-        if (attackScript == null) attackScript = GetComponentInChildren<EnemyAttack>();
+        if (attackScript == null) attackScript = GetComponent<EnemyAttack>();
         if (attackScript == null) Debug.LogError("This Enemy is Missing attackScript!");
-        if (agent == null) agent = GetComponentInChildren<NavMeshAgent>();
+        if (agent == null) agent = GetComponent<NavMeshAgent>();
         if (agent == null) Debug.LogError("This Enemy is Missing NavMeshAgent! Other AI Scripts will not be able to run!");
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -162,9 +157,10 @@ public class Enemy : MonoBehaviour
         Debug.Log("Combat ON");
         agent.isStopped = true; //Stop moving
         agent.updateRotation = false;
+        detectionScript.isLookingAround = false; //bug fix 
 
         agent.isStopped = false; //Reenable to reposition
-        Reposition();
+        attackScript.Reposition();
 
         combatMode = true;
         combatModeTimer = 0f;
@@ -334,7 +330,7 @@ public class Enemy : MonoBehaviour
             if (overlappingSmokes <= 0)
             {
                 inSmoke = false;
-                Debug.Log("Enemy exited all smoke zones.");
+                //Debug.Log("Enemy exited all smoke zones.");
             }
         }
     }
@@ -346,7 +342,7 @@ public class Enemy : MonoBehaviour
         if (overlappingSmokes <= 0)
         {
             inSmoke = false;
-            Debug.Log("Smoke disabled, inSmoke reset.");
+            //Debug.Log("Smoke disabled, inSmoke reset.");
         }
     }
 
@@ -355,112 +351,34 @@ public class Enemy : MonoBehaviour
         detectionScript.HeardNoise(playerTransform, isWalking);
     }
 
-    // COMBAT REPOSITIONING ====================================================================
-    public void Reposition()
+    public bool HasLineOfSight(Transform target)
     {
-        // Find nearby enemies
-        List<Vector3> enemyPositions = GetNearbyEnemyPositions();
-
-        // Find a free position around the player
-        Vector3 freePosition = FindFreePosition(enemyPositions);
-
-        // If a valid free position is found, move there
-        if (freePosition != Vector3.zero)
+        RaycastHit hit;
+        Vector3 directionToTarget = (target.position - transform.position).normalized;
+        if (Physics.Raycast(transform.position, directionToTarget, out hit, detectionScript.GetCurrentDetectionDistance()))
         {
-            Debug.Log("Repositioning!");
-            agent.SetDestination(freePosition);
+            Debug.DrawRay(transform.position, directionToTarget * detectionScript.GetCurrentDetectionDistance(), Color.red, 0.01f); // DISABLE-ABLE disable disablable
+            return hit.transform == target;
         }
-        else
-        {
-            Debug.Log("Failed to find position!");
-        }
+        return false;
     }
 
-    private List<Vector3> GetNearbyEnemyPositions()
+    public bool HasClearLineOfSightForRepositionOrStrafe(Vector3 targetPosition)
     {
-        List<Vector3> positions = new List<Vector3>();
+        RaycastHit hit;
+        Vector3 directionToTarget = (targetPosition - transform.position).normalized; // Direction to the target position
 
-        // Use OverlapSphere to find nearby enemies
-        Collider[] colliders = Physics.OverlapSphere(player.position, combatModeProximity, enemyLayer);
-        foreach (var collider in colliders)
+        // Perform a raycast in the direction the enemy wants to move
+        if (Physics.Raycast(transform.position, directionToTarget, out hit, detectionScript.GetCurrentDetectionDistance(), surfacesLayer))
         {
-            // Exclude this enemy
-            if (collider.gameObject != gameObject)
-            {
-                positions.Add(collider.transform.position);
-            }
+            // Visualize the raycast (optional, for debugging)
+            Debug.DrawRay(transform.position, directionToTarget * detectionScript.GetCurrentDetectionDistance(), Color.green, 0.1f);
+
+            // If we hit something, return false (meaning the path is blocked)
+            return false;
         }
 
-        return positions;
-    }
-
-    private Vector3 FindFreePosition(List<Vector3> enemyPositions)
-    {
-        // Try multiple positions around the player
-        int numSamples = 36; // Divide the circle into 36 segments
-        for (int i = 0; i < numSamples; i++)
-        {
-            float angle = (360f / numSamples) * i;
-            Vector3 candidatePosition = CalculatePositionOnCircle(player.position, combatModeProximity, angle);
-
-            // Check if this position is far enough from other enemies
-            if (IsPositionFree(candidatePosition, enemyPositions))
-            {
-                return candidatePosition;
-            }
-        }
-
-        // No valid position found
-        return Vector3.zero;
-    }
-
-    private Vector3 CalculatePositionOnCircle(Vector3 center, float radius, float angle)
-    {
-        // Convert the angle from degrees to radians
-        float radians = angle * Mathf.Deg2Rad;
-
-        // Calculate the position on the circle
-        float x = center.x + radius * Mathf.Cos(radians);
-        float z = center.z + radius * Mathf.Sin(radians);
-        return new Vector3(x, center.y, z); // Assume y-coordinate remains the same
-    }
-
-    private bool IsPositionFree(Vector3 position, List<Vector3> enemyPositions)
-    {
-        foreach (var enemyPos in enemyPositions)
-        {
-            if (Vector3.Distance(position, enemyPos) < enemySpacing)
-            {
-                return false;
-            }
-        }
+        // If no obstacles are detected, return true (line-of-sight is clear)
         return true;
-    }
-
-    // STRAFING
-    public void Strafe()
-    {
-        Debug.Log("Strafe!");
-        // Calculate the direction perpendicular to the player
-        Vector3 directionToPlayer = (player.position - transform.position).normalized;
-        Vector3 strafeDirection = Vector3.Cross(directionToPlayer, Vector3.up).normalized;
-
-        // Decide whether to strafe left or right
-        if (!strafingRight)
-        {
-            strafeDirection = -strafeDirection;
-        }
-
-        // Calculate the target position
-        Vector3 targetPosition = transform.position + strafeDirection * strafeSpeed;
-
-        // Use NavMeshAgent to move to the target position
-        agent.SetDestination(targetPosition);
-    }
-
-    public void ToggleStrafeDirection()
-    {
-        // Toggle strafing direction
-        strafingRight = !strafingRight;
     }
 }

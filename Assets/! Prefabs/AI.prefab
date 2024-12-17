@@ -1,69 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &975490328038788918
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6956843500103280987}
-  - component: {fileID: 5732293975268784025}
-  m_Layer: 9
-  m_Name: Attack
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6956843500103280987
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 975490328038788918}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3999139784295660231}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5732293975268784025
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 975490328038788918}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29b1fd4a377f0a24ea42c8c0f621bf5c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attackRange: 3
-  attackAngle: 80
-  attackAnimTime: 0.3
-  minAttackInterval: 3
-  maxAttackInterval: 8
-  blockTime: 2
-  minRepositionInterval: 10
-  maxRepositionInterval: 20
-  minStrafeInterval: 2
-  maxStrafeInterval: 5
-  attackAvailable: 0
-  attackWaitTime: 0
-  attackWaitTimer: 0
-  canReposition: 0
-  repositionTime: 0
-  repositionTimer: 0
-  canStrafe: 0
-  strafeTime: 0
-  strafeTimer: 0
-  enemyScript: {fileID: 0}
 --- !u!1 &1769122857705964786
 GameObject:
   m_ObjectHideFlags: 0
@@ -74,6 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3999139784295660231}
   - component: {fileID: 8867886320714626331}
+  - component: {fileID: 2550329782099102616}
+  - component: {fileID: 5742486413366494391}
+  - component: {fileID: 429888840770217083}
   - component: {fileID: 3238511630373101444}
   - component: {fileID: 3136488879376753980}
   - component: {fileID: 4174511297004527470}
@@ -97,10 +36,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2714477187429026189}
-  - {fileID: 7580563479587274674}
-  - {fileID: 6956843500103280987}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8867886320714626331
@@ -127,11 +63,6 @@ MonoBehaviour:
   combatModeProximity: 5.5
   combatModeOutDecayTime: 0.5
   combatMode: 0
-  smartReposition: 1
-  enemySpacing: 3
-  canStrafe: 1
-  strafingRight: 0
-  strafeSpeed: 4
   inSmoke: 0
   smokeChokeAfterDisappear: 2
   currentHealth: 0
@@ -163,6 +94,144 @@ MonoBehaviour:
     m_Bits: 0
   overlappingSmokes: 0
   combatModeTimer: 0
+--- !u!114 &2550329782099102616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1769122857705964786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29b1fd4a377f0a24ea42c8c0f621bf5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackRange: 3
+  attackAngle: 80
+  attackAnimTime: 0.3
+  minAttackInterval: 3
+  maxAttackInterval: 8
+  blockTime: 2
+  minRepositionInterval: 10
+  maxRepositionInterval: 20
+  minStrafeInterval: 2
+  maxStrafeInterval: 5
+  smartReposition: 1
+  enemySpacing: 3
+  canStrafe: 1
+  strafingRight: 0
+  strafeSpeed: 5
+  attackAvailable: 0
+  attackWaitTime: 0
+  attackWaitTimer: 0
+  canRepositionNow: 0
+  repositionTime: 0
+  repositionTimer: 0
+  canStrafeNow: 0
+  strafeTime: 0
+  strafeTimer: 0
+  enemyScript: {fileID: 0}
+--- !u!114 &5742486413366494391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1769122857705964786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32cb855860b4c634381f64693c1bf0d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  susMeter: 0
+  currentState: 0
+  isSusPause: 0
+  isLookingAround: 0
+  currentDetectDistance: 0
+  currentGreenAngle: 0
+  currentYellowAngle: 0
+  detectDistance: 16.5
+  greenAngle: 110
+  yellowAngle: 65
+  corpseInDetectionArea: 0
+  corpseMultiplier: 1.4
+  smokeInDetectionArea: 0
+  smokeMultiplier: 1.2
+  smokeDetectDistanceMult: 0.3
+  smokeGreenAngleMult: 0.3
+  smokeYellowAngleMult: 0.3
+  greenSusInc: 8
+  yellowSusInc: 14
+  susDec: 8
+  maxSusDecayValue: 14
+  susDecayDelay: 3
+  susAffectedByDistance: 1
+  maxSusDistancePercent: 300
+  noiseWalkSusInc: 18
+  noiseRunSusInc: 42
+  noiseHeardDecay: 3
+  noiseAffectedByDistance: 1
+  noiseMaxSusDistancePercent: 600
+  awareMeter: 50
+  awareDetectDistanceInc: 3
+  awareGreenAngleInc: 10
+  awareYellowAngleInc: 15
+  awareSusMultiplier: 1.1
+  awareSusDec: 8
+  awareSusDecayDelay: 6
+  awareRotationSpeedMult: 1.2
+  inveMeter: 100
+  inveDetectDistanceInc: 6
+  inveGreenAngleInc: 20
+  inveYellowAngleInc: 25
+  inveSusMultiplier: 1.25
+  inveSusDec: 5
+  inveSusDecayDelay: 10
+  inveLookInterval: 3
+  inveLookAngle: 120
+  inveRotationSpeedMult: 1.5
+  isAlert: 0
+  alertMeter: 150
+  alertDetectDistanceInc: 10
+  alertGreenAngleInc: 45
+  alertModePeriod: 20
+  alertMoveSpeedMult: 1.7
+  alertModeSpread: 21
+  alertLookInterval: 1.2
+  alertLookAngle: 200
+  alertRotationSpeedMult: 1.8
+  alertBuffs: 0
+  buffDetectDistanceInc: 3
+  buffGreenAngleInc: 15
+  buffYellowAngleInc: 15
+  buffSusMultiplier: 1.4
+  buffMoveSpeedInc: 1.2
+  buffRotationSpeedMult: 1.2
+  alertedSpread: 14
+  enemyScript: {fileID: 0}
+  outOfSightTimer: 0
+  lastKnownPosition: {x: 0, y: 0, z: 0}
+  inveIdleTimer: 0
+  randomLookDirection: {x: 0, y: 0, z: 0, w: 0}
+  alertTimer: 0
+  corpsesSeen: []
+  noiseHeardTimer: 0
+--- !u!114 &429888840770217083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1769122857705964786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ca6c1c1bec2f184faa31cbd7909e15f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Activities: []
+  currentActivityIndex: 0
+  currentPathIndex: 0
+  enemyScript: {fileID: 0}
 --- !u!195 &3238511630373101444
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -261,168 +330,3 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1 &3617392627845117757
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2714477187429026189}
-  - component: {fileID: 5800075886384458536}
-  m_Layer: 9
-  m_Name: Activity
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2714477187429026189
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3617392627845117757}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3999139784295660231}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5800075886384458536
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3617392627845117757}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ca6c1c1bec2f184faa31cbd7909e15f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Activities: []
-  currentActivityIndex: 0
-  currentPathIndex: 0
-  enemyScript: {fileID: 0}
---- !u!1 &7447436486967394279
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7580563479587274674}
-  - component: {fileID: 1803856307033069460}
-  m_Layer: 9
-  m_Name: Detection
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7580563479587274674
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7447436486967394279}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3999139784295660231}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1803856307033069460
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7447436486967394279}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32cb855860b4c634381f64693c1bf0d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  susMeter: 0
-  currentState: 0
-  isSusPause: 0
-  isLookingAround: 0
-  currentDetectDistance: 0
-  currentGreenAngle: 0
-  currentYellowAngle: 0
-  detectDistance: 16.5
-  greenAngle: 110
-  yellowAngle: 65
-  corpseInDetectionArea: 0
-  corpseMultiplier: 1.4
-  smokeInDetectionArea: 0
-  smokeMultiplier: 1.2
-  smokeDetectDistanceMult: 0.3
-  smokeGreenAngleMult: 0.3
-  smokeYellowAngleMult: 0.3
-  greenSusInc: 8
-  yellowSusInc: 14
-  susDec: 8
-  maxSusDecayValue: 14
-  susDecayDelay: 3
-  susAffectedByDistance: 1
-  maxSusDistancePercent: 300
-  noiseWalkSusInc: 18
-  noiseRunSusInc: 42
-  noiseHeardDecay: 3
-  noiseAffectedByDistance: 1
-  noiseMaxSusDistancePercent: 600
-  awareMeter: 50
-  awareDetectDistanceInc: 3
-  awareGreenAngleInc: 10
-  awareYellowAngleInc: 15
-  awareSusMultiplier: 1.1
-  awareSusDec: 8
-  awareSusDecayDelay: 6
-  awareRotationSpeedMult: 1.2
-  inveMeter: 100
-  inveDetectDistanceInc: 6
-  inveGreenAngleInc: 20
-  inveYellowAngleInc: 25
-  inveSusMultiplier: 1.25
-  inveSusDec: 5
-  inveSusDecayDelay: 10
-  inveLookInterval: 3
-  inveLookAngle: 120
-  inveRotationSpeedMult: 1.5
-  isAlert: 0
-  alertMeter: 150
-  alertDetectDistanceInc: 10
-  alertGreenAngleInc: 45
-  alertModePeriod: 20
-  alertMoveSpeedMult: 1.7
-  alertModeSpread: 21
-  alertLookInterval: 1.2
-  alertLookAngle: 200
-  alertRotationSpeedMult: 1.8
-  alertBuffs: 0
-  buffDetectDistanceInc: 3
-  buffGreenAngleInc: 15
-  buffYellowAngleInc: 15
-  buffSusMultiplier: 1.4
-  buffMoveSpeedInc: 1.2
-  buffRotationSpeedMult: 1.2
-  alertedSpread: 14
-  enemyScript: {fileID: 0}
-  outOfSightTimer: 0
-  lastKnownPosition: {x: 0, y: 0, z: 0}
-  inveIdleTimer: 0
-  randomLookDirection: {x: 0, y: 0, z: 0, w: 0}
-  alertTimer: 0
-  corpsesSeen: []
-  noiseHeardTimer: 0

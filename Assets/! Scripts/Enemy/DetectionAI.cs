@@ -197,7 +197,7 @@ public class DetectionAI : MonoBehaviour
 
     private void Start()
     {
-        if (enemyScript == null) enemyScript = GetComponentInParent<Enemy>();
+        if (enemyScript == null) enemyScript = GetComponent<Enemy>();
         if (enemyScript == null) Debug.LogWarning("Enemy Script reference is missing!");
     }
 
@@ -280,11 +280,11 @@ public class DetectionAI : MonoBehaviour
 
         //BEHAVIORS
         // Rotate towards the player during Aware if they are in the green or yellow zones
-        if (susMeter >= awareMeter && enemyScript.playerInDetectionArea && HasLineOfSight(enemyScript.player))
+        if (susMeter >= awareMeter && enemyScript.playerInDetectionArea && enemyScript.HasLineOfSight(enemyScript.player))
         {
             RotateTowardsPlayer(); //Aware ++
         }
-        else if (susMeter >= awareMeter && susMeter <= inveMeter && !enemyScript.playerInDetectionArea && !HasLineOfSight(enemyScript.player))
+        else if (susMeter >= awareMeter && susMeter <= inveMeter && !enemyScript.playerInDetectionArea && !enemyScript.HasLineOfSight(enemyScript.player))
         {
             RotateTowardsLastKnown(); //Aware, but no sight of Player
         }
@@ -317,8 +317,9 @@ public class DetectionAI : MonoBehaviour
                 if (alertTimer < alertModePeriod) AlertMode();
                 speedMult += (alertMoveSpeedMult - 1);
                 rotationMult += alertRotationSpeedMult;
-                if (Vector3.Distance(transform.position, enemyScript.player.position) <= enemyScript.combatModeProximity && !enemyScript.combatMode) enemyScript.EnterCombatMode(); // Combat Proximity?
-                else if (Vector3.Distance(transform.position, enemyScript.player.position) > enemyScript.combatModeProximity && enemyScript.combatMode)
+                float distanceFromPlayer = Vector3.Distance(transform.position, enemyScript.player.position);
+                if (distanceFromPlayer <= enemyScript.combatModeProximity && !enemyScript.combatMode) enemyScript.EnterCombatMode(); // Combat Proximity?
+                else if (distanceFromPlayer > enemyScript.combatModeProximity && enemyScript.combatMode)
                 {
                     enemyScript.combatModeTimer += Time.deltaTime;
                     if (enemyScript.combatModeTimer >= enemyScript.combatModeOutDecayTime)
@@ -328,14 +329,14 @@ public class DetectionAI : MonoBehaviour
                 }
                 else if (!enemyScript.combatMode)
                 {
-                    if (enemyScript.playerInDetectionArea && HasLineOfSight(enemyScript.player)) GoTo(enemyScript.player.position); // Follow player if in vision
+                    if (enemyScript.playerInDetectionArea && enemyScript.HasLineOfSight(enemyScript.player)) GoTo(enemyScript.player.position); // Follow player if in vision
                     else GoTo(lastKnownPosition); // If player disappears, go to last known location
                 }
                 break;
             case DetectionState.Investigating:
                 enemyScript.PauseActivity();
                 rotationMult += (inveRotationSpeedMult - 1);
-                if (enemyScript.playerInDetectionArea && HasLineOfSight(enemyScript.player)) GoTo(enemyScript.player.position); // Follow player if in vision
+                if (enemyScript.playerInDetectionArea && enemyScript.HasLineOfSight(enemyScript.player)) GoTo(enemyScript.player.position); // Follow player if in vision
                 else if (!enemyScript.inSmoke) GoTo(lastKnownPosition); // If player disappears, go to last known location
                 break;
             case DetectionState.Aware:
@@ -519,13 +520,13 @@ public class DetectionAI : MonoBehaviour
             float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
 
             // Check for yellow zone
-            if (angleToPlayer <= GetCurrentYellowAngle() / 2 && HasLineOfSight(hit.transform))
+            if (angleToPlayer <= GetCurrentYellowAngle() / 2 && enemyScript.HasLineOfSight(hit.transform))
             {
                 IncreaseSuspicion(yellowSusInc, false);
                 PlayerDetected(hit);
             }
             // Check for green zone
-            else if (angleToPlayer <= GetCurrentGreenAngle() / 2 && HasLineOfSight(hit.transform))
+            else if (angleToPlayer <= GetCurrentGreenAngle() / 2 && enemyScript.HasLineOfSight(hit.transform))
             {
                 IncreaseSuspicion(greenSusInc, false);
                 PlayerDetected(hit);
@@ -547,20 +548,27 @@ public class DetectionAI : MonoBehaviour
         foreach (var hit in hits)
         {
             Enemy enemy = hit.GetComponent<Enemy>();
-            if (hit.gameObject != gameObject && enemy.detectionScript != null)
+            //1) Not this gameobject itself
+            //2) Not dead
+            //3) Not in combat mode already
+            if (hit.gameObject != gameObject && !enemy.isDead && !enemy.combatMode)
             {
-                //Player Chase Behavior - When this AI is alert, alert other AI
-                if (enemyScript.playerInDetectionArea && susMeter >= alertMeter)
+                DetectionAI detectionScript = enemy.detectionScript;
+                if (detectionScript != null)
                 {
-                    enemy.detectionScript.susMeter = enemy.detectionScript.alertMeter;
-                    //pass on knowledge
-                    enemy.detectionScript.lastKnownPosition = enemy.player.position;
-                    enemy.detectionScript.GoTo(lastKnownPosition);
-                }
-                else //Not alert, but has been alerted
-                {
-                    //pass on knowledge
-                    enemy.detectionScript.alertBuffs = true;
+                    //Player Chase Behavior - When this AI is alert, alert other AI
+                    if (enemyScript.playerInDetectionArea && susMeter >= alertMeter)
+                    {
+                        detectionScript.susMeter = detectionScript.alertMeter;
+                        //pass on knowledge
+                        detectionScript.lastKnownPosition = enemy.player.position;
+                        detectionScript.GoTo(lastKnownPosition);
+                    }
+                    else //Not alert, but has been alerted
+                    {
+                        //pass on knowledge
+                        detectionScript.alertBuffs = true;
+                    }
                 }
             }
         }
@@ -583,14 +591,14 @@ public class DetectionAI : MonoBehaviour
                 float angleToCorpse = Vector3.Angle(transform.forward, directionToCorpse);
 
                 // Check for yellow zone
-                if (angleToCorpse <= GetCurrentYellowAngle() / 2 && HasLineOfSight(hit.transform)) //sight of corpse
+                if (angleToCorpse <= GetCurrentYellowAngle() / 2 && enemyScript.HasLineOfSight(hit.transform)) //sight of corpse
                 {
                     IncreaseSuspicion(yellowSusInc * corpseMultiplier, false);
                     CorpseDetected(hit);
                     
                 }
                 // Check for green zone
-                else if (angleToCorpse <= GetCurrentGreenAngle() / 2 && HasLineOfSight(hit.transform)) //sight of corpse
+                else if (angleToCorpse <= GetCurrentGreenAngle() / 2 && enemyScript.HasLineOfSight(hit.transform)) //sight of corpse
                 {
                     IncreaseSuspicion(greenSusInc * corpseMultiplier, false);
                     CorpseDetected(hit);
@@ -624,14 +632,14 @@ public class DetectionAI : MonoBehaviour
             float angleToSmoke = Vector3.Angle(transform.forward, directionToSmoke);
 
             // Check for yellow zone
-            if (angleToSmoke <= GetCurrentYellowAngle() / 2 && HasLineOfSight(hit.transform)) //sight of corpse
+            if (angleToSmoke <= GetCurrentYellowAngle() / 2 && enemyScript.HasLineOfSight(hit.transform)) //sight of corpse
             {
                 //let susMeter hang around mid point between alert and inve
                 if (susMeter < alertMeter - 1f) IncreaseSuspicion(yellowSusInc * corpseMultiplier, false);
                 SmokeDetected(hit);
             }
             // Check for green zone
-            else if (angleToSmoke <= GetCurrentGreenAngle() / 2 && HasLineOfSight(hit.transform)) //sight of corpse
+            else if (angleToSmoke <= GetCurrentGreenAngle() / 2 && enemyScript.HasLineOfSight(hit.transform)) //sight of corpse
             {
                 //let susMeter hang around mid point between alert and inve
                 if (susMeter < alertMeter - 1f) IncreaseSuspicion(greenSusInc * corpseMultiplier, false);
@@ -818,7 +826,8 @@ public class DetectionAI : MonoBehaviour
         enemyScript.agent.SetDestination(target);
 
         // If already at the target position, trigger LookAround behavior
-        if (!enemyScript.agent.pathPending && enemyScript.agent.remainingDistance <= (enemyScript.maxDistanceFromNodes * 2f))
+        if (!enemyScript.agent.pathPending && !enemyScript.HasLineOfSight(enemyScript.player)
+            && enemyScript.agent.remainingDistance <= (enemyScript.maxDistanceFromNodes * 2f))
         {
             inveIdleTimer += Time.deltaTime;
 
@@ -892,18 +901,6 @@ public class DetectionAI : MonoBehaviour
         }
     }
 
-    private bool HasLineOfSight(Transform target)
-    {
-        RaycastHit hit;
-        Vector3 directionToTarget = (target.position - transform.position).normalized;
-        if (Physics.Raycast(transform.position, directionToTarget, out hit, GetCurrentDetectionDistance()))
-        {
-            Debug.DrawRay(transform.position, directionToTarget * GetCurrentDetectionDistance(), Color.red, 0.01f); // DISABLE-ABLE disable disablable
-            return hit.transform == target;
-        }
-        return false;
-    }
-
     public void InstantAggroMelee()
     {
         lastKnownPosition = enemyScript.player.position;
@@ -915,39 +912,39 @@ public class DetectionAI : MonoBehaviour
         susMeter = alertMeter;
     }
 
-    private void OnDrawGizmosSelected() // DISABLE-ABLE disable disablable
-    {
-        // Draw green detection zone
-        Gizmos.color = new Color(0, 1, 0, 0.2f);
-        DrawDetectionCone(GetCurrentGreenAngle());
+    //private void OnDrawGizmosSelected() // DISABLE-ABLE disable disablable
+    //{
+    //     Draw green detection zone
+    //    Gizmos.color = new Color(0, 1, 0, 0.2f);
+    //    DrawDetectionCone(GetCurrentGreenAngle());
 
-        // Draw yellow detection zone
-        Gizmos.color = new Color(1, 1, 0, 0.2f);
-        DrawDetectionCone(GetCurrentYellowAngle());
+    //     Draw yellow detection zone
+    //    Gizmos.color = new Color(1, 1, 0, 0.2f);
+    //    DrawDetectionCone(GetCurrentYellowAngle());
 
-        // Draw the last known position during investigation
-        if (currentState == DetectionState.Investigating)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(lastKnownPosition, 0.5f);
-        }
+    //     Draw the last known position during investigation
+    //    if (currentState == DetectionState.Investigating)
+    //    {
+    //        Gizmos.color = Color.red;
+    //        Gizmos.DrawWireSphere(lastKnownPosition, 0.5f);
+    //    }
 
-        // Set Gizmos color based on alert state
-        Gizmos.color = isAlert ? Color.red : Color.yellow;
-        // Draw the detection sphere
-        Gizmos.DrawWireSphere(transform.position, GetCurrentAlertSpreadDistance());
-    }
-    private void DrawDetectionCone(float angle)
-    {
-        Vector3 forward = transform.forward * GetCurrentDetectionDistance();
-        Vector3 rightBoundary = Quaternion.Euler(0, angle / 2, 0) * forward;
-        Vector3 leftBoundary = Quaternion.Euler(0, -angle / 2, 0) * forward;
+    //     Set Gizmos color based on alert state
+    //    Gizmos.color = isAlert ? Color.red : Color.yellow;
+    //     Draw the detection sphere
+    //    Gizmos.DrawWireSphere(transform.position, GetCurrentAlertSpreadDistance());
+    //}
+    //private void DrawDetectionCone(float angle)
+    //{
+    //    Vector3 forward = transform.forward * GetCurrentDetectionDistance();
+    //    Vector3 rightBoundary = Quaternion.Euler(0, angle / 2, 0) * forward;
+    //    Vector3 leftBoundary = Quaternion.Euler(0, -angle / 2, 0) * forward;
 
-        Gizmos.DrawRay(transform.position, rightBoundary);
-        Gizmos.DrawRay(transform.position, leftBoundary);
-        Gizmos.DrawWireSphere(transform.position, GetCurrentDetectionDistance());
+    //    Gizmos.DrawRay(transform.position, rightBoundary);
+    //    Gizmos.DrawRay(transform.position, leftBoundary);
+    //    Gizmos.DrawWireSphere(transform.position, GetCurrentDetectionDistance());
 
-        Vector3 coneBaseCenter = transform.position + forward;
-        Gizmos.DrawWireSphere(coneBaseCenter, 0.2f); // Optional: Mark the furthest point
-    }
+    //    Vector3 coneBaseCenter = transform.position + forward;
+    //    Gizmos.DrawWireSphere(coneBaseCenter, 0.2f); // Optional: Mark the furthest point
+    //}
 }
