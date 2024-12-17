@@ -302,7 +302,7 @@ AudioSource:
   m_GameObject: {fileID: 100000}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 6807428232033337006, guid: 9322b1164e82d7549b1126ef96262d0f, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
@@ -919,6 +919,7 @@ MonoBehaviour:
   lookingAtEnemy: {fileID: 0}
   attackCooldown: 0.75
   isSwinging: 0
+  MainHandObject: {fileID: 0}
   meleeRange: 4
   meleeAngle: 100
   meleeAnimTime: 0.2
