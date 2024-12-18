@@ -87,8 +87,6 @@ public class ActivityAI : MonoBehaviour
 
     private IEnumerator Idle(Activity activity)
     {
-        enemyScript.SetMovementAnimation();
-
         enemyScript.isExecutingActivity = true;
 
         // Check if idle point is defined
@@ -104,9 +102,14 @@ public class ActivityAI : MonoBehaviour
         if (activity.idlePoint != null && Vector3.Distance(transform.position, activity.idlePoint.transform.position) > enemyScript.maxDistanceFromNodes)
         {
             enemyScript.agent.SetDestination(activity.idlePoint.transform.position);
+            //ANIMATION
+            enemyScript.SetMovementAnimation();
 
             while (!enemyScript.isActivityPaused && Vector3.Distance(transform.position, activity.idlePoint.transform.position) > enemyScript.maxDistanceFromNodes)
                 yield return null;
+
+            //ANIMATION
+            enemyScript.SetMovementAnimation();
 
             if (enemyScript.isActivityPaused) yield break; // Stop activity if paused
         }
