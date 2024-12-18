@@ -35,7 +35,9 @@ public class MenuController : MonoBehaviour
     public Toggle fullscreenToggle;
 
     [Header("Auto")]
-    public GameObject playerController; // FPSController
+    public GameObject player;
+    public FirstPersonController fpsController; // FPSController
+    public Rigidbody rb; // FPSController
     public CharacterController characterController; // FPSController character controller
 
     [Header("Debug")]
@@ -63,7 +65,6 @@ public class MenuController : MonoBehaviour
     {
         //Fix toggle tick being wrong
         isFullscreen = Screen.fullScreen;
-        fullscreenToggle.isOn = isFullscreen;
     }
 
     void Update()
@@ -92,26 +93,26 @@ public class MenuController : MonoBehaviour
         }
     }
 
-    
-
     // Start game
-    public void StartGame()
+    public void InitializePlayerVariables()
     {
+        if (player == null) player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null) Debug.Log("No Player Found!");
+
+        if (fpsController == null) fpsController = player.GetComponent<FirstPersonController>();
+        if (characterController == null) characterController = player.GetComponent<CharacterController>();
+        if (rb == null) rb = player.GetComponent<Rigidbody>();
+
+        if (fpsController == null) Debug.LogWarning("No fpsController Found!");
+        if (characterController == null) Debug.LogWarning("No characterController Found!");
+        if (rb == null) Debug.LogWarning("No rb Found!");
+
         Debug.Log("Game started.");
-        //mainMenuCamera.gameObject.SetActive(false);
-        //playerController.gameObject.SetActive(true);
         mainMenuUI.SetActive(false);
-        //playerController.GetComponent<FirstPersonController>().enabled = true;
-        //characterController.enabled = true;
         gameplayPanel.SetActive(true);
-        currentMenuState = MenuState.Gameplay; // Set state to Gameplay
+        currentMenuState = MenuState.Gameplay;
 
-        // Lex's Code
-        //playerController.GetComponentInChildren<Inventory>().enabled = true;
-
-        // Lock and hide the cursor for gameplay
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        LockCursor();
     }
     // Open settings
     public void OpenSettings()
@@ -119,6 +120,9 @@ public class MenuController : MonoBehaviour
         ReanimateCursor();
         settingsPanel.SetActive(true);
         currentMenuState = MenuState.Settings;
+
+        //Toggle wrong value fix
+        fullscreenToggle.isOn = isFullscreen;
 
         if (pauseMenuPanel.activeSelf || isPaused) pauseMenuPanel.SetActive(false);
         else mainMenuUI.SetActive(false);
@@ -176,24 +180,22 @@ public class MenuController : MonoBehaviour
     public void TogglePauseMenu()
     {
         if (!isPaused 
-            && playerController.GetComponent<Rigidbody>().isKinematic
+            && rb.isKinematic
             && characterController.isGrounded
-            && playerController.GetComponent<FirstPersonController>().m_IsGrappling == false)
+            && fpsController.m_IsGrappling == false)
         {
             isPaused = !isPaused;
 
             if (isPaused)
             {
                 Time.timeScale = 0f; // Pause game
-                playerController.GetComponent<FirstPersonController>().enabled = false;
+                fpsController.enabled = false;
                 characterController.enabled = false;
                 pauseMenuPanel.SetActive(true);
                 gameplayPanel.SetActive(false);
                 currentMenuState = MenuState.PauseMenu;
 
-                // Enable and unlock the cursor
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
+                ReanimateCursor();
 
                 Debug.Log("Game paused.");
             }
@@ -201,14 +203,12 @@ public class MenuController : MonoBehaviour
             {
                 Time.timeScale = 1f; // Resume game
                 pauseMenuPanel.SetActive(false);
-                playerController.GetComponent<FirstPersonController>().enabled = true;
+                fpsController.enabled = true;
                 characterController.enabled = true;
                 gameplayPanel.SetActive(true);
                 currentMenuState = MenuState.Gameplay; // Back to gameplay
 
-                // Lock and hide the cursor
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
+                LockCursor();
 
                 Debug.Log("Game resumed.");
             }
@@ -221,7 +221,7 @@ public class MenuController : MonoBehaviour
         Time.timeScale = 1f;
         pauseMenuPanel.SetActive(false);
         gameplayPanel.SetActive(true);
-        playerController.GetComponent<FirstPersonController>().enabled = true;
+        fpsController.enabled = true;
         characterController.enabled = true;
         currentMenuState = MenuState.Gameplay; // Resumes to Gameplay state
 
@@ -232,7 +232,7 @@ public class MenuController : MonoBehaviour
         Debug.Log("Game resumed from pause menu.");
     }
     // Quit to main menu from pause menu
-    public void QuitToMainMenu()
+    public void QuitToMainMenu(string mainMenuSceneName)
     {
         Debug.Log("Returned to main menu from pause menu.");
         Time.timeScale = 1f; // Resume game time
@@ -243,12 +243,11 @@ public class MenuController : MonoBehaviour
         pauseMenuPanel.SetActive(false);
         settingsPanel.SetActive(false); // Ensure settings panel is hidden
         currentMenuState = MenuState.MainMenu;
-
         isPaused = false; // Reset pause state
 
-        // Enable and unlock the cursor
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        ReanimateCursor();
+
+        LoadScene(mainMenuSceneName);
     }
 
     //BUTTONS
@@ -303,7 +302,7 @@ public class MenuController : MonoBehaviour
         // Start loading the scene asynchronously
         AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(sceneName);
 
-        // Disable scene activation until we update progress
+        // Disable scene activation until progress is complete
         asyncOperation.allowSceneActivation = false;
 
         // While the scene is still loading, update the slider and text
@@ -316,29 +315,42 @@ public class MenuController : MonoBehaviour
             loadingSlider.value = progress;
             loadingText.text = Mathf.FloorToInt(progress * 100) + "%"; // Display percentage as text
 
-            // If the loading is done (reaches 90%), activate the scene
+            // Artificial delay to simulate slower loading
+            if (asyncOperation.progress < 0.9f)
+            {
+                yield return new WaitForSeconds(0.1f); // Simulate loading time
+            }
+
+            // When the loading reaches 90% (progress = 0.9), activate the scene
             if (asyncOperation.progress >= 0.9f)
             {
-                loadingText.text = "Press any key to continue...";
-                if (Input.anyKeyDown)
-                {
-                    asyncOperation.allowSceneActivation = true;
-                }
+                asyncOperation.allowSceneActivation = true;
             }
 
             yield return null;
         }
 
-        //DONE
+        // DONE
         currentMenuState = MenuState.Gameplay;
         gameplayPanel.SetActive(true);
+        loadingScreen.SetActive(false);
+
+        InitializePlayerVariables();
     }
+
+
 
     //Lex's simple functions
     public void ReanimateCursor()
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+    }
+    public void LockCursor()
+    {
+        // Lock and hide the cursor for gameplay
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     // Debugging
