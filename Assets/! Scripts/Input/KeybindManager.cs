@@ -21,6 +21,7 @@ public class KeybindManager : MonoBehaviour // Saving, Loading Keybinds
         { "Crouch", KeyCode.LeftControl },
         { "Unequip Offhand", KeyCode.X },
         { "Block", KeyCode.Q },
+        { "Close", KeyCode.Escape},
         { "Inventory", KeyCode.Tab },
         { "Inventory Slot 1", KeyCode.Alpha1 },
         { "Inventory Slot 2", KeyCode.Alpha2 },

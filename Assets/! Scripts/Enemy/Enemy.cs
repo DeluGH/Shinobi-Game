@@ -86,13 +86,13 @@ public class Enemy : MonoBehaviour
         if (player == null) Debug.LogWarning("Player reference is missing! Unable to FindPlayer()");
         // Others
         if (detectionScript == null) detectionScript = GetComponent<DetectionAI>();
-        if (detectionScript == null) Debug.LogError("This Enemy is Missing detectionScript!");
+        if (detectionScript == null) Debug.LogWarning("This Enemy is Missing detectionScript!");
         if (activityScript == null) activityScript = GetComponent<ActivityAI>();
-        if (activityScript == null) Debug.LogError("This Enemy is Missing activityScript!");
+        if (activityScript == null) Debug.LogWarning("This Enemy is Missing activityScript!");
         if (attackScript == null) attackScript = GetComponent<EnemyAttack>();
-        if (attackScript == null) Debug.LogError("This Enemy is Missing attackScript!");
+        if (attackScript == null) Debug.LogWarning("This Enemy is Missing attackScript!");
         if (agent == null) agent = GetComponent<NavMeshAgent>();
-        if (agent == null) Debug.LogError("This Enemy is Missing NavMeshAgent! Other AI Scripts will not be able to run!");
+        if (agent == null) Debug.LogWarning("This Enemy is Missing NavMeshAgent! Other AI Scripts will not be able to run!");
         if (anim == null) anim = GetComponentInChildren<Animator>();
         if (anim == null) Debug.LogWarning("This Enemy is Missing anim!");
     }
@@ -107,8 +107,8 @@ public class Enemy : MonoBehaviour
         agent.angularSpeed = rotationSpeed;
         agent.stoppingDistance = maxDistanceFromNodes;
 
-        detectionScript.enabled = true;
-        activityScript.enabled = true;
+        if (detectionScript != null) detectionScript.enabled = true;
+        if (activityScript != null) activityScript.enabled = true;
     }
 
     private void Update()

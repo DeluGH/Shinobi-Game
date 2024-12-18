@@ -11,7 +11,7 @@ public class InventorySlot
 public class Inventory : MonoBehaviour
 {
     [Header("Inventory Wheel Settings")]
-    public float openWheelKeyPressTime = 0.1f; // Hold inventory button for this long to open
+    public float openWheelKeyPressTime = 0.25f; // Hold inventory button for this long to open
     public float inventoryPressStartTime = 0f;
     public float inventoryPressTime = 0f;
 

@@ -114,28 +114,26 @@ public class ActivityAI : MonoBehaviour
             if (enemyScript.isActivityPaused) yield break; // Stop activity if paused
         }
 
-        // If idleLookAt is specified, rotate to face it on the Y-axis
+        // If idleLookAt is specified, look at it for idleTime duration
         if (activity.idleLookAt != null)
         {
-            Vector3 targetPosition = new Vector3(activity.idleLookAt.transform.position.x, transform.position.y, activity.idleLookAt.transform.position.z); // Keep current Y position
-            Quaternion targetRotation = Quaternion.LookRotation(targetPosition - transform.position);
+            //ANIMATION
+            enemyScript.SetMovementAnimation();
 
-            // Smoothly rotate towards the idleLookAt GameObject on the Y-axis
-            while (!enemyScript.isActivityPaused && Quaternion.Angle(transform.rotation, targetRotation) > 1f)
+            float timer = activity.idleTime;
+
+            while (!enemyScript.isActivityPaused && timer > 0)
             {
+                // Smoothly rotate towards the idleLookAt GameObject on the Y-axis
+                Vector3 targetPosition = new Vector3(activity.idleLookAt.transform.position.x, transform.position.y, activity.idleLookAt.transform.position.z); // Keep current Y position
+                Quaternion targetRotation = Quaternion.LookRotation(targetPosition - transform.position);
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Time.deltaTime * enemyScript.rotationSpeed);
+
+                timer -= Time.deltaTime;
                 yield return null;
             }
 
             if (enemyScript.isActivityPaused) yield break; // Stop activity if paused
-        }
-
-        // Wait for the specified duration
-        float timer = activity.idleTime;
-        while (!enemyScript.isActivityPaused && timer > 0)
-        {
-            timer -= Time.deltaTime;
-            yield return null;
         }
 
         if (!enemyScript.isActivityPaused) NextActivity(); // Only proceed if not paused
