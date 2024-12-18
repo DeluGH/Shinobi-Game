@@ -22,6 +22,7 @@ public class PlayerAttack : MonoBehaviour
     public float attackCooldown = 0.75f;           // Time taken to attack + assassinate after Swing
     public bool isSwinging = false;
     public GameObject MainHandObject;
+    public GameObject SwingAffect;  // can be null
 
     [Header("Light")]
     public float meleeRange = 4f;
@@ -331,6 +332,13 @@ public class PlayerAttack : MonoBehaviour
         }
         else if (!isHeavy)
         {
+            GameObject swingEffect;
+            if (SwingAffect != null)
+            {
+                swingEffect = Instantiate(SwingAffect, cameraFacing.transform.position, Quaternion.identity, cameraFacing.transform);
+                swingEffect.transform.localRotation = Quaternion.identity;
+            }
+
             Animator anim = MainHandObject.GetComponentInChildren<Animator>();
             anim.SetTrigger("Attack");
         }

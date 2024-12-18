@@ -65,7 +65,7 @@ public class Player : MonoBehaviour
 
     public void PlayerMadeNoise()
     {
-        Debug.Log("Player Made Noise!");
+        //Debug.Log("Player Made Noise!");
 
         noiseScript.NotifyEnemies(isWalking);
     }

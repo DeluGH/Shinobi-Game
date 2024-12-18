@@ -33,6 +33,11 @@ public class Enemy : MonoBehaviour
     public float movementSpeed = 5f;
     public float rotationSpeed = 120f;
     [Space(5f)]
+    public bool isWalking = false;
+    public bool isRunning = false;
+    public bool isStrafing = false;
+    public bool strafingRight = false;
+    [Space(5f)]
     public bool isChoking = false; // Stunned - Choking
     public float chokingDuration = 0f;
     public float chokingTimer = 0f;
@@ -50,6 +55,7 @@ public class Enemy : MonoBehaviour
     [Header("References (Auto Assign)")]
     public Transform player;            // Reference to the player
     public NavMeshAgent agent;
+    public Animator anim; 
 
     public DetectionAI detectionScript;
     public ActivityAI activityScript;
@@ -87,6 +93,8 @@ public class Enemy : MonoBehaviour
         if (attackScript == null) Debug.LogError("This Enemy is Missing attackScript!");
         if (agent == null) agent = GetComponent<NavMeshAgent>();
         if (agent == null) Debug.LogError("This Enemy is Missing NavMeshAgent! Other AI Scripts will not be able to run!");
+        if (anim == null) anim = GetComponentInChildren<Animator>();
+        if (anim == null) Debug.LogWarning("This Enemy is Missing anim!");
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -106,6 +114,15 @@ public class Enemy : MonoBehaviour
     private void Update()
     {
         if (player == null) { FindPlayer(); return; }
+
+        if (HasReachedDestination())
+        {
+            if (isStrafing)
+            {
+                isStrafing = false;
+                SetMovementAnimation();
+            }
+        }
 
         if (isChoking)
         {
@@ -127,6 +144,76 @@ public class Enemy : MonoBehaviour
                 stunnedTimer = 0f;
                 stunnedDuration = 0f;
             }
+        }
+    }
+
+    public void SetMovementAnimation()
+    {
+        if (!canEnemyPerform()) return;
+
+        // GET DIRECTION 
+        if (HasReachedDestination())
+        {
+            isWalking = false;
+            isRunning = false;
+            anim.SetBool("isWalking", false);
+            anim.SetBool("isRunning", false);
+            anim.SetBool("isBackingUp", false);
+        }
+        else
+        {
+            // WALKING OR RUNNING?
+            if (movementSpeed <= baseMovementSpeed + 1f) // walking
+            {
+                isWalking = true;
+                isRunning = false;
+                anim.SetBool("isWalking", true);
+                anim.SetBool("isRunning", false);
+                anim.SetBool("isBackingUp", false);
+
+                anim.SetTrigger("Walk");
+            }
+            else // running
+            {
+                isWalking = false;
+                isRunning = true;
+                anim.SetBool("isWalking", false);
+                anim.SetBool("isRunning", true);
+                anim.SetBool("isBackingUp", false);
+
+                anim.SetTrigger("Run");
+            }
+
+            Vector3 toDestination = agent.destination - transform.position;
+            Vector3 localDirection = transform.InverseTransformDirection(toDestination.normalized);
+            if (localDirection.z < -0.5f) // back
+            {
+                anim.SetBool("isBackingUp", true);
+                anim.SetTrigger("Back");
+            }
+        }
+        
+
+        // Strafing instead of walking/running?
+        if (isStrafing)
+        {
+            if (!strafingRight)
+            {
+                anim.SetBool("isStrafingRight", true);
+                anim.SetBool("isStrafingLeft", false);
+                anim.SetTrigger("StrafeRight");
+            }
+            else //left
+            {
+                anim.SetBool("isStrafingRight", false);
+                anim.SetBool("isStrafingLeft", true);
+                anim.SetTrigger("StrafeLeft");
+            }
+        }
+        else
+        {
+            anim.SetBool("isStrafingRight", false);
+            anim.SetBool("isStrafingLeft", false);
         }
     }
 
@@ -183,7 +270,15 @@ public class Enemy : MonoBehaviour
         // No Minus if blocking
         if (!isBlocking || penetratingAttack)
         {
+            // IMPACT ANIMATION
+            anim.SetTrigger("TakeDamage");
+
             currentHealth -= hitPoints;
+        }
+        else // success block
+        {
+            // BLOCK IMPACT
+            anim.SetTrigger("BlockHit");
         }
 
         // Death check
@@ -217,15 +312,24 @@ public class Enemy : MonoBehaviour
         HitByHeavyMelee(1, 1);
     }
 
-    public void HitByRange(int hitPoints)
+    public void HitByRange(int hitPoints, bool canInstaKill)
     {
-        if (hitCauseAlert && currentHealth > 0) detectionScript.InstantAggroRange(); // AggroRange is different
+        if (canInstaKill)
+        {
+            if (detectionScript.currentState == DetectionState.Alerted) DamangeTaken(hitPoints, true); //range is penetraing (not affected by block)
+            else Die();
+        }
+        else
+        {
+            DamangeTaken(hitPoints, true); //range is penetraing (not affected by block)
+        }
+
         //InstantAggroRange alerts enemies but doesn't pass player info
-        DamangeTaken(hitPoints, true);
+        if (hitCauseAlert && currentHealth > 0) detectionScript.InstantAggroRange(); // AggroRange is different
     }
     public void HitByRange()
     {
-        HitByRange(1);
+        HitByRange(1, false);
     }
 
     public void Stun(float duration)
@@ -242,6 +346,10 @@ public class Enemy : MonoBehaviour
 
     public void Die()
     {
+        //ANIMATION
+        anim.SetBool("isDead", true);
+        anim.SetTrigger("Dieded");
+
         currentHealth = 0; // Make sure health is ded
         isDead = true;
 
@@ -250,10 +358,6 @@ public class Enemy : MonoBehaviour
         isExecutingActivity = false;
 
         agent.enabled = false;
-
-        // Death anim
-        transform.position = new Vector3(transform.position.x, transform.position.y - 1f, transform.position.z);
-        transform.Rotate(0, 0, 90f);
 
         //Disable collider
         GetComponent<Collider>().excludeLayers = LayerMask.GetMask("Player");
@@ -330,7 +434,9 @@ public class Enemy : MonoBehaviour
             if (overlappingSmokes <= 0)
             {
                 inSmoke = false;
-                //Debug.Log("Enemy exited all smoke zones.");
+
+                //Fix smoke moved
+                if (isChoking && !inSmoke) chokingDuration = smokeChokeAfterDisappear;
             }
         }
     }
@@ -342,7 +448,9 @@ public class Enemy : MonoBehaviour
         if (overlappingSmokes <= 0)
         {
             inSmoke = false;
-            //Debug.Log("Smoke disabled, inSmoke reset.");
+
+            //Fix smoke moved
+            if (isChoking && !inSmoke) chokingDuration = smokeChokeAfterDisappear;
         }
     }
 
@@ -380,5 +488,16 @@ public class Enemy : MonoBehaviour
 
         // If no obstacles are detected, return true (line-of-sight is clear)
         return true;
+    }
+
+    public bool HasReachedDestination()
+    {
+        if (!agent.pathPending && !isDead) // Ensure the path is ready
+        {
+            // Check if the agent is close enough to its destination
+            float remainingDistance = agent.remainingDistance;
+            return remainingDistance != Mathf.Infinity && remainingDistance <= agent.stoppingDistance;
+        }
+        return false;
     }
 }

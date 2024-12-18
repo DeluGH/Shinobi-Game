@@ -9,7 +9,7 @@ public class EnemyAttack : MonoBehaviour
     [Header("Combat Settings")]
     public float attackRange = 3.5f;
     public float attackAngle = 80f;
-    public float attackAnimTime = 0.3f; // Wind Up before the swing time
+    public float attackAnimTime = 0.5f; // Wind Up before the swing time
     public float minAttackInterval = 3f; // Random time between attacks
     public float maxAttackInterval = 8f; // Random time between attacks
 
@@ -27,7 +27,6 @@ public class EnemyAttack : MonoBehaviour
     public float enemySpacing = 3f;
     [Space(5f)]
     public bool canStrafe = true;
-    public bool strafingRight = false;
     public float strafeSpeed = 5f;
 
     [Header("Debug Reference")]
@@ -46,6 +45,7 @@ public class EnemyAttack : MonoBehaviour
     [Header("References (Auto)")]
     public Enemy enemyScript;
     public Vector3 attackPosition;
+    public float attackGoToTimer = 0f;
 
     private void Start()
     {
@@ -115,7 +115,9 @@ public class EnemyAttack : MonoBehaviour
 
     public void GetAttackGoToPosition()
     {
-        int maxAttempts = 6;
+        attackGoToTimer = 0f;
+
+        int maxAttempts = 7;
         int attempts = 0;
 
         Vector3 destination = CalculateAttackPosition(attempts);
@@ -143,9 +145,15 @@ public class EnemyAttack : MonoBehaviour
         while (Vector3.Distance(attackPosition, transform.position) > attackRange)
         {
             enemyScript.agent.SetDestination(attackPosition);
-            yield return null;
+            //MOVEMENT ANIMATION
+            enemyScript.SetMovementAnimation();
+
+            attackGoToTimer += Time.deltaTime;
+            if (attackGoToTimer < 5f) yield return null;
         }
 
+        //ANIMATE
+        enemyScript.anim.SetTrigger("Attack");
         // Wait for the attack animation time
         yield return new WaitForSeconds(attackAnimTime);
 
@@ -198,6 +206,7 @@ public class EnemyAttack : MonoBehaviour
         enemyScript.isBlocking = true;
 
         //BLOCKING ANIMATION
+        enemyScript.anim.SetBool("isBlocking", true);
 
         // Block for the specified duration
         Debug.Log("Enemy is blocking");
@@ -205,6 +214,8 @@ public class EnemyAttack : MonoBehaviour
         yield return new WaitForSeconds(blockTime);
 
         enemyScript.isBlocking = false;
+        enemyScript.anim.SetBool("isBlocking", false);
+
         Debug.Log("Enemy stopped blocking");
     }
 
@@ -224,7 +235,11 @@ public class EnemyAttack : MonoBehaviour
             if (freePosition != Vector3.zero && enemyScript.HasClearLineOfSightForRepositionOrStrafe(freePosition))
             {
                 Debug.Log("Repositioning!");
+
                 enemyScript.agent.SetDestination(freePosition);
+                //MOVEMENT ANIMATION
+                enemyScript.SetMovementAnimation();
+
                 return;
             }
             attempts++;
@@ -304,7 +319,7 @@ public class EnemyAttack : MonoBehaviour
         Vector3 strafeDirection = Vector3.Cross(directionToPlayer, Vector3.up).normalized;
 
         // Decide whether to strafe left or right
-        if (!strafingRight)
+        if (!enemyScript.strafingRight)
         {
             strafeDirection = -strafeDirection;
         }
@@ -315,7 +330,13 @@ public class EnemyAttack : MonoBehaviour
         // Check if the target position is valid
         if (enemyScript.HasClearLineOfSightForRepositionOrStrafe(targetPosition))
         {
+            // ANIMATION
+            enemyScript.isStrafing = true;
+            //MOVEMENT ANIMATION
+            enemyScript.SetMovementAnimation();
             enemyScript.agent.SetDestination(targetPosition);
+
+            ToggleStrafeDirection();
             Debug.Log("Strafing!");
         }
         else
@@ -327,7 +348,7 @@ public class EnemyAttack : MonoBehaviour
     public void ToggleStrafeDirection()
     {
         // Toggle strafing direction
-        strafingRight = !strafingRight;
+        enemyScript.strafingRight = !enemyScript.strafingRight;
     }
 
     private void OnDrawGizmosSelected()

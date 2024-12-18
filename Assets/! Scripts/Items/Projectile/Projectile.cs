@@ -4,7 +4,7 @@ public class Projectile : MonoBehaviour
 {
     [Header("Projectile Settings")]
     public int damage = 1;
-    public bool isInstaKill = false;
+    public bool canInstaKill = false; // instant kill if enemy is not alert
     public bool canStickIfHit = true;
 
     [Header("References (Auto)")]
@@ -25,9 +25,6 @@ public class Projectile : MonoBehaviour
         //ENEMY
         if (((1 << collider.gameObject.layer) & enemyLayer) != 0)
         {
-            if (isInstaKill)Debug.Log($"Killed Enemy: {collider.gameObject.name}!");
-            else Debug.Log($"Hit Enemy: {collider.gameObject.name} and dealt {damage} damage!");
-
             //STICK TO ENEMY (Projectile becomes their child)
             if (canStickIfHit)
             {
@@ -46,14 +43,7 @@ public class Projectile : MonoBehaviour
             Enemy enemyScript = collider.GetComponent<Enemy>();
             if (enemyScript != null && !enemyScript.isDead)
             {
-                if (isInstaKill)
-                {
-                    enemyScript.Die();
-                }
-                else
-                {
-                    enemyScript.HitByRange(damage);
-                }
+                enemyScript.HitByRange(damage, canInstaKill);
             }
         }
         else // NON ENEMIES

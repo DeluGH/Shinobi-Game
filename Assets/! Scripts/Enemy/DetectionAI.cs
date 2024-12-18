@@ -203,7 +203,7 @@ public class DetectionAI : MonoBehaviour
 
     private void Update()
     {
-        if (enemyScript && enemyScript.canEnemyPerform() && enemyScript.player) // canEnemyPerform - isDead? isChoking? isStunned?
+        if (enemyScript && enemyScript.player) // canEnemyPerform - isDead? isChoking? isStunned?
         {
             HandleDetection();
             HandleCurrentState();
@@ -221,28 +221,31 @@ public class DetectionAI : MonoBehaviour
 
     private void HandleDetection()
     {
-        // Detect Corpses - No point verifying if there's corpses in range since we need to use Overlapsphere anyway
-        DetectCorpses();
-        DetectSmokebomb();
-
-        // DetectPlayer only if player is within range
-        float distanceToPlayer = Vector3.Distance(transform.position, enemyScript.player.position);
-        if (distanceToPlayer <= GetCurrentDetectionDistance())
-        { // IN RANGE
-            DetectPlayer();
-
-            if (enemyScript.playerInDetectionArea) outOfSightTimer = 0f;
-
-            //In range but not detected
-            if (!enemyScript.playerInDetectionArea && susMeter > 0)
-            {
-                DecreaseSuspicion();
-            }
-        }
-        else // NOT IN RANGE
+        if (enemyScript.canEnemyPerform())
         {
-            enemyScript.playerInDetectionArea = false;
-            if (susMeter > 0) DecreaseSuspicion();
+            // Detect Corpses - No point verifying if there's corpses in range since we need to use Overlapsphere anyway
+            DetectCorpses();
+            DetectSmokebomb();
+
+            // DetectPlayer only if player is within range
+            float distanceToPlayer = Vector3.Distance(transform.position, enemyScript.player.position);
+            if (distanceToPlayer <= GetCurrentDetectionDistance())
+            { // IN RANGE
+                DetectPlayer();
+
+                if (enemyScript.playerInDetectionArea) outOfSightTimer = 0f;
+
+                //In range but not detected
+                if (!enemyScript.playerInDetectionArea && susMeter > 0)
+                {
+                    DecreaseSuspicion();
+                }
+            }
+            else // NOT IN RANGE
+            {
+                enemyScript.playerInDetectionArea = false;
+                if (susMeter > 0) DecreaseSuspicion();
+            }
         }
     }
 
@@ -319,7 +322,7 @@ public class DetectionAI : MonoBehaviour
                 rotationMult += alertRotationSpeedMult;
                 float distanceFromPlayer = Vector3.Distance(transform.position, enemyScript.player.position);
                 if (distanceFromPlayer <= enemyScript.combatModeProximity && !enemyScript.combatMode) enemyScript.EnterCombatMode(); // Combat Proximity?
-                else if (distanceFromPlayer > enemyScript.combatModeProximity && enemyScript.combatMode)
+                else if (distanceFromPlayer > enemyScript.combatModeProximity && enemyScript.combatMode) // Player Exit Combat Proximity
                 {
                     enemyScript.combatModeTimer += Time.deltaTime;
                     if (enemyScript.combatModeTimer >= enemyScript.combatModeOutDecayTime)
@@ -327,7 +330,14 @@ public class DetectionAI : MonoBehaviour
                         enemyScript.DisableCombatMode();
                     }
                 }
-                else if (!enemyScript.combatMode)
+                else if (enemyScript.combatMode) // Player within proximity
+                {
+                    if (!enemyScript.playerInDetectionArea) // Player not in sight
+                    {
+                        lastKnownPosition = enemyScript.player.transform.position;
+                    }
+                }
+                else if (!enemyScript.combatMode) // No combat mode / Lost player, Go investigate
                 {
                     if (enemyScript.playerInDetectionArea && enemyScript.HasLineOfSight(enemyScript.player)) GoTo(enemyScript.player.position); // Follow player if in vision
                     else GoTo(lastKnownPosition); // If player disappears, go to last known location
@@ -825,9 +835,11 @@ public class DetectionAI : MonoBehaviour
         enemyScript.agent.isStopped = false; //unpause activity after aware pause
         enemyScript.agent.SetDestination(target);
 
+        //MOVEMENT ANIMATION
+        enemyScript.SetMovementAnimation();
+
         // If already at the target position, trigger LookAround behavior
-        if (!enemyScript.agent.pathPending && !enemyScript.HasLineOfSight(enemyScript.player)
-            && enemyScript.agent.remainingDistance <= (enemyScript.maxDistanceFromNodes * 2f))
+        if (!enemyScript.HasReachedDestination() && !enemyScript.HasLineOfSight(enemyScript.player))
         {
             inveIdleTimer += Time.deltaTime;
 

@@ -68,6 +68,8 @@ public class ActivityAI : MonoBehaviour
         {
             Transform target = activity.pathPoints[currentPathIndex].transform;
             enemyScript.agent.SetDestination(target.position);
+            //ANIMATION
+            enemyScript.SetMovementAnimation();
 
             // Wait until the enemy reaches the current pathpoint
             while (!enemyScript.isActivityPaused && Vector3.Distance(transform.position, target.position) > enemyScript.maxDistanceFromNodes)
@@ -85,6 +87,8 @@ public class ActivityAI : MonoBehaviour
 
     private IEnumerator Idle(Activity activity)
     {
+        enemyScript.SetMovementAnimation();
+
         enemyScript.isExecutingActivity = true;
 
         // Check if idle point is defined

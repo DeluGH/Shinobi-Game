@@ -52,7 +52,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 1
-  isInstaKill: 1
+  canInstaKill: 1
   canStickIfHit: 1
   enemyLayer:
     serializedVersion: 2
