@@ -351,7 +351,7 @@ public class DetectionAI : MonoBehaviour
                 break;
             case DetectionState.Aware:
                 enemyScript.PauseActivity();
-                enemyScript.agent.isStopped = true; // bug fix: AI still moving after entering aware mode
+                if (enemyScript.agent.isActiveAndEnabled) enemyScript.agent.isStopped = true; // bug fix: AI still moving after entering aware mode
                 rotationMult += (awareRotationSpeedMult - 1);
                 break;
             case DetectionState.Normal:

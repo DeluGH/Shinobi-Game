@@ -137,7 +137,7 @@ public class EnemyAttack : MonoBehaviour
         // Feature: moves a little forward to attack
         float distanceFromPlayer = Vector3.Distance(enemyScript.player.transform.position, transform.position);
         Vector3 directionToPlayer = (enemyScript.player.transform.position - transform.position).normalized;
-        return transform.position + directionToPlayer * (distanceFromPlayer - attackRange + 1f - attempts * 0.1f); // + 1f for player radius and enemy radius
+        return transform.position + directionToPlayer * ((distanceFromPlayer + 1f) - attackRange - (attempts * 0.1f)); // + 1f for player radius and enemy radius
     }
 
     private IEnumerator PerformAttack()
