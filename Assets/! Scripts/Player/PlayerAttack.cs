@@ -42,7 +42,6 @@ public class PlayerAttack : MonoBehaviour
     public float meleeAnimTime = 0.2f;        // Time taken to Swing after attack is called
 
     [Header("Heavy")] // Destroys blocks, stuns, damage them if not blocking, no damage if their blocking
-    public int heavyDamage = 2;
     public float heavyRange = 4.5f;
     public float heavyAngle = 70f;
     public float heavyAnimTime = 0.1f;     // Time taken to Swing after attack is called
@@ -144,11 +143,19 @@ public class PlayerAttack : MonoBehaviour
             {
                 chargeTime = Time.time - chargeStartTime;
 
+                Animator anim = MainHandObject.GetComponentInChildren<Animator>();
+                if (anim != null) anim.SetBool("isCharging", true);
+                else Debug.LogWarning("No Sword Anim detected!");
+
                 //if (chargeTime < heavyChargeTime) Debug.Log($"Charging... {chargeTime}");
                 //else Debug.Log($"Heavy Ready!");
             }
             if (Input.GetKeyUp(KeybindManager.Instance.keybinds["Attack"]))
             {
+                Animator anim = MainHandObject.GetComponentInChildren<Animator>();
+                if (anim != null) anim.SetBool("isCharging", false);
+                else Debug.LogWarning("No Sword Anim detected!");
+
                 //ATTACK
                 if (canAssassinate && assEnemyTarget != null)
                 {
@@ -165,6 +172,26 @@ public class PlayerAttack : MonoBehaviour
 
                 chargeTime = 0f;
                 meleeTimer = 0f;
+            }
+        }
+
+        //BLOCKING
+        if (!isSwinging && !isAssing)
+        {   
+            if (Input.GetKey(KeybindManager.Instance.keybinds["Block"]))
+            {
+                Animator anim = MainHandObject.GetComponentInChildren<Animator>();
+                if (anim != null) anim.SetBool("isBlocking", true);
+                else Debug.LogWarning("No Sword Anim detected!");
+            }
+
+            if (Input.GetKeyUp(KeybindManager.Instance.keybinds["Block"]))
+            {
+                playerScript.isBlocking = false;
+
+                Animator anim = MainHandObject.GetComponentInChildren<Animator>();
+                if (anim != null) anim.SetBool("isBlocking", false);
+                else Debug.LogWarning("No Sword Anim detected!");
             }
         }
     }
@@ -376,6 +403,9 @@ public class PlayerAttack : MonoBehaviour
         if (isHeavy) // heavy
         {
             //animate heavy
+            Animator anim = MainHandObject.GetComponentInChildren<Animator>();
+            if (anim != null) anim.SetTrigger("Attack");
+            else Debug.LogWarning("No Sword Anim detected!");
         }
         else if (!isHeavy) // light 
         {
@@ -396,7 +426,8 @@ public class PlayerAttack : MonoBehaviour
 
             // light animation
             Animator anim = MainHandObject.GetComponentInChildren<Animator>();
-            anim.SetTrigger("Attack");
+            if (anim != null) anim.SetTrigger("Attack");
+            else Debug.LogWarning("No Sword Anim detected!");
         }
 
         isSwinging = true;
@@ -429,7 +460,7 @@ public class PlayerAttack : MonoBehaviour
 
                     if (isHeavy)
                     {
-                        enemyScript.HitByHeavyMelee(heavyDamage, heavyStunTime); // HIT AND STUN
+                        enemyScript.HitByHeavyMelee(1, heavyStunTime); // HIT AND STUN
                     }
                     else if (!isHeavy) enemyScript.HitByMelee(); // HIT
 

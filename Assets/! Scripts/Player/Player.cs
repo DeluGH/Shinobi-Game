@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
 
     [Header("Debug References")]
     public int currentHealth;
+    public bool isBlocking = false;
     public bool isAssassinating = false;
     public bool isDead = false;
     public bool isWalking = false;

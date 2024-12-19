@@ -265,10 +265,10 @@ public class Enemy : MonoBehaviour
         attackScript.TryToBlock();
     }
 
-    public void DamangeTaken(int hitPoints, bool penetratingAttack)
+    public void DamangeTaken(int hitPoints, bool ignoresBlocks)
     {
         // No Minus if blocking
-        if (!isBlocking || penetratingAttack)
+        if (!isBlocking || ignoresBlocks)
         {
             // IMPACT ANIMATION
             anim.SetTrigger("TakeDamage");
@@ -304,13 +304,11 @@ public class Enemy : MonoBehaviour
     public void HitByHeavyMelee(int hitPoints, float stunDuration) //+ STUNNED
     {
         if (hitCauseAlert && currentHealth > 0) detectionScript.InstantAggroMelee(); //pass player location and alert
-
-        Debug.Log("IM STUNNED"!);
-        attackScript.StopBlocking(); //isBlocking false,
-        anim.SetTrigger("BlockHit");
-
+        
         Stun(stunDuration);
-        DamangeTaken(hitPoints, true);
+        DamangeTaken(hitPoints, false);
+
+        if (isBlocking) attackScript.StopBlocking(); //isBlocking false
     }
     public void HitByHeavyMelee()
     {
