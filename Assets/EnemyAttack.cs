@@ -171,6 +171,9 @@ public class EnemyAttack : MonoBehaviour
 
             if (angleToPlayer <= attackAngle / 2)
             {
+                Player playerScript = player.GetComponent<Player>();
+                playerScript.PlayerHit();
+
                 Debug.Log($"Hit player: {player.name}");
             }
         }

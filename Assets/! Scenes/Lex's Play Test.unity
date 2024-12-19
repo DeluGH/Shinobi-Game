@@ -2359,34 +2359,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 11400000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: m_Enabled
-      value: 1
+    - target: {fileID: 1277757305491851741, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
+      propertyPath: maxHealth
+      value: 10
       objectReference: {fileID: 0}
-    - target: {fileID: 14300000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: SwingAffect
-      value: 
-      objectReference: {fileID: 4919092195301282347, guid: 6fdcd2ee4dc42534e8e158eeb8df5797, type: 3}
     - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: GhostSwingAffect
       value: 
       objectReference: {fileID: 4919092195301282347, guid: 60284ce370ad98d46a5d20e0e2d9899b, type: 3}
-    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: ghostChargeAmount
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 5399441641840452582, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7491280175671438195, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: near clip plane
-      value: 0.01
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

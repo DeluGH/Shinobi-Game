@@ -27,6 +27,8 @@ public class Inventory : MonoBehaviour
     public Item utilHand; // swaps with Inventory Items
     public GameObject mainHand; // For holding sword or swapping with back items
     public GameObject onBack; // Item currently stored on the back
+    public int holdingAmount;
+    public int stackAmount;
 
     [Header("References (Auto)")]
     public GameObject player; // This game object
@@ -48,6 +50,7 @@ public class Inventory : MonoBehaviour
         HandleInput();
     }
 
+    // Input
     void HandleInput()
     {
         // Check for holding right click
@@ -70,6 +73,7 @@ public class Inventory : MonoBehaviour
                 UseEquippedUtilItem();
 
                 UpdateItemPositions(); // Update Model Hand
+                UpdateItemCount(); // Update UI
             }
         }
 
@@ -79,6 +83,7 @@ public class Inventory : MonoBehaviour
             UnequipUtilHand();
 
             UpdateItemPositions(); // Update Model Hand
+            UpdateItemCount(); // Update UI
         }
 
         // INVENTORY HANDLING
@@ -95,7 +100,7 @@ public class Inventory : MonoBehaviour
             // Open wheel
             if (inventoryPressTime >= openWheelKeyPressTime)
             {
-                WeaponWheelController.Instance.OpenInventoryWheel();
+                GameplayUIController.Instance.OpenInventoryWheel();
             }
         }
         //Swap Back w Hand / Hand w Back
@@ -104,7 +109,7 @@ public class Inventory : MonoBehaviour
             if (inventoryPressTime < openWheelKeyPressTime) SwapBackAndMain();
             
             // Close Wheel
-            if (WeaponWheelController.Instance.isOpen) WeaponWheelController.Instance.CloseInventoryWheel();
+            if (GameplayUIController.Instance.isOpen) GameplayUIController.Instance.CloseInventoryWheel();
 
             UpdateItemPositions(); // Update Model Hand
         }
@@ -120,7 +125,6 @@ public class Inventory : MonoBehaviour
             }
         }
     }
-
     void SwapBackAndMain()
     {
         GameObject temp;
@@ -130,6 +134,7 @@ public class Inventory : MonoBehaviour
         onBack = temp;
     }
 
+    // Using
     void UseEquippedUtilItem()
     {
         if (utilHand != null)
@@ -149,82 +154,92 @@ public class Inventory : MonoBehaviour
             Debug.Log("No item equipped!");
         }
     }
-
     void RemoveUtilHandObject()
     {
-        if (utilHand != null && utilHand.removeOnUse) 
+        if (utilHand != null && utilHand.removeOnUse)
         {
-            utilHand = null;
+            holdingAmount--; // Decrease the amount being held by 1
+            if (holdingAmount <= 0) // If no more items are being held
+            {
+                utilHand = null; // Clear the utilHand
+                holdingAmount = 0; // Ensure holdingAmount does not go below 0
+            }
         }
     }
 
-
-    void EquipFromInventorySlot(int slotIndex) // Equip when using keys 1-4
+    // Equip
+    void EquipFromInventorySlot(int slotIndex)
     {
         if (slotIndex < 0 || slotIndex >= inventorySlots.Count) return;
 
         InventorySlot slot = inventorySlots[slotIndex];
         if (slot.item == null || slot.count <= 0) return;
 
-        // Items restricted to inventory go directly to onHand
-        AddToInventory(utilHand); // Put the current onHand item back into inventory
+        // Put the current utilHand item back into inventory
+        if (utilHand != null)
+        {
+            bool addedToInventory = AddToInventory(utilHand, holdingAmount);
+            if (!addedToInventory)
+            {
+                Debug.LogWarning("No space in inventory for the current utilHand item. Unable to equip new item.");
+                return;
+            }
+        }
+
+        // Equip the entire stack from the selected slot
         utilHand = slot.item;
+        holdingAmount = slot.count; // Set the holdingAmount to the number of items in the stack
+        stackAmount = utilHand.maxStackCount; // Set stackAmount to the maximum stack size of the item
 
-        RemoveFromSlot(slotIndex); // Remove item from inventory
+        // Clear the slot
+        slot.item = null;
+        slot.count = 0;
+
+        Debug.Log($"Equipped {holdingAmount}/{stackAmount} {utilHand.itemName}(s)");
     }
-
-    // Putting things back into inventory when swapping items
-    bool AddToInventory(Item item)
+    bool AddToInventory(Item item, int amount = 1)
     {
-        if (item == null) return false;
+        if (item == null || amount <= 0) return false;
 
-        // Check if item already exists in inventory
+        // Try adding to an existing stack
         foreach (var slot in inventorySlots)
         {
             if (slot.item == item && slot.count < item.maxStackCount)
             {
-                slot.count++;
-                return true;
+                int spaceAvailable = item.maxStackCount - slot.count;
+                int toAdd = Mathf.Min(spaceAvailable, amount);
+
+                slot.count += toAdd;
+                amount -= toAdd;
+
+                if (amount <= 0) return true; // All items added successfully
             }
         }
 
-        // Add to the first empty slot if the item doesn't already exist in the inventory
+        // Add to empty slots
         foreach (var slot in inventorySlots)
         {
             if (slot.item == null)
             {
+                int toAdd = Mathf.Min(item.maxStackCount, amount);
+
                 slot.item = item;
-                slot.count = 1;
-                return true;
+                slot.count = toAdd;
+                amount -= toAdd;
+
+                if (amount <= 0) return true; // All items added successfully
             }
         }
 
-        Debug.Log("Inventory full!");
-        return false;
+        Debug.LogWarning("Not enough space in inventory to add all items!");
+        return amount <= 0;
     }
-
-    // Removal from inventory when swapping items
-    void RemoveFromSlot(int slotIndex)
-    {
-        if (slotIndex < 0 || slotIndex >= inventorySlots.Count) return;
-
-        if (inventorySlots[slotIndex].count > 1)
-        {
-            inventorySlots[slotIndex].count--;
-        }
-        else
-        {
-            inventorySlots[slotIndex].item = null;
-            inventorySlots[slotIndex].count = 0;
-        }
-    }
-
     void UnequipUtilHand()
     {
         if (utilHand != null)
         {
             // Attempt to add the utilHand item back into the inventory
-            bool addedToInventory = AddToInventory(utilHand);
+            bool addedToInventory = AddToInventory(utilHand, holdingAmount);
 
             if (addedToInventory)
             {
@@ -269,6 +284,12 @@ public class Inventory : MonoBehaviour
             GameObject itemModel = Instantiate(mainHand, mainHandPos.position, mainHandPos.rotation);
             itemModel.transform.SetParent(mainHandPos);
         }
+    }
+
+    // UI
+    void UpdateItemCount()
+    {
+        GameplayUIController.Instance.UpdateItemText(holdingAmount, stackAmount);
     }
 
 }

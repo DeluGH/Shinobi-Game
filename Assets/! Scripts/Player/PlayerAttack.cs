@@ -154,7 +154,7 @@ public class PlayerAttack : MonoBehaviour
                 {
                     Assassinate(isAirAss());
                 }
-                else if (chargeTime >= heavyChargeTime * (ghostMode ? ghostHeavyChargeTimePercentage : 0)) // Heavy
+                else if (chargeTime >= heavyChargeTime * (ghostMode ? ghostHeavyChargeTimePercentage : 1f)) // Heavy
                 {
                     Swing(true); //isHeavy
                 }

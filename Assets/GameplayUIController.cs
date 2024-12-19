@@ -1,16 +1,31 @@
+using System.Collections;
+using TMPro;
 using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class WeaponWheelController : MonoBehaviour
+public class GameplayUIController : MonoBehaviour
 {
+    public static GameplayUIController Instance;
+
+    [Header("Health")]
+    public Slider healthSlider;
+    public int currentHealth;
+    public int maxHealth;
+
+    [Header("Util Count")]
+    public TextMeshProUGUI itemText;
+
+    [Header("Wheel")]
     public Animator anim;
     public bool isOpen = false;
     private bool weaponWheelSelected = false;
     public Image selectedItem;
     public Sprite noImage;
     public static int weaponID;
-    public static WeaponWheelController Instance;
+
+    private float healthLerpDuration = 0.5f; // Duration for health slider animation
+    private Coroutine healthLerpCoroutine;
 
     private void Awake()
     {
@@ -59,5 +74,36 @@ public class WeaponWheelController : MonoBehaviour
         // Lock and hide the cursor after the weapon wheel is closed
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+
+    public void UpdateHealthSlider(int currentHealth, int maxHealth)
+    {
+        if (healthLerpCoroutine != null)
+        {
+            StopCoroutine(healthLerpCoroutine);
+        }
+
+        healthLerpCoroutine = StartCoroutine(LerpHealth(currentHealth, maxHealth));
+    }
+
+    private IEnumerator LerpHealth(int targetHealth, int maxHealth)
+    {
+        float elapsed = 0f;
+        float startValue = healthSlider.value;
+        float targetValue = (float)targetHealth / maxHealth;
+
+        while (elapsed < healthLerpDuration)
+        {
+            elapsed += Time.deltaTime;
+            healthSlider.value = Mathf.Lerp(startValue, targetValue, elapsed / healthLerpDuration);
+            yield return null;
+        }
+
+        healthSlider.value = targetValue;
+    }
+
+    public void UpdateItemText(int currentItems, int maxItems)
+    {
+        itemText.text = $"{currentItems}/{maxItems}";
     }
 }

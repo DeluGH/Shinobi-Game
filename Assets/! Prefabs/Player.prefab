@@ -107,7 +107,11 @@ MonoBehaviour:
   charController: {fileID: 0}
   noiseScript: {fileID: 0}
   rb: {fileID: 0}
+  maxHealth: 10
+  assingImmunity: 1
+  currentHealth: 0
   isAssassinating: 0
+  isDead: 0
   isWalking: 0
   isCrouching: 0
   isFalling: 0
@@ -711,6 +715,8 @@ MonoBehaviour:
   utilHand: {fileID: 0}
   mainHand: {fileID: 5207085083445899772, guid: 42e75c57dd5b3ce42802a703a6049353, type: 3}
   onBack: {fileID: 0}
+  holdingAmount: 0
+  stackAmount: 0
   player: {fileID: 0}
   inventorySlots:
   - item: {fileID: 11400000, guid: c3f31c3a045697a49b579c75b8f4cb95, type: 2}
@@ -914,13 +920,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   highlightPrefab: {fileID: 6741813466830848338, guid: ed0312782665d9b46b6b165a95dd9a4a, type: 3}
-  currentHighlight: {fileID: 0}
+  GhostSwingAffect: {fileID: 4919092195301282347, guid: 60284ce370ad98d46a5d20e0e2d9899b, type: 3}
+  SwingAffect: {fileID: 4919092195301282347, guid: 6fdcd2ee4dc42534e8e158eeb8df5797, type: 3}
   cameraFacing: {fileID: 0}
   lookingAtEnemy: {fileID: 0}
+  ghostCurrentChargeAmount: 0
+  currentAttackCooldown: 0
   attackCooldown: 0.75
   isSwinging: 0
   MainHandObject: {fileID: 0}
-  SwingAffect: {fileID: 4919092195301282347, guid: 6fdcd2ee4dc42534e8e158eeb8df5797, type: 3}
+  ghostMode: 0
+  ghostChargeAmount: 7
+  ghostDuration: 12
+  ghostRangeBuff: 1
+  ghostAngleBuff: 20
+  ghostAttackCooldown: 0.25
+  ghostHeavyChargeTimePercentage: 0.5
   meleeRange: 4
   meleeAngle: 100
   meleeAnimTime: 0.2
@@ -944,10 +959,12 @@ MonoBehaviour:
   airAssAnimTime: 0.1
   airAssLerpMinDistance: 0.15
   airAssLerpTime: 0.1
+  currentHighlight: {fileID: 0}
   playerScript: {fileID: 0}
   maxRaycastRange: 10
   drawSwingGizmo: 0
   meleeTimer: 0
+  ghostTimer: 0
   assEnemyTarget: {fileID: 0}
   canAssassinate: 0
   currentAssEnemyTarget: {fileID: 0}
