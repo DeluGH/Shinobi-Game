@@ -24,9 +24,6 @@ public class GameplayUIController : MonoBehaviour
     public Sprite noImage;
     public static int weaponID;
 
-    private float healthLerpDuration = 0.5f; // Duration for health slider animation
-    private Coroutine healthLerpCoroutine;
-
     private void Awake()
     {
         Instance = this;
@@ -78,28 +75,26 @@ public class GameplayUIController : MonoBehaviour
 
     public void UpdateHealthSlider(int currentHealth, int maxHealth)
     {
-        if (healthLerpCoroutine != null)
-        {
-            StopCoroutine(healthLerpCoroutine);
-        }
+        healthSlider.minValue = 0;
+        healthSlider.maxValue = maxHealth;
+        healthSlider.value = currentHealth;
 
-        healthLerpCoroutine = StartCoroutine(LerpHealth(currentHealth, maxHealth));
+        StartCoroutine(LerpHealth(currentHealth));
     }
-
-    private IEnumerator LerpHealth(int targetHealth, int maxHealth)
+    private IEnumerator LerpHealth(int targetHealth)
     {
         float elapsed = 0f;
+        float duration = 0.5f; // Smooth transition duration
         float startValue = healthSlider.value;
-        float targetValue = (float)targetHealth / maxHealth;
 
-        while (elapsed < healthLerpDuration)
+        while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            healthSlider.value = Mathf.Lerp(startValue, targetValue, elapsed / healthLerpDuration);
+            healthSlider.value = Mathf.Lerp(startValue, targetHealth, elapsed / duration);
             yield return null;
         }
 
-        healthSlider.value = targetValue;
+        healthSlider.value = targetHealth;
     }
 
     public void UpdateItemText(int currentItems, int maxItems)

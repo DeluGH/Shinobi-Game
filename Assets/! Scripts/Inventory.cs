@@ -71,9 +71,6 @@ public class Inventory : MonoBehaviour
             if (utilHand != null)
             {
                 UseEquippedUtilItem();
-
-                UpdateItemPositions(); // Update Model Hand
-                UpdateItemCount(); // Update UI
             }
         }
 
@@ -81,9 +78,6 @@ public class Inventory : MonoBehaviour
         if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Unequip Offhand"]))
         {
             UnequipUtilHand();
-
-            UpdateItemPositions(); // Update Model Hand
-            UpdateItemCount(); // Update UI
         }
 
         // INVENTORY HANDLING
@@ -115,14 +109,22 @@ public class Inventory : MonoBehaviour
         }
 
         // Equip Items (keys: 1-4)
-        for (int i = 0; i < inventorySlots.Count; i++)
+        if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Inventory Slot 1"]))
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1 + i) && i < inventorySlots.Count)
-            {
-                EquipFromInventorySlot(i);
-
-                UpdateItemPositions(); // Update Model Hand
-            }
+            EquipFromInventorySlot(0);
+        }
+        if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Inventory Slot 2"]))
+        {
+            EquipFromInventorySlot(1);
+        }
+        if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Inventory Slot 3"]))
+        {
+            EquipFromInventorySlot(2);
+        }
+        if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Inventory Slot 4"]))
+        {
+            EquipFromInventorySlot(3);
+            
         }
     }
     void SwapBackAndMain()
@@ -153,6 +155,9 @@ public class Inventory : MonoBehaviour
         {
             Debug.Log("No item equipped!");
         }
+
+        UpdateItemPositions(); // Update Model Hand
+        UpdateItemCount(); // Update UI
     }
     void RemoveUtilHandObject()
     {
@@ -195,6 +200,8 @@ public class Inventory : MonoBehaviour
         slot.item = null;
         slot.count = 0;
 
+        UpdateItemPositions(); // Update Model Hand
+        UpdateItemCount(); // Update UI
         Debug.Log($"Equipped {holdingAmount}/{stackAmount} {utilHand.itemName}(s)");
     }
     bool AddToInventory(Item item, int amount = 1)
@@ -254,6 +261,9 @@ public class Inventory : MonoBehaviour
         {
             Debug.Log("No item equipped in the util hand!");
         }
+
+        UpdateItemPositions(); // Update Model Hand
+        UpdateItemCount(); // Update UI
     }
 
     // MODELS

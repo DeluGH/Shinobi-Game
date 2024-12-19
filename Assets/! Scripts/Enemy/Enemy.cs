@@ -340,7 +340,7 @@ public class Enemy : MonoBehaviour
     public void Stun(float duration)
     {
         PauseActivity();
-        if (agent.enabled) agent.isStopped = true; // fix while moving, they get stunned, stops them from moving
+        if (agent.isActiveAndEnabled) agent.isStopped = true; // fix while moving, they get stunned, stops them from moving
 
         isStunned = true;
         
@@ -387,8 +387,9 @@ public class Enemy : MonoBehaviour
 
     public void ContinueActivity()
     {
-        if (agent.pathPending) agent.isStopped = true;
-        agent.isStopped = false;
+        if (agent.pathPending && agent.isActiveAndEnabled) agent.isStopped = true;
+
+        if (agent.isActiveAndEnabled) agent.isStopped = false;
         isExecutingActivity = false;
         isActivityPaused = false;
     }
@@ -408,7 +409,7 @@ public class Enemy : MonoBehaviour
     public void EnteredSmoke(Collider collider)
     {
         PauseActivity();
-        if (agent.enabled) agent.isStopped = true; // fix while moving, they get somked
+        if (agent.isActiveAndEnabled) agent.isStopped = true; // fix while moving, they get somked
 
         inSmoke = true;
         isChoking = true; // start choke in smoke

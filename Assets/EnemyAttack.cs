@@ -144,7 +144,7 @@ public class EnemyAttack : MonoBehaviour
     {
         while (Vector3.Distance(attackPosition, transform.position) > attackRange)
         {
-            enemyScript.agent.SetDestination(attackPosition);
+            if (enemyScript.agent.isActiveAndEnabled) enemyScript.agent.SetDestination(attackPosition);
             //MOVEMENT ANIMATION
             enemyScript.SetMovementAnimation();
 
@@ -244,7 +244,7 @@ public class EnemyAttack : MonoBehaviour
             {
                 Debug.Log("Repositioning!");
 
-                enemyScript.agent.SetDestination(freePosition);
+                if (enemyScript.agent.isActiveAndEnabled) enemyScript.agent.SetDestination(freePosition);
                 //MOVEMENT ANIMATION
                 enemyScript.SetMovementAnimation();
 
@@ -338,11 +338,12 @@ public class EnemyAttack : MonoBehaviour
         // Check if the target position is valid
         if (enemyScript.HasClearLineOfSightForRepositionOrStrafe(targetPosition))
         {
+            
+            if (enemyScript.agent.isActiveAndEnabled) enemyScript.agent.SetDestination(targetPosition);
             // ANIMATION
             enemyScript.isStrafing = true;
             //MOVEMENT ANIMATION
             enemyScript.SetMovementAnimation();
-            enemyScript.agent.SetDestination(targetPosition);
 
             ToggleStrafeDirection();
             Debug.Log("Strafing!");
