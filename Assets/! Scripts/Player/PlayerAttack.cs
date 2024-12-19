@@ -8,21 +8,33 @@ using UnityStandardAssets.Utility;
 
 public class PlayerAttack : MonoBehaviour
 {
-    [Header("Ass Highlighter (Assign!)")]
+    [Header("Assign These!!!")]
     public GameObject highlightPrefab;
-    public GameObject currentHighlight; // Only highlights if currentHighlight = null, currentHighlight changes parents and follows above them
+    public GameObject GhostSwingAffect;  // can be null
+    public GameObject SwingAffect;  // can be null
+    
 
     [Header("Camera Reference (Auto)")]
     public Transform cameraFacing; // Important for aiming
 
     [Header("Debug References")]
     public GameObject lookingAtEnemy; // Enemy player is looking at
+    public int ghostCurrentChargeAmount = 0;
+    public float currentAttackCooldown = 0f;
 
     [Header("Swinging with Sword")]
     public float attackCooldown = 0.75f;           // Time taken to attack + assassinate after Swing
     public bool isSwinging = false;
     public GameObject MainHandObject;
-    public GameObject SwingAffect;  // can be null
+
+    [Header("Ghost Mode")]
+    public bool ghostMode = false;
+    public int ghostChargeAmount = 7; // needed to charge
+    public float ghostDuration = 12f;
+    public float ghostRangeBuff = 1f; // adds to all range
+    public float ghostAngleBuff = 20f; // adds to all angles
+    public float ghostAttackCooldown = 0.25f; // adds to all angles
+    public float ghostHeavyChargeTimePercentage = 0.5f; // charge 0.5 = 50% less time
 
     [Header("Light")]
     public float meleeRange = 4f;
@@ -61,10 +73,12 @@ public class PlayerAttack : MonoBehaviour
     public float airAssLerpTime = 0.1f;             // Time taken for player to lerp/reach the AI                       // Default: 0.1
 
     [Header("References (Auto)")]
+    public GameObject currentHighlight; // Only highlights if currentHighlight = null, currentHighlight changes parents and follows above them
     public Player playerScript;
     public float maxRaycastRange = 10f;
     public bool drawSwingGizmo = false; // Flag to draw swing gizmo
     public float meleeTimer = 0f;
+    public float ghostTimer = 0f;
     [Space(5f)]
     public GameObject assEnemyTarget; // Enemy within assRange & looking at
     public bool canAssassinate = false; // use this to change UI (add ass UI on screen)
@@ -73,13 +87,15 @@ public class PlayerAttack : MonoBehaviour
 
     void Start()
     {
+        currentAttackCooldown = attackCooldown;
+
         if (MainHandObject == null) MainHandObject = GameObject.FindGameObjectWithTag("Main Hand");
         if (MainHandObject == null) Debug.LogWarning("Unable to Find Main HAND!!");
 
         if (cameraFacing == null) cameraFacing = GameObject.FindGameObjectWithTag("MainCamera").transform;
         if (cameraFacing == null) Debug.LogWarning("Unable to Find Main Camera!");
 
-        playerScript = GetComponentInParent<Player>();
+        if (!playerScript) playerScript = GetComponentInParent<Player>();
         if (!playerScript) Debug.LogWarning("Player Script reference is missing!");
     }
 
@@ -90,12 +106,35 @@ public class PlayerAttack : MonoBehaviour
         if (canAssassinate && assEnemyTarget && !isAssing) HighlightEnemy(assEnemyTarget);
         else RemoveHighlight();
 
+        //Ghost Mode
+        if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Ghost Ultimate"]))
+        {
+            if (!ghostMode && ghostCurrentChargeAmount >= ghostChargeAmount)
+            {
+                //Enter ghost mode
+                ghostMode = true;
+                ghostTimer = 0f;
+                ghostCurrentChargeAmount = 0;
+                currentAttackCooldown = ghostAttackCooldown;
+            }
+        }
+        //Ghost Timer - Disabler
+        if (ghostMode)
+        {
+            ghostTimer += Time.deltaTime;
+            if (ghostTimer >= ghostDuration)
+            {
+                ghostMode = false;
+                ghostTimer = 0f;
+                currentAttackCooldown = attackCooldown;
+            }
+        }
 
         // !! Set attackCooldown to 0 in Frenzy, or just change attackCooldown for anything
-        if (meleeTimer < attackCooldown && !isSwinging && !isAssing) meleeTimer += Time.deltaTime;
+        if (meleeTimer < currentAttackCooldown && !isSwinging && !isAssing) meleeTimer += Time.deltaTime;
         // Check for holding left click
         //CHARGING ONLY
-        if (meleeTimer >= attackCooldown)
+        if (meleeTimer >= currentAttackCooldown)
         {
             if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Attack"]))
             {
@@ -115,7 +154,7 @@ public class PlayerAttack : MonoBehaviour
                 {
                     Assassinate(isAirAss());
                 }
-                else if (chargeTime >= heavyChargeTime) // Heavy
+                else if (chargeTime >= heavyChargeTime * (ghostMode ? ghostHeavyChargeTimePercentage : 0)) // Heavy
                 {
                     Swing(true); //isHeavy
                 }
@@ -128,13 +167,20 @@ public class PlayerAttack : MonoBehaviour
                 meleeTimer = 0f;
             }
         }
-        
+    }
+
+    public void IncreaseGhostCharge()
+    {
+        if (!ghostMode && ghostCurrentChargeAmount < ghostChargeAmount)
+        {
+            ghostCurrentChargeAmount++;
+        }
     }
 
     public bool isFacingEnemy() // Closest/First rayhit enemy is Target
     {
         //is falling? use wider angle
-        float scanAngle = isAirAss() ? airAssScanAngle : assScanAngle;
+        float scanAngle = (isAirAss() ? airAssScanAngle : assScanAngle) + (ghostMode ? ghostAngleBuff : 0);
 
         Collider[] hitColliders = Physics.OverlapSphere(cameraFacing.position, maxRaycastRange, playerScript.enemyLayer);
         float closestDistance = float.MaxValue;
@@ -186,7 +232,7 @@ public class PlayerAttack : MonoBehaviour
         {
             // AIR ASSASSINATION
             if (IsValidTarget(enemyScript) && // not dead
-                Vector3.Distance(transform.position, lookingAtEnemy.transform.position) <= airAssRange && //within AIR ass range
+                Vector3.Distance(transform.position, lookingAtEnemy.transform.position) <= airAssRange + (ghostMode ? ghostRangeBuff : 0) && //within AIR ass range
                 (!enemyScript.playerInDetectionArea || enemyScript.isChoking || enemyScript.isStunned)) // not in view OR enemy is busy choking
             {
                 assEnemyTarget = lookingAtEnemy;
@@ -199,7 +245,7 @@ public class PlayerAttack : MonoBehaviour
         {
             // LAND ASSASSINATION
             if (IsValidTarget(enemyScript) && // not dead
-            Vector3.Distance(transform.position, lookingAtEnemy.transform.position) <= assRange && //within ass range
+            Vector3.Distance(transform.position, lookingAtEnemy.transform.position) <= assRange + (ghostMode ? ghostRangeBuff : 0) && //within ass range
             (IsPlayerBehindEnemy(lookingAtEnemy.transform) && !enemyScript.playerInDetectionArea || enemyScript.isChoking || enemyScript.isStunned)) // is behind & not in view OR enemy is busy choking
             {
                 assEnemyTarget = lookingAtEnemy;
@@ -241,6 +287,7 @@ public class PlayerAttack : MonoBehaviour
                 Debug.Log("ASS");
                 isAssing = true;
                 playerScript.DoingAss(); // Disables fpscontroller and charcontroller
+                IncreaseGhostCharge();
 
                 enemyScript.PauseActivity();
                 enemyScript.agent.isStopped = true;
@@ -326,19 +373,28 @@ public class PlayerAttack : MonoBehaviour
     {
         Debug.Log($"Swing! Heavy: {isHeavy}");
         // Animate swinging here
-        if (isHeavy)
+        if (isHeavy) // heavy
         {
             //animate heavy
         }
-        else if (!isHeavy)
+        else if (!isHeavy) // light 
         {
             GameObject swingEffect;
             if (SwingAffect != null)
             {
-                swingEffect = Instantiate(SwingAffect, cameraFacing.transform.position, Quaternion.identity, cameraFacing.transform);
-                swingEffect.transform.localRotation = Quaternion.identity;
+                if (!ghostMode) //slash effect
+                {
+                    swingEffect = Instantiate(SwingAffect, cameraFacing.transform.position, Quaternion.identity, cameraFacing.transform);
+                    swingEffect.transform.localRotation = Quaternion.identity;
+                }
+                else
+                {
+                    swingEffect = Instantiate(GhostSwingAffect, cameraFacing.transform.position, Quaternion.identity, cameraFacing.transform);
+                    swingEffect.transform.localRotation = Quaternion.identity;
+                }
             }
 
+            // light animation
             Animator anim = MainHandObject.GetComponentInChildren<Animator>();
             anim.SetTrigger("Attack");
         }
@@ -349,8 +405,10 @@ public class PlayerAttack : MonoBehaviour
     public IEnumerator StartSwing(bool isHeavy)
     {
         float waitTime = isHeavy ? heavyAnimTime : meleeAnimTime;
-        float attackRange = isHeavy ? heavyRange : meleeRange;
-        float attackAngle = isHeavy ? heavyAngle : meleeAngle;
+        float attackRange = (isHeavy ? heavyRange : meleeRange) + (ghostMode ? ghostRangeBuff : 0);
+        float attackAngle = (isHeavy ? heavyAngle : meleeAngle) + (ghostMode ? ghostAngleBuff : 0);
+
+        NotifyEnemiesOfAttack(attackAngle, attackRange);
 
         yield return new WaitForSeconds(waitTime);
 
@@ -375,6 +433,12 @@ public class PlayerAttack : MonoBehaviour
                     }
                     else if (!isHeavy) enemyScript.HitByMelee(); // HIT
 
+                    //GHOST MODE CHARGE
+                    if (enemyScript.isDead)
+                    {
+                        IncreaseGhostCharge();
+                    }
+
                     Debug.Log($"Hit enemy: {enemyScript.name}");
                 }
             }
@@ -383,10 +447,10 @@ public class PlayerAttack : MonoBehaviour
         drawSwingGizmo = true;
         StartCoroutine(ResetSwingGizmo()); //DISABLE-ABLE disableable disable
     }
-    public void NotifyEnemiesOfAttack()
+    public void NotifyEnemiesOfAttack(float angle, float range)
     {
         // Find all colliders within the noise radius on the enemy layer
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, meleeRange + 1f, playerScript.enemyLayer);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, range + 1f, playerScript.enemyLayer); // +1f to include radius of colliders
         foreach (Collider collider in hitColliders)
         {
             Enemy enemy = collider.GetComponent<Enemy>();
@@ -395,7 +459,7 @@ public class PlayerAttack : MonoBehaviour
                 Vector3 directionToEnemy = (enemy.transform.position - transform.position).normalized;
                 float angleToEnemy = Vector3.Angle(transform.forward, directionToEnemy);
 
-                if (angleToEnemy <= (meleeAngle + 10f) / 2)
+                if (angleToEnemy <= (angle + 10f) / 2)
                 {
                     enemy.SeeAttack(); // Enemies react to attacks
                 }

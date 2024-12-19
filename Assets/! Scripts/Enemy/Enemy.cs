@@ -272,7 +272,7 @@ public class Enemy : MonoBehaviour
         {
             // IMPACT ANIMATION
             anim.SetTrigger("TakeDamage");
-
+                
             currentHealth -= hitPoints;
         }
         else // success block
@@ -291,7 +291,10 @@ public class Enemy : MonoBehaviour
     public void HitByMelee(int hitPoints)
     {
         if (hitCauseAlert && currentHealth > 0) detectionScript.InstantAggroMelee(); //pass player location and alert
-        DamangeTaken(hitPoints, false);
+
+        DamangeTaken(hitPoints, false); //take damage before stop blocking
+
+        if (isBlocking) attackScript.StopBlocking();
     }
     public void HitByMelee()
     {
@@ -303,6 +306,8 @@ public class Enemy : MonoBehaviour
         if (hitCauseAlert && currentHealth > 0) detectionScript.InstantAggroMelee(); //pass player location and alert
 
         Debug.Log("IM STUNNED"!);
+        attackScript.StopBlocking(); //isBlocking false,
+        anim.SetTrigger("BlockHit");
 
         Stun(stunDuration);
         DamangeTaken(hitPoints, true);

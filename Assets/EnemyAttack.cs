@@ -213,6 +213,11 @@ public class EnemyAttack : MonoBehaviour
 
         yield return new WaitForSeconds(blockTime);
 
+        if (enemyScript.isBlocking) StopBlocking();
+    }
+
+    public void StopBlocking()
+    {
         enemyScript.isBlocking = false;
         enemyScript.anim.SetBool("isBlocking", false);
 
