@@ -25,20 +25,6 @@ public class Projectile : MonoBehaviour
         //ENEMY
         if (((1 << collider.gameObject.layer) & enemyLayer) != 0)
         {
-            //STICK TO ENEMY (Projectile becomes their child)
-            if (canStickIfHit)
-            {
-                Rigidbody rb = GetComponent<Rigidbody>();
-                if (rb != null)
-                {
-                    rb.isKinematic = true;
-                }
-
-                // Stick to enemies
-                transform.SetParent(collider.transform, true);
-                rotateScript.isRotate = false;
-            }
-
             //Damage
             Enemy enemyScript = collider.GetComponent<Enemy>();
             if (enemyScript != null && !enemyScript.isDead)

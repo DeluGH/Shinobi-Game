@@ -85,7 +85,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e8447cf11fd3c84a9f418a7dff12b77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seconds: 300
+  seconds: 5
 --- !u!114 &3354710593102960652
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100,6 +100,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rotation: 90
   rotateDirection: 2
+  positionOffset: {x: 0, y: 0, z: 0}
+  applyPositionOffset: 0
 --- !u!65 &8398965602308354783
 BoxCollider:
   m_ObjectHideFlags: 0

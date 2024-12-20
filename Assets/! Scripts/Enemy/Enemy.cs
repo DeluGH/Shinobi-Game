@@ -59,7 +59,8 @@ public class Enemy : MonoBehaviour
     [Header("References (Auto Assign)")]
     public Transform player;            // Reference to the player
     public NavMeshAgent agent;
-    public Animator anim; 
+    public Animator anim;
+    public CapsuleCollider capsuleCollider;
 
     public DetectionAI detectionScript;
     public ActivityAI activityScript;
@@ -89,6 +90,8 @@ public class Enemy : MonoBehaviour
         if (player == null) FindPlayer();
         if (player == null) Debug.LogWarning("Player reference is missing! Unable to FindPlayer()");
         // Others
+        if (capsuleCollider == null) capsuleCollider = GetComponent<CapsuleCollider>();
+        if (capsuleCollider == null) Debug.LogWarning("This Enemy is Missing capsuleCollider!");
         if (detectionScript == null) detectionScript = GetComponent<DetectionAI>();
         if (detectionScript == null) Debug.LogWarning("This Enemy is Missing detectionScript!");
         if (activityScript == null) activityScript = GetComponent<ActivityAI>();
@@ -378,7 +381,8 @@ public class Enemy : MonoBehaviour
         agent.enabled = false;
 
         //Disable collider
-        GetComponent<Collider>().excludeLayers = LayerMask.GetMask("Player");
+        capsuleCollider.excludeLayers = LayerMask.GetMask("Player");
+        capsuleCollider.enabled = false;
 
         Destroy(gameObject, despawnTime);
     }
