@@ -1,2 +1,27 @@
 fileFormatVersion: 2
 guid: 81530c3061b1e694abb2b845eb136ec9
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - highlightPrefab: {fileID: 6741813466830848338, guid: ed0312782665d9b46b6b165a95dd9a4a, type: 3}
+  - GhostSwingAffect: {fileID: 4919092195301282347, guid: 60284ce370ad98d46a5d20e0e2d9899b, type: 3}
+  - SwingAffect: {fileID: 4919092195301282347, guid: 6fdcd2ee4dc42534e8e158eeb8df5797, type: 3}
+  - swordsClash: {fileID: 8300000, guid: 3ad7b1f437e067d4f83344e370aa9a71, type: 3}
+  - enemyHit: {fileID: 8300000, guid: a92922a7375482b4b8d47040651aa444, type: 3}
+  - swordSwing: {fileID: 8300000, guid: a50ddaad0ecf347409d27a821e2d42e2, type: 3}
+  - swordParry: {fileID: 8300000, guid: 62c1aaef19184e749acd49180c5a4225, type: 3}
+  - assSound: {fileID: 8300000, guid: ddd63906988741c48b628f3dbee91bd1, type: 3}
+  - fallingSound: {fileID: 8300000, guid: 18eddb5dd01f35149bdb0337e73d698f, type: 3}
+  - cameraFacing: {instanceID: 0}
+  - lookingAtEnemy: {instanceID: 0}
+  - MainHandObject: {instanceID: 0}
+  - currentHighlight: {instanceID: 0}
+  - playerScript: {instanceID: 0}
+  - assEnemyTarget: {instanceID: 0}
+  - currentAssEnemyTarget: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

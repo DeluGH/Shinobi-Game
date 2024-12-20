@@ -144,11 +144,12 @@ public class EnemyAttack : MonoBehaviour
         while (Vector3.Distance(attackPosition, transform.position) > attackRange)
         {
             if (enemyScript.agent.isActiveAndEnabled) enemyScript.agent.SetDestination(attackPosition);
+            else break;
             //MOVEMENT ANIMATION
             enemyScript.SetMovementAnimation();
 
             attackGoToTimer += Time.deltaTime;
-            if (attackGoToTimer < 5f) yield return null;
+            if (attackGoToTimer < 3f) yield return null;
         }
 
         //ANIMATE
@@ -172,9 +173,11 @@ public class EnemyAttack : MonoBehaviour
             {
                 Player playerScript = player.GetComponent<Player>();
                 playerScript.PlayerHit();
-
                 Debug.Log($"Hit player: {player.name}");
-            }
+
+                // dance partyyyy!!
+                if (playerScript.isDead) enemyScript.anim.SetTrigger("Twerk");
+            };
         }
 
         enemyScript.isAttacking = false;

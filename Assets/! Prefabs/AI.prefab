@@ -52,6 +52,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b724e46d169f6114f8c910fd38033ace, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  blockParticle: {fileID: 4914658440447471751, guid: 9ca92957e88009548950b81d6481584e, type: 3}
+  parriedParticle: {fileID: 4914658440447471751, guid: b549d1ee5fa26ed459eefe6559eb1e5a, type: 3}
   baseHealth: 4
   baseMovementSpeed: 5
   baseRotationSpeed: 120
@@ -61,7 +63,7 @@ MonoBehaviour:
   canBlock: 1
   isBlocking: 0
   isAttacking: 0
-  combatModeProximity: 5.5
+  combatModeProximity: 8
   combatModeOutDecayTime: 0.5
   combatMode: 0
   inSmoke: 0

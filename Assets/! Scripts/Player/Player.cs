@@ -8,9 +8,10 @@ public class Player : MonoBehaviour
     public CharacterController charController;
     public PlayerNoise noiseScript;
     public Rigidbody rb;
+    public AudioSource audioSource;
 
     [Header("Health")]
-    public int maxHealth;
+    public int maxHealth = 6;
     public bool assingImmunity = true;
 
     [Header("Debug References")]
@@ -32,10 +33,12 @@ public class Player : MonoBehaviour
         fpsController = GetComponent<FirstPersonController>();
         charController = GetComponent<CharacterController>();
         noiseScript = GetComponentInChildren<PlayerNoise>();
+        audioSource = GetComponent<AudioSource>();
 
         if (fpsController == null) Debug.LogWarning("No fpsController reference!!");
         if (charController == null) Debug.LogWarning("No charController reference!!");
         if (noiseScript == null) Debug.LogWarning("No noiseScript reference!!");
+        if (audioSource == null) Debug.LogWarning("No audioSource reference!!");
 
         enemyLayer = LayerMask.GetMask("Enemy");
         if (enemyLayer == 0) Debug.LogWarning("Enemy layer reference is missing!");
@@ -61,8 +64,18 @@ public class Player : MonoBehaviour
 
         if (currentHealth <= 0)
         {
-            isDead = true;
+            PlayerDie();
         }
+    }
+
+    public void PlayerDie()
+    {
+        isDead = true;
+
+        fpsController.enabled = false;
+        charController.enabled = false;
+
+        MenuController.Instance.GameOver();
     }
 
     public void PlayerHealing(int amount)
@@ -142,3 +155,4 @@ public class Player : MonoBehaviour
         lastPositionY = currentY;
     }
 }
+

@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -145,5 +146,7 @@ public class AudioManager : MonoBehaviour
         PlayerPrefs.SetFloat(NPCVolumeKey, 0f);
         PlayerPrefs.SetFloat(PlayerVolumeKey, 0f);
         PlayerPrefs.SetFloat(UIVolumeKey, 0f);
+
+        VolumeUI.Instance.RefreshSliders();
     }
 }

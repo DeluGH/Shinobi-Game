@@ -2,8 +2,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class VolumeSettingsPanel : MonoBehaviour
+public class VolumeUI : MonoBehaviour
 {
+    public static VolumeUI Instance;
+
     [Header("Master")]
     public Slider masterSlider;
     public TextMeshProUGUI masterText;
@@ -32,6 +34,19 @@ public class VolumeSettingsPanel : MonoBehaviour
     public Slider npcSlider;
     public TextMeshProUGUI npcText;
 
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this; // Set the singleton instance
+            DontDestroyOnLoad(gameObject); // Keep the AudioManager persistent across scenes
+        }
+        else
+        {
+            Destroy(gameObject); // Destroy duplicates of the singleton
+        }
+    }
+
     private void Start()
     {
         // Initialize sliders and text with current values from AudioManager
@@ -42,6 +57,24 @@ public class VolumeSettingsPanel : MonoBehaviour
         InitializeSlider(playerSlider, playerText, AudioManager.Instance.GetCurrentPlayerVolume(), AudioManager.Instance.SetPlayerVolume);
         InitializeSlider(uiSlider, uiText, AudioManager.Instance.GetCurrentUIVolume(), AudioManager.Instance.SetUIVolume);
         InitializeSlider(npcSlider, npcText, AudioManager.Instance.GetCurrentNPCVolume(), AudioManager.Instance.SetNPCVolume);
+    }
+
+    public void RefreshSliders()
+    {
+        UpdateSlider(masterSlider, masterText, AudioManager.Instance.GetCurrentMasterVolume());
+        UpdateSlider(enemySlider, enemyText, AudioManager.Instance.GetCurrentEnemyVolume());
+        UpdateSlider(ambienceSlider, ambienceText, AudioManager.Instance.GetCurrentAmbienceVolume());
+        UpdateSlider(musicSlider, musicText, AudioManager.Instance.GetCurrentMusicVolume());
+        UpdateSlider(playerSlider, playerText, AudioManager.Instance.GetCurrentPlayerVolume());
+        UpdateSlider(uiSlider, uiText, AudioManager.Instance.GetCurrentUIVolume());
+        UpdateSlider(npcSlider, npcText, AudioManager.Instance.GetCurrentNPCVolume());
+    }
+
+    private void UpdateSlider(Slider slider, TextMeshProUGUI text, float dbValue)
+    {
+        float percentageValue = DbToPercentage(dbValue);
+        slider.value = percentageValue;
+        UpdateVolumeText(text, percentageValue);
     }
 
     private void InitializeSlider(Slider slider, TextMeshProUGUI text, float currentValue, System.Action<float> onValueChanged)

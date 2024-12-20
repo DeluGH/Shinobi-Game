@@ -7,6 +7,10 @@ using static UnityEditor.FilePathAttribute;
 
 public class Enemy : MonoBehaviour
 {
+    [Header("Particles")]
+    public GameObject blockParticle;
+    public GameObject parriedParticle;
+
     [Header("Enemy Settings")]
     public int baseHealth = 4;
     public float baseMovementSpeed = 5f;
@@ -141,7 +145,7 @@ public class Enemy : MonoBehaviour
             if (stunnedTimer >= stunnedDuration)
             {
                 isStunned = false;
-                agent.isStopped = false;
+                if (agent.isActiveAndEnabled) agent.isStopped = false;
 
                 stunnedTimer = 0f;
                 stunnedDuration = 0f;
@@ -244,11 +248,11 @@ public class Enemy : MonoBehaviour
     public void EnterCombatMode()
     {
         Debug.Log("Combat ON");
-        agent.isStopped = true; //Stop moving
+        if (agent.isActiveAndEnabled) agent.isStopped = true; //Stop moving
         agent.updateRotation = false;
         detectionScript.isLookingAround = false; //bug fix 
 
-        agent.isStopped = false; //Reenable to reposition
+        if (agent.isActiveAndEnabled) agent.isStopped = false; //Reenable to reposition
         attackScript.Reposition();
 
         combatMode = true;
@@ -259,7 +263,7 @@ public class Enemy : MonoBehaviour
     {
         Debug.Log("Combat OFF");
         combatMode = false;
-        agent.updateRotation = true;
+        if (agent.isActiveAndEnabled) agent.updateRotation = true;
     }
 
     public void SeeAttack()
@@ -267,7 +271,7 @@ public class Enemy : MonoBehaviour
         attackScript.TryToBlock();
     }
 
-    public void DamangeTaken(int hitPoints, bool ignoresBlocks)
+    public void DamangeTaken(int hitPoints, bool ignoresBlocks, bool isHeavy)
     {
         // No Minus if blocking
         if (!isBlocking || ignoresBlocks)
@@ -280,7 +284,16 @@ public class Enemy : MonoBehaviour
         else // success block
         {
             // BLOCK IMPACT
-            anim.SetTrigger("BlockHit");
+            if (!isHeavy)
+            {
+                anim.SetTrigger("BlockHit");
+                Instantiate(blockParticle, transform.position, Quaternion.identity, transform);
+            }
+            if (isHeavy)
+            {
+                anim.SetTrigger("TakeDamage");
+                Instantiate(parriedParticle, transform.position, Quaternion.identity, transform);
+            }
         }
 
         // Death check
@@ -294,7 +307,7 @@ public class Enemy : MonoBehaviour
     {
         if (hitCauseAlert && currentHealth > 0) detectionScript.InstantAggroMelee(); //pass player location and alert
 
-        DamangeTaken(hitPoints, false); //take damage before stop blocking
+        DamangeTaken(hitPoints, false, false); //take damage before stop blocking
 
         if (isBlocking) attackScript.StopBlocking();
     }
@@ -308,7 +321,7 @@ public class Enemy : MonoBehaviour
         if (hitCauseAlert && currentHealth > 0) detectionScript.InstantAggroMelee(); //pass player location and alert
         
         Stun(stunDuration);
-        DamangeTaken(hitPoints, false);
+        DamangeTaken(hitPoints, false, true);
 
         if (isBlocking) attackScript.StopBlocking(); //isBlocking false
     }
@@ -321,12 +334,12 @@ public class Enemy : MonoBehaviour
     {
         if (canInstaKill)
         {
-            if (detectionScript.currentState == DetectionState.Alerted) DamangeTaken(hitPoints, true); //range is penetraing (not affected by block)
+            if (detectionScript.currentState == DetectionState.Alerted) DamangeTaken(hitPoints, true, false); //range is penetraing (not affected by block)
             else Die();
         }
         else
         {
-            DamangeTaken(hitPoints, true); //range is penetraing (not affected by block)
+            DamangeTaken(hitPoints, true, false); //range is penetraing (not affected by block)
         }
 
         //InstantAggroRange alerts enemies but doesn't pass player info

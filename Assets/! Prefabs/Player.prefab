@@ -107,9 +107,11 @@ MonoBehaviour:
   charController: {fileID: 0}
   noiseScript: {fileID: 0}
   rb: {fileID: 0}
-  maxHealth: 10
+  audioSource: {fileID: 0}
+  maxHealth: 6
   assingImmunity: 1
   currentHealth: 0
+  isBlocking: 0
   isAssassinating: 0
   isDead: 0
   isWalking: 0
@@ -922,6 +924,12 @@ MonoBehaviour:
   highlightPrefab: {fileID: 6741813466830848338, guid: ed0312782665d9b46b6b165a95dd9a4a, type: 3}
   GhostSwingAffect: {fileID: 4919092195301282347, guid: 60284ce370ad98d46a5d20e0e2d9899b, type: 3}
   SwingAffect: {fileID: 4919092195301282347, guid: 6fdcd2ee4dc42534e8e158eeb8df5797, type: 3}
+  swordsClash: {fileID: 8300000, guid: 3ad7b1f437e067d4f83344e370aa9a71, type: 3}
+  enemyHit: {fileID: 8300000, guid: a92922a7375482b4b8d47040651aa444, type: 3}
+  swordSwing: {fileID: 0}
+  swordParry: {fileID: 8300000, guid: 62c1aaef19184e749acd49180c5a4225, type: 3}
+  assSound: {fileID: 0}
+  fallingSound: {fileID: 0}
   cameraFacing: {fileID: 0}
   lookingAtEnemy: {fileID: 0}
   ghostCurrentChargeAmount: 0
@@ -939,12 +947,11 @@ MonoBehaviour:
   meleeRange: 4
   meleeAngle: 100
   meleeAnimTime: 0.2
-  heavyDamage: 2
   heavyRange: 4.5
   heavyAngle: 70
   heavyAnimTime: 0.1
   heavyStunTime: 1.5
-  heavyChargeTime: 1
+  heavyChargeTime: 1.1
   chargeTime: 0
   chargeStartTime: 0
   assRange: 3
@@ -969,3 +976,4 @@ MonoBehaviour:
   canAssassinate: 0
   currentAssEnemyTarget: {fileID: 0}
   isAssing: 0
+  isPlayingFallingAudio: 0

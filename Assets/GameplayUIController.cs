@@ -100,5 +100,7 @@ public class GameplayUIController : MonoBehaviour
     public void UpdateItemText(int currentItems, int maxItems)
     {
         itemText.text = $"{currentItems}/{maxItems}";
+
+        if (currentItems == 0 && maxItems == 0) itemText.text = $"";
     }
 }

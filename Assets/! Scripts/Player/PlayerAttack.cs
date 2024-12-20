@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEditor.Timeline.Actions;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -12,7 +13,14 @@ public class PlayerAttack : MonoBehaviour
     public GameObject highlightPrefab;
     public GameObject GhostSwingAffect;  // can be null
     public GameObject SwingAffect;  // can be null
-    
+
+    [Header("Sounds (Assign pls)")]
+    public AudioClip swordsClash;   // Enemy blocked
+    public AudioClip enemyHit;      // Enemy hit by attack
+    public AudioClip swordSwing;      // Enemy hit by attack
+    public AudioClip swordParry;      // Enemy hit by attack
+    public AudioClip assSound;
+    public AudioClip fallingSound;
 
     [Header("Camera Reference (Auto)")]
     public Transform cameraFacing; // Important for aiming
@@ -83,6 +91,8 @@ public class PlayerAttack : MonoBehaviour
     public bool canAssassinate = false; // use this to change UI (add ass UI on screen)
     public GameObject currentAssEnemyTarget;    // Different from assEnemyTarget, what if during animation assEnemyTarget moves away/changes target
     public bool isAssing = false;               // If True, shouldn't receive player input, is playing Animation
+    [Space(5f)]
+    public bool isPlayingFallingAudio = false;
 
     void Start()
     {
@@ -297,8 +307,23 @@ public class PlayerAttack : MonoBehaviour
     
     public bool isAirAss()
     {
-        if (playerScript.isFalling && playerScript.fallHeight >= fallHeightRequired) return true;
-        else return false;
+        if (playerScript.isFalling && playerScript.fallHeight >= fallHeightRequired)
+        {
+            if (!isPlayingFallingAudio)
+            {
+                isPlayingFallingAudio = true;
+                playerScript.audioSource.PlayOneShot(fallingSound);
+            }
+            return true;
+        }
+        else
+        {
+            if (isPlayingFallingAudio)
+            {
+                playerScript.audioSource.Stop();
+            }
+            return false;
+        }
     }
 
     public void Assassinate(bool isAirAssassinate)
@@ -319,10 +344,22 @@ public class PlayerAttack : MonoBehaviour
                 enemyScript.PauseActivity();
                 enemyScript.agent.isStopped = true;
                 enemyScript.agent.ResetPath();
+
+                //Sounds
+                playerScript.audioSource.PlayOneShot(assSound);
+
+                //Animations
+                Animator anim = MainHandObject.GetComponentInChildren<Animator>();
+                if (anim != null)
+                {
+                    if (isAirAssassinate) anim.SetTrigger("Air Ass");
+                    else anim.SetTrigger("Ass");
+                }
+                else Debug.LogWarning("No Sword Anim detected!");
             }
             else Debug.LogWarning("NO ENEMY SCRIPT!!");
 
-            //"Animation"
+            //mving to Enemy Animation
             StartCoroutine(MoveToEnemy(isAirAssassinate));
         }
         else Debug.LogWarning("NO assEnemyTarget!!");
@@ -406,9 +443,15 @@ public class PlayerAttack : MonoBehaviour
             Animator anim = MainHandObject.GetComponentInChildren<Animator>();
             if (anim != null) anim.SetTrigger("Attack");
             else Debug.LogWarning("No Sword Anim detected!");
+
+            //heavy sound
+            playerScript.audioSource.PlayOneShot(swordSwing);
         }
         else if (!isHeavy) // light 
         {
+            //Light sound
+            playerScript.audioSource.PlayOneShot(swordSwing);
+
             GameObject swingEffect;
             if (SwingAffect != null)
             {
@@ -460,9 +503,20 @@ public class PlayerAttack : MonoBehaviour
 
                     if (isHeavy)
                     {
+                        //SOUND BEFORE HIT (to determine if blocking or not)
+                        if (enemyScript.isBlocking) playerScript.audioSource.PlayOneShot(swordParry);
+                        else playerScript.audioSource.PlayOneShot(enemyHit);
+
                         enemyScript.HitByHeavyMelee(1, heavyStunTime); // HIT AND STUN
                     }
-                    else if (!isHeavy) enemyScript.HitByMelee(); // HIT
+                    else if (!isHeavy)
+                    {
+                        //SOUND BEFORE HIT (to determine if blocking or not)
+                        if (enemyScript.isBlocking) playerScript.audioSource.PlayOneShot(swordsClash);
+                        else playerScript.audioSource.PlayOneShot(enemyHit);
+
+                        enemyScript.HitByMelee(); // HIT
+                    }
 
                     //GHOST MODE CHARGE
                     if (enemyScript.isDead)
