@@ -2989,7 +2989,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 184202, guid: d44f072607d893145b2f6d39c8229bef, type: 3}
       propertyPath: m_Name
-      value: SM_Wep_Odachi_01
+      value: EnemyWeapon
       objectReference: {fileID: 0}
     - target: {fileID: 416848, guid: d44f072607d893145b2f6d39c8229bef, type: 3}
       propertyPath: m_LocalScale.x

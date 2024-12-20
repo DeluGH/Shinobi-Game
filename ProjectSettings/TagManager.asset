@@ -10,6 +10,7 @@ TagManager:
   - Grappable
   - Main Hand
   - Util Hand
+  - EnemyWeapon
   layers:
   - Default
   - TransparentFX
