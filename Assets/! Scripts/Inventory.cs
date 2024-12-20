@@ -43,7 +43,6 @@ public class Inventory : MonoBehaviour
         if (mainHandPos == null) mainHandPos = GameObject.FindWithTag("Main Hand").transform;
 
         UpdateItemPositions();
-        GameplayUIController.Instance.UpdateItemText(0, 0);
     }
 
     private void Update()

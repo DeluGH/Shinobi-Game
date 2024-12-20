@@ -82,8 +82,10 @@ public class MenuController : MonoBehaviour
                     CloseSettings();
                     break;
                 case MenuState.Gameplay:
-                case MenuState.PauseMenu:
                     TogglePauseMenu();
+                    break;
+                case MenuState.PauseMenu:
+                    ResumeGame();
                     break;
                 case MenuState.Keybinds:
                     ToggleKeybindsMenu();
@@ -223,15 +225,16 @@ public class MenuController : MonoBehaviour
     // Resume game (called by the Resume button)
     public void ResumeGame()
     {
+        LockCursor();
+
         isPaused = false;
         Time.timeScale = 1f;
         pauseMenuPanel.SetActive(false);
         gameplayPanel.SetActive(true);
         fpsController.enabled = true;
         characterController.enabled = true;
-        currentMenuState = MenuState.Gameplay; // Resumes to Gameplay state
 
-        LockCursor();
+        currentMenuState = MenuState.Gameplay; // Resumes to Gameplay state
 
         Debug.Log("Game resumed from pause menu.");
     }

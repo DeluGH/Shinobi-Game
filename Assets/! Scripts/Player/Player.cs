@@ -44,7 +44,6 @@ public class Player : MonoBehaviour
         if (enemyLayer == 0) Debug.LogWarning("Enemy layer reference is missing!");
 
         currentHealth = maxHealth;
-        GameplayUIController.Instance.UpdateHealthSlider(currentHealth, maxHealth);
     }
 
     private void Update()

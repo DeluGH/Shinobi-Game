@@ -93,6 +93,7 @@ public class PlayerAttack : MonoBehaviour
     public bool isAssing = false;               // If True, shouldn't receive player input, is playing Animation
     [Space(5f)]
     public bool isPlayingFallingAudio = false;
+    public bool startedCharging = false;
 
     void Start()
     {
@@ -149,9 +150,15 @@ public class PlayerAttack : MonoBehaviour
             if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Attack"]))
             {
                 chargeStartTime = Time.time; // Record when charging started
+                startedCharging = true;
             }
             if (Input.GetKey(KeybindManager.Instance.keybinds["Attack"]))
             {
+                if (startedCharging == false) // bug fix chargeStartTime doesn't execute if you charge before attackcooldown
+                {
+                    chargeStartTime = Time.time; // Record when charging started
+                    startedCharging = true;
+                }
                 chargeTime = Time.time - chargeStartTime;
 
                 Animator anim = MainHandObject.GetComponentInChildren<Animator>();

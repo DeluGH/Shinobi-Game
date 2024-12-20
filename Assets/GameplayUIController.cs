@@ -28,7 +28,7 @@ public class GameplayUIController : MonoBehaviour
     {
         Instance = this;
     }
-
+    
     void Update()
     {
         switch (weaponID)
