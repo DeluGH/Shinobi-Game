@@ -46,6 +46,7 @@ public class EnemyAttack : MonoBehaviour
     public Enemy enemyScript;
     public Vector3 attackPosition;
     public float attackGoToTimer = 0f;
+    public bool playerIsKilled = false;
 
     private void Start()
     {
@@ -59,7 +60,7 @@ public class EnemyAttack : MonoBehaviour
 
     private void Update()
     {
-        if (enemyScript.combatMode && enemyScript.canEnemyPerform()) // not dead, not stunned, not choking, not attacking, not blocking
+        if (enemyScript.combatMode && enemyScript.canEnemyPerform() && !playerIsKilled) // not dead, not stunned, not choking, not attacking, not blocking
         {
             //ATTACK TIMER MANAGER
             if (!attackAvailable)
@@ -176,7 +177,11 @@ public class EnemyAttack : MonoBehaviour
                 Debug.Log($"Hit player: {player.name}");
 
                 // dance partyyyy!!
-                if (playerScript.isDead) enemyScript.anim.SetTrigger("Twerk");
+                if (playerScript.isDead)
+                {
+                    playerIsKilled = true;
+                    enemyScript.anim.SetBool("Twerk", true);
+                }
             };
         }
 

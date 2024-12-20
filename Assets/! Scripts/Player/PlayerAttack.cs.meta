@@ -7,6 +7,7 @@ MonoImporter:
   - highlightPrefab: {fileID: 6741813466830848338, guid: ed0312782665d9b46b6b165a95dd9a4a, type: 3}
   - GhostSwingAffect: {fileID: 4919092195301282347, guid: 60284ce370ad98d46a5d20e0e2d9899b, type: 3}
   - SwingAffect: {fileID: 4919092195301282347, guid: 6fdcd2ee4dc42534e8e158eeb8df5797, type: 3}
+  - blockParticle: {fileID: 4914658440447471751, guid: 9ca92957e88009548950b81d6481584e, type: 3}
   - swordsClash: {fileID: 8300000, guid: 3ad7b1f437e067d4f83344e370aa9a71, type: 3}
   - enemyHit: {fileID: 8300000, guid: a92922a7375482b4b8d47040651aa444, type: 3}
   - swordSwing: {fileID: 8300000, guid: a50ddaad0ecf347409d27a821e2d42e2, type: 3}

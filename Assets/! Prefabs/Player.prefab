@@ -103,11 +103,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77205034d73864e4a92d02e762cef969, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fpsController: {fileID: 0}
-  charController: {fileID: 0}
-  noiseScript: {fileID: 0}
-  rb: {fileID: 0}
-  audioSource: {fileID: 0}
   maxHealth: 6
   assingImmunity: 1
   currentHealth: 0
@@ -121,6 +116,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   fallHeight: 0
+  attackScript: {fileID: 0}
+  fpsController: {fileID: 0}
+  charController: {fileID: 0}
+  noiseScript: {fileID: 0}
+  rb: {fileID: 0}
+  audioSource: {fileID: 0}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -311,7 +312,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 6807428232033337006, guid: 9322b1164e82d7549b1126ef96262d0f, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -924,12 +925,13 @@ MonoBehaviour:
   highlightPrefab: {fileID: 6741813466830848338, guid: ed0312782665d9b46b6b165a95dd9a4a, type: 3}
   GhostSwingAffect: {fileID: 4919092195301282347, guid: 60284ce370ad98d46a5d20e0e2d9899b, type: 3}
   SwingAffect: {fileID: 4919092195301282347, guid: 6fdcd2ee4dc42534e8e158eeb8df5797, type: 3}
+  blockParticle: {fileID: 4914658440447471751, guid: 9ca92957e88009548950b81d6481584e, type: 3}
   swordsClash: {fileID: 8300000, guid: 3ad7b1f437e067d4f83344e370aa9a71, type: 3}
   enemyHit: {fileID: 8300000, guid: a92922a7375482b4b8d47040651aa444, type: 3}
-  swordSwing: {fileID: 0}
+  swordSwing: {fileID: 8300000, guid: a50ddaad0ecf347409d27a821e2d42e2, type: 3}
   swordParry: {fileID: 8300000, guid: 62c1aaef19184e749acd49180c5a4225, type: 3}
-  assSound: {fileID: 0}
-  fallingSound: {fileID: 0}
+  assSound: {fileID: 8300000, guid: ddd63906988741c48b628f3dbee91bd1, type: 3}
+  fallingSound: {fileID: 8300000, guid: 18eddb5dd01f35149bdb0337e73d698f, type: 3}
   cameraFacing: {fileID: 0}
   lookingAtEnemy: {fileID: 0}
   ghostCurrentChargeAmount: 0
@@ -977,3 +979,4 @@ MonoBehaviour:
   currentAssEnemyTarget: {fileID: 0}
   isAssing: 0
   isPlayingFallingAudio: 0
+  startedCharging: 0

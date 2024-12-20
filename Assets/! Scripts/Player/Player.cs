@@ -3,13 +3,6 @@ using UnityStandardAssets.Characters.FirstPerson;
 
 public class Player : MonoBehaviour
 {
-    [Header("References (Auto)")]
-    public FirstPersonController fpsController;
-    public CharacterController charController;
-    public PlayerNoise noiseScript;
-    public Rigidbody rb;
-    public AudioSource audioSource;
-
     [Header("Health")]
     public int maxHealth = 6;
     public bool assingImmunity = true;
@@ -28,17 +21,27 @@ public class Player : MonoBehaviour
     private float startFallHeight = 0f;
     private float lastPositionY = 0f;
 
+    [Header("References (Auto)")]
+    public PlayerAttack attackScript;
+    public FirstPersonController fpsController;
+    public CharacterController charController;
+    public PlayerNoise noiseScript;
+    public Rigidbody rb;
+    public AudioSource audioSource;
+
     private void Start()
     {
         fpsController = GetComponent<FirstPersonController>();
         charController = GetComponent<CharacterController>();
         noiseScript = GetComponentInChildren<PlayerNoise>();
         audioSource = GetComponent<AudioSource>();
+        attackScript = GetComponentInChildren<PlayerAttack>();
 
         if (fpsController == null) Debug.LogWarning("No fpsController reference!!");
         if (charController == null) Debug.LogWarning("No charController reference!!");
         if (noiseScript == null) Debug.LogWarning("No noiseScript reference!!");
         if (audioSource == null) Debug.LogWarning("No audioSource reference!!");
+        if (attackScript == null) Debug.LogWarning("No attackScript reference!!");
 
         enemyLayer = LayerMask.GetMask("Enemy");
         if (enemyLayer == 0) Debug.LogWarning("Enemy layer reference is missing!");
@@ -53,7 +56,10 @@ public class Player : MonoBehaviour
 
     public void PlayerHit()
     {
-        if (assingImmunity && isAssassinating) return;
+        //either assing or blocking
+        if ((assingImmunity && isAssassinating)) return;
+
+        if (isBlocking) attackScript.Blocked();
 
         if (currentHealth > 0)
         {

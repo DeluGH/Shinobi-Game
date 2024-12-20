@@ -444,6 +444,7 @@ MonoBehaviour:
   enemyScript: {fileID: 0}
   attackPosition: {x: 0, y: 0, z: 0}
   attackGoToTimer: 0
+  playerIsKilled: 0
 --- !u!114 &31196710
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1788,6 +1789,7 @@ MonoBehaviour:
   enemyScript: {fileID: 0}
   attackPosition: {x: 0, y: 0, z: 0}
   attackGoToTimer: 0
+  playerIsKilled: 0
 --- !u!114 &450242419
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2369,50 +2371,22 @@ PrefabInstance:
       propertyPath: m_PlayOnAwake
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1277757305491851741, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: maxHealth
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: assSound
       value: 
       objectReference: {fileID: 8300000, guid: ddd63906988741c48b628f3dbee91bd1, type: 3}
     - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: enemyHit
-      value: 
-      objectReference: {fileID: 8300000, guid: a92922a7375482b4b8d47040651aa444, type: 3}
-    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: swordParry
-      value: 
-      objectReference: {fileID: 8300000, guid: 62c1aaef19184e749acd49180c5a4225, type: 3}
-    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: swordSwing
       value: 
       objectReference: {fileID: 8300000, guid: a50ddaad0ecf347409d27a821e2d42e2, type: 3}
-    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: SwingAffect
-      value: 
-      objectReference: {fileID: 4919092195301282347, guid: 6fdcd2ee4dc42534e8e158eeb8df5797, type: 3}
-    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: swordsClash
-      value: 
-      objectReference: {fileID: 8300000, guid: 3ad7b1f437e067d4f83344e370aa9a71, type: 3}
     - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: fallingSound
       value: 
       objectReference: {fileID: 8300000, guid: 18eddb5dd01f35149bdb0337e73d698f, type: 3}
     - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: heavyChargeTime
-      value: 1.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: highlightPrefab
+      propertyPath: blockParticle
       value: 
-      objectReference: {fileID: 6741813466830848338, guid: ed0312782665d9b46b6b165a95dd9a4a, type: 3}
-    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: GhostSwingAffect
-      value: 
-      objectReference: {fileID: 4919092195301282347, guid: 60284ce370ad98d46a5d20e0e2d9899b, type: 3}
+      objectReference: {fileID: 4914658440447471751, guid: 9ca92957e88009548950b81d6481584e, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2738,6 +2712,7 @@ MonoBehaviour:
   enemyScript: {fileID: 0}
   attackPosition: {x: 0, y: 0, z: 0}
   attackGoToTimer: 0
+  playerIsKilled: 0
 --- !u!114 &714030714
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4667,6 +4642,7 @@ MonoBehaviour:
   enemyScript: {fileID: 0}
   attackPosition: {x: 0, y: 0, z: 0}
   attackGoToTimer: 0
+  playerIsKilled: 0
 --- !u!114 &1295466125
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6232,6 +6208,7 @@ MonoBehaviour:
   enemyScript: {fileID: 0}
   attackPosition: {x: 0, y: 0, z: 0}
   attackGoToTimer: 0
+  playerIsKilled: 0
 --- !u!114 &1734060335
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6726,6 +6703,7 @@ MonoBehaviour:
   enemyScript: {fileID: 0}
   attackPosition: {x: 0, y: 0, z: 0}
   attackGoToTimer: 0
+  playerIsKilled: 0
 --- !u!114 &1807200520
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19244,6 +19222,7 @@ MonoBehaviour:
   enemyScript: {fileID: 0}
   attackPosition: {x: 0, y: 0, z: 0}
   attackGoToTimer: 0
+  playerIsKilled: 0
 --- !u!82 &6131422397100379095
 AudioSource:
   m_ObjectHideFlags: 0
@@ -20306,6 +20285,7 @@ MonoBehaviour:
   enemyScript: {fileID: 0}
   attackPosition: {x: 0, y: 0, z: 0}
   attackGoToTimer: 0
+  playerIsKilled: 0
 --- !u!82 &6989950025489212974
 AudioSource:
   m_ObjectHideFlags: 0
@@ -20939,6 +20919,7 @@ MonoBehaviour:
   enemyScript: {fileID: 0}
   attackPosition: {x: 0, y: 0, z: 0}
   attackGoToTimer: 0
+  playerIsKilled: 0
 --- !u!82 &7510759838939233832
 AudioSource:
   m_ObjectHideFlags: 0
@@ -21746,6 +21727,7 @@ MonoBehaviour:
   enemyScript: {fileID: 0}
   attackPosition: {x: 0, y: 0, z: 0}
   attackGoToTimer: 0
+  playerIsKilled: 0
 --- !u!82 &8159660886936881870
 AudioSource:
   m_ObjectHideFlags: 0
@@ -22277,6 +22259,7 @@ MonoBehaviour:
   enemyScript: {fileID: 0}
   attackPosition: {x: 0, y: 0, z: 0}
   attackGoToTimer: 0
+  playerIsKilled: 0
 --- !u!82 &8549680930649803456
 AudioSource:
   m_ObjectHideFlags: 0
@@ -22592,6 +22575,7 @@ MonoBehaviour:
   enemyScript: {fileID: 0}
   attackPosition: {x: 0, y: 0, z: 0}
   attackGoToTimer: 0
+  playerIsKilled: 0
 --- !u!82 &8630108703648259931
 AudioSource:
   m_ObjectHideFlags: 0
@@ -23011,6 +22995,7 @@ MonoBehaviour:
   enemyScript: {fileID: 0}
   attackPosition: {x: 0, y: 0, z: 0}
   attackGoToTimer: 0
+  playerIsKilled: 0
 --- !u!82 &8867886319294562525
 AudioSource:
   m_ObjectHideFlags: 0

@@ -13,6 +13,7 @@ public class PlayerAttack : MonoBehaviour
     public GameObject highlightPrefab;
     public GameObject GhostSwingAffect;  // can be null
     public GameObject SwingAffect;  // can be null
+    public GameObject blockParticle;
 
     [Header("Sounds (Assign pls)")]
     public AudioClip swordsClash;   // Enemy blocked
@@ -118,7 +119,7 @@ public class PlayerAttack : MonoBehaviour
 
 
         //Ghost Mode
-        if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Ghost Ultimate"]))
+        if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Ghost Ultimate"]) && !playerScript.isDead)
         {
             if (!ghostMode && ghostCurrentChargeAmount >= ghostChargeAmount)
             {
@@ -142,10 +143,10 @@ public class PlayerAttack : MonoBehaviour
         }
 
         // !! Set attackCooldown to 0 in Frenzy, or just change attackCooldown for anything
-        if (meleeTimer < currentAttackCooldown && !isSwinging && !isAssing) meleeTimer += Time.deltaTime;
+        if (meleeTimer < currentAttackCooldown && !isSwinging && !isAssing && !playerScript.isDead) meleeTimer += Time.deltaTime;
         // Check for holding left click
         //CHARGING ONLY
-        if (meleeTimer >= currentAttackCooldown)
+        if (meleeTimer >= currentAttackCooldown && !playerScript.isDead && !playerScript.isBlocking)
         {
             if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Attack"]))
             {
@@ -194,10 +195,12 @@ public class PlayerAttack : MonoBehaviour
         }
 
         //BLOCKING
-        if (!isSwinging && !isAssing)
+        if (!isSwinging && !isAssing && !playerScript.isDead)
         {   
             if (Input.GetKey(KeybindManager.Instance.keybinds["Block"]))
             {
+                playerScript.isBlocking = true;
+
                 Animator anim = MainHandObject.GetComponentInChildren<Animator>();
                 if (anim != null) anim.SetBool("isBlocking", true);
                 else Debug.LogWarning("No Sword Anim detected!");
@@ -212,6 +215,12 @@ public class PlayerAttack : MonoBehaviour
                 else Debug.LogWarning("No Sword Anim detected!");
             }
         }
+    }
+
+    public void Blocked()
+    {
+        playerScript.audioSource.PlayOneShot(swordsClash);
+        Instantiate(blockParticle, transform.position, Quaternion.identity, transform);
     }
 
     public void IncreaseGhostCharge()
