@@ -87,6 +87,7 @@ public class EnemyAttack : MonoBehaviour
                 //ATTACK
                 enemyScript.isAttacking = true;
                 attackWaitTimer = 0f;
+                attackGoToTimer = 0f;
 
                 GetAttackGoToPosition();
                 StartCoroutine(PerformAttack());
@@ -115,8 +116,6 @@ public class EnemyAttack : MonoBehaviour
 
     public void GetAttackGoToPosition()
     {
-        attackGoToTimer = 0f;
-
         int maxAttempts = 7;
         int attempts = 0;
 

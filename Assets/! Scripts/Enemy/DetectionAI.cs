@@ -926,24 +926,24 @@ public class DetectionAI : MonoBehaviour
 
     //private void OnDrawGizmosSelected() // DISABLE-ABLE disable disablable
     //{
-    //     Draw green detection zone
+    //    //Draw green detection zone
     //    Gizmos.color = new Color(0, 1, 0, 0.2f);
     //    DrawDetectionCone(GetCurrentGreenAngle());
 
-    //     Draw yellow detection zone
+    //    //Draw yellow detection zone
     //    Gizmos.color = new Color(1, 1, 0, 0.2f);
     //    DrawDetectionCone(GetCurrentYellowAngle());
 
-    //     Draw the last known position during investigation
+    //    //Draw the last known position during investigation
     //    if (currentState == DetectionState.Investigating)
     //    {
     //        Gizmos.color = Color.red;
     //        Gizmos.DrawWireSphere(lastKnownPosition, 0.5f);
     //    }
 
-    //     Set Gizmos color based on alert state
+    //    //Set Gizmos color based on alert state
     //    Gizmos.color = isAlert ? Color.red : Color.yellow;
-    //     Draw the detection sphere
+    //    //Draw the detection sphere
     //    Gizmos.DrawWireSphere(transform.position, GetCurrentAlertSpreadDistance());
     //}
     //private void DrawDetectionCone(float angle)

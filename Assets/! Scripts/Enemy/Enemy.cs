@@ -141,6 +141,8 @@ public class Enemy : MonoBehaviour
             if (stunnedTimer >= stunnedDuration)
             {
                 isStunned = false;
+                agent.isStopped = false;
+
                 stunnedTimer = 0f;
                 stunnedDuration = 0f;
             }

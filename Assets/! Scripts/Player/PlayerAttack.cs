@@ -48,7 +48,7 @@ public class PlayerAttack : MonoBehaviour
 
     public float heavyStunTime = 1.5f;
 
-    public float heavyChargeTime = 1f;   // Time taken to complete charge heavy
+    public float heavyChargeTime = 1.1f;   // Time taken to complete charge heavy
     public float chargeTime = 0f;
     public float chargeStartTime = 0f;
 

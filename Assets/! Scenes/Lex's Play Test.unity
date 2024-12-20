@@ -2364,6 +2364,18 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
+      propertyPath: SwingAffect
+      value: 
+      objectReference: {fileID: 4919092195301282347, guid: 6fdcd2ee4dc42534e8e158eeb8df5797, type: 3}
+    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
+      propertyPath: heavyChargeTime
+      value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
+      propertyPath: highlightPrefab
+      value: 
+      objectReference: {fileID: 6741813466830848338, guid: ed0312782665d9b46b6b165a95dd9a4a, type: 3}
+    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: GhostSwingAffect
       value: 
       objectReference: {fileID: 4919092195301282347, guid: 60284ce370ad98d46a5d20e0e2d9899b, type: 3}
