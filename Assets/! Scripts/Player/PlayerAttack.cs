@@ -115,6 +115,7 @@ public class PlayerAttack : MonoBehaviour
         if (canAssassinate && assEnemyTarget && !isAssing) HighlightEnemy(assEnemyTarget);
         else RemoveHighlight();
 
+
         //Ghost Mode
         if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Ghost Ultimate"]))
         {
@@ -320,11 +321,14 @@ public class PlayerAttack : MonoBehaviour
         {
             if (isPlayingFallingAudio)
             {
+                isPlayingFallingAudio = false;
                 playerScript.audioSource.Stop();
             }
             return false;
         }
     }
+
+
 
     public void Assassinate(bool isAirAssassinate)
     {

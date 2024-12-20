@@ -2372,6 +2372,10 @@ PrefabInstance:
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
+      propertyPath: assSound
+      value: 
+      objectReference: {fileID: 8300000, guid: ddd63906988741c48b628f3dbee91bd1, type: 3}
+    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: enemyHit
       value: 
       objectReference: {fileID: 8300000, guid: a92922a7375482b4b8d47040651aa444, type: 3}
@@ -2382,7 +2386,7 @@ PrefabInstance:
     - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: swordSwing
       value: 
-      objectReference: {fileID: 8300000, guid: b3a0f424fc4ef2a408690306799358fe, type: 3}
+      objectReference: {fileID: 8300000, guid: a50ddaad0ecf347409d27a821e2d42e2, type: 3}
     - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: SwingAffect
       value: 
@@ -2391,6 +2395,10 @@ PrefabInstance:
       propertyPath: swordsClash
       value: 
       objectReference: {fileID: 8300000, guid: 3ad7b1f437e067d4f83344e370aa9a71, type: 3}
+    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
+      propertyPath: fallingSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 18eddb5dd01f35149bdb0337e73d698f, type: 3}
     - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: heavyChargeTime
       value: 1.1
