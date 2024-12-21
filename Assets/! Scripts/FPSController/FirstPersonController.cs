@@ -12,7 +12,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
     [RequireComponent(typeof(AudioSource))]
     public class FirstPersonController : MonoBehaviour
     {
-        [SerializeField] private float interactRange = 1;
+        
         [SerializeField] private bool m_IsWalking;
         [SerializeField] private bool m_IsCrouched;
         public bool m_IsGrappling;
@@ -53,10 +53,6 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private float defaultHeight;
         private Vector3 defaultCenter;
         private Vector3 m_CrouchedCameraPosition;
-        private Interactable interactable;
-        private RaycastHit interactionHit;
-        private string interactTag = "Interactable";
-        private string interactKeyString = "Interact";
 
         [Header("Player Reference")]
         public Player playerScript;
@@ -88,29 +84,6 @@ namespace UnityStandardAssets.Characters.FirstPerson
         // Update is called once per frame
         private void Update()
         {
-            //  To whover is gonna be fixing this, there are two problems
-            // 1. interactable.DoInteraction(); is not being ran
-            // 2. after hovering over an interactable for a while, player control is just gone for some reason
-
-            
-            if (Physics.Raycast(transform.position, m_Camera.transform.forward, out interactionHit, interactRange))
-            {
-                if (interactionHit.collider.gameObject.tag == interactTag)
-                {
-                    interactable = interactionHit.collider.gameObject.GetComponent<Interactable>();
-                    interactable.DoHoverOverActions();
-
-
-                    if (Input.GetKeyDown(KeybindManager.Instance.keybinds[interactKeyString]))
-                    {
-                        interactable.DoInteraction();
-                    }
-                }
-
-            }
-
-
-
             GetInput(out speed);
 
             RotateView();

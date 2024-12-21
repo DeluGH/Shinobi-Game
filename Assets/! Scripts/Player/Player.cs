@@ -22,6 +22,7 @@ public class Player : MonoBehaviour
     private float lastPositionY = 0f;
 
     [Header("References (Auto)")]
+    public Transform cameraFacing; // Important for aiming
     public PlayerAttack attackScript;
     public FirstPersonController fpsController;
     public CharacterController charController;
@@ -31,6 +32,9 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
+        if (cameraFacing == null) cameraFacing = GameObject.FindGameObjectWithTag("MainCamera").transform;
+        if (cameraFacing == null) Debug.LogWarning("Unable to Find Main Camera!");
+
         fpsController = GetComponent<FirstPersonController>();
         charController = GetComponent<CharacterController>();
         noiseScript = GetComponentInChildren<PlayerNoise>();

@@ -23,8 +23,6 @@ public class PlayerAttack : MonoBehaviour
     public AudioClip assSound;
     public AudioClip fallingSound;
 
-    [Header("Camera Reference (Auto)")]
-    public Transform cameraFacing; // Important for aiming
 
     [Header("Debug References")]
     public GameObject lookingAtEnemy; // Enemy player is looking at
@@ -102,9 +100,6 @@ public class PlayerAttack : MonoBehaviour
 
         if (MainHandObject == null) MainHandObject = GameObject.FindGameObjectWithTag("Main Hand");
         if (MainHandObject == null) Debug.LogWarning("Unable to Find Main HAND!!");
-
-        if (cameraFacing == null) cameraFacing = GameObject.FindGameObjectWithTag("MainCamera").transform;
-        if (cameraFacing == null) Debug.LogWarning("Unable to Find Main Camera!");
 
         if (!playerScript) playerScript = GetComponentInParent<Player>();
         if (!playerScript) Debug.LogWarning("Player Script reference is missing!");
@@ -236,19 +231,19 @@ public class PlayerAttack : MonoBehaviour
         //is falling? use wider angle
         float scanAngle = (isAirAss() ? airAssScanAngle : assScanAngle) + (ghostMode ? ghostAngleBuff : 0);
 
-        Collider[] hitColliders = Physics.OverlapSphere(cameraFacing.position, maxRaycastRange, playerScript.enemyLayer);
+        Collider[] hitColliders = Physics.OverlapSphere(playerScript.cameraFacing.position, maxRaycastRange, playerScript.enemyLayer);
         float closestDistance = float.MaxValue;
         GameObject closestEnemy = null;
 
         foreach (Collider collider in hitColliders)
         {
-            Vector3 closestPointOnCollider = collider.ClosestPoint(cameraFacing.position);
-            Vector3 directionToPoint = (closestPointOnCollider - cameraFacing.position).normalized;
+            Vector3 closestPointOnCollider = collider.ClosestPoint(playerScript.cameraFacing.position);
+            Vector3 directionToPoint = (closestPointOnCollider - playerScript.cameraFacing.position).normalized;
 
-            float angleToPoint = Vector3.Angle(cameraFacing.forward, directionToPoint);
+            float angleToPoint = Vector3.Angle(playerScript.cameraFacing.forward, directionToPoint);
             if (angleToPoint <= scanAngle / 2)
             {
-                float distanceToPoint = Vector3.Distance(cameraFacing.position, closestPointOnCollider);
+                float distanceToPoint = Vector3.Distance(playerScript.cameraFacing.position, closestPointOnCollider);
 
                 if (distanceToPoint < closestDistance)
                 {
@@ -477,12 +472,12 @@ public class PlayerAttack : MonoBehaviour
             {
                 if (!ghostMode) //slash effect
                 {
-                    swingEffect = Instantiate(SwingAffect, cameraFacing.transform.position, Quaternion.identity, cameraFacing.transform);
+                    swingEffect = Instantiate(SwingAffect, playerScript.cameraFacing.transform.position, Quaternion.identity, playerScript.cameraFacing.transform);
                     swingEffect.transform.localRotation = Quaternion.identity;
                 }
                 else
                 {
-                    swingEffect = Instantiate(GhostSwingAffect, cameraFacing.transform.position, Quaternion.identity, cameraFacing.transform);
+                    swingEffect = Instantiate(GhostSwingAffect, playerScript.cameraFacing.transform.position, Quaternion.identity, playerScript.cameraFacing.transform);
                     swingEffect.transform.localRotation = Quaternion.identity;
                 }
             }
@@ -612,26 +607,26 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
-    private void drawFacingGizmos()
+    private void drawFacingGizmos() //DISABLE-ABLE disableable disable
     {
-        if (cameraFacing == null) return;
+        if (playerScript.cameraFacing == null) return;
 
         Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(cameraFacing.position, maxRaycastRange); // Draw the detection sphere
+        Gizmos.DrawWireSphere(playerScript.cameraFacing.position, maxRaycastRange); // Draw the detection sphere
 
         // Draw cone boundaries
-        Vector3 leftBoundary = Quaternion.Euler(0, -assScanAngle / 2, 0) * cameraFacing.forward * maxRaycastRange;
-        Vector3 rightBoundary = Quaternion.Euler(0, assScanAngle / 2, 0) * cameraFacing.forward * maxRaycastRange;
+        Vector3 leftBoundary = Quaternion.Euler(0, -assScanAngle / 2, 0) * playerScript.cameraFacing.forward * maxRaycastRange;
+        Vector3 rightBoundary = Quaternion.Euler(0, assScanAngle / 2, 0) * playerScript.cameraFacing.forward * maxRaycastRange;
 
         Gizmos.color = Color.cyan;
-        Gizmos.DrawLine(cameraFacing.position, cameraFacing.position + leftBoundary);
-        Gizmos.DrawLine(cameraFacing.position, cameraFacing.position + rightBoundary);
+        Gizmos.DrawLine(playerScript.cameraFacing.position, playerScript.cameraFacing.position + leftBoundary);
+        Gizmos.DrawLine(playerScript.cameraFacing.position, playerScript.cameraFacing.position + rightBoundary);
 
         // Draw a line to the closest enemy, if any
         if (lookingAtEnemy != null)
         {
             Gizmos.color = Color.black;
-            Gizmos.DrawLine(cameraFacing.position, lookingAtEnemy.transform.position); // Line to closest enemy
+            Gizmos.DrawLine(playerScript.cameraFacing.position, lookingAtEnemy.transform.position); // Line to closest enemy
             Gizmos.DrawSphere(lookingAtEnemy.transform.position, 0.2f); // Mark closest enemy
         }
     }
