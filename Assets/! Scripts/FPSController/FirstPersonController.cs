@@ -53,6 +53,10 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private float defaultHeight;
         private Vector3 defaultCenter;
         private Vector3 m_CrouchedCameraPosition;
+        private Interactable interactable;
+        private RaycastHit interactionHit;
+        private string interactTag = "Interactable";
+        private string interactKeyString = "Interact";
 
         [Header("Player Reference")]
         public Player playerScript;
@@ -88,22 +92,22 @@ namespace UnityStandardAssets.Characters.FirstPerson
             // 1. interactable.DoInteraction(); is not being ran
             // 2. after hovering over an interactable for a while, player control is just gone for some reason
 
-            //RaycastHit hit;
-            //if (Physics.Raycast(transform.position, m_Camera.transform.forward, out hit, interactRange))
-            //{
-            //    if (hit.collider.gameObject.tag == "Interactable")
-            //    {
-            //        Interactable interactable = hit.collider.gameObject.GetComponent<Interactable>();
-            //        interactable.DoHoverOverActions();
+            
+            if (Physics.Raycast(transform.position, m_Camera.transform.forward, out interactionHit, interactRange))
+            {
+                if (interactionHit.collider.gameObject.tag == interactTag)
+                {
+                    interactable = interactionHit.collider.gameObject.GetComponent<Interactable>();
+                    interactable.DoHoverOverActions();
 
 
-            //        if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Interact"]))
-            //        {
-            //            interactable.DoInteraction();
-            //        }
-            //    }
+                    if (Input.GetKeyDown(KeybindManager.Instance.keybinds[interactKeyString]))
+                    {
+                        interactable.DoInteraction();
+                    }
+                }
 
-            //}
+            }
 
 
 
