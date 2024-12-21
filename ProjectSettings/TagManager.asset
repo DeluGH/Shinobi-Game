@@ -11,6 +11,7 @@ TagManager:
   - Main Hand
   - Util Hand
   - EnemyWeapon
+  - Interactable
   layers:
   - Default
   - TransparentFX
