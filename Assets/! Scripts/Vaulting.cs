@@ -40,6 +40,7 @@ public class Vaulting : MonoBehaviour
     {
         Vault();
     }
+
     private void Vault()
     {
         if (Input.GetKey(KeyCode.Space) && !isVaulting)
@@ -48,9 +49,18 @@ public class Vaulting : MonoBehaviour
             //cast a ray to see if in range to vault and check if its a vaultable object
             if (Physics.Raycast(cam.transform.position, cam.transform.forward, out var firstHit, vaultRange))
             {
+                // check if its a climbable grapple point
+                Grappable grappable = null;
+                bool grappableValid = false;
+                if (firstHit.collider.gameObject.tag == "Grappable")
+                {
+                    grappable = firstHit.collider.gameObject.GetComponent<Grappable>();
+                    grappableValid = grappable.climbable;
+                }
 
                 //cast to a point to go to after vaulting
-                if (firstHit.collider.gameObject.tag == "Vaultable"  && Physics.Raycast(firstHit.point + (cam.transform.forward * characterController.radius) + (Vector3.up * vaultHeightLimit * characterController.height), Vector3.down, out var secondHit, characterController.height))
+                if ((firstHit.collider.gameObject.tag == "Vaultable" || grappableValid)
+                    && Physics.Raycast(firstHit.point + (cam.transform.forward * characterController.radius) + (Vector3.up * vaultHeightLimit * characterController.height), Vector3.down, out var secondHit, characterController.height))
                 {
                     //  if grappling hook swining, stop it
                     if (fpsController.m_IsGrappling)
