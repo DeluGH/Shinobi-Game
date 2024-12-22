@@ -18,6 +18,7 @@ public class MenuController : MonoBehaviour
         Volume,
         Gameplay,
         Gameover,
+        MissionSelect,
     }
 
     [Header("Menus")]
@@ -29,6 +30,7 @@ public class MenuController : MonoBehaviour
     public GameObject keybindsPanel;
     public GameObject volumePanel;
     public GameObject gameOverPanel;
+    public GameObject missionSelectPanel; // mission selection
 
     [Header("Others")]
     public GameObject loadingScreen;
