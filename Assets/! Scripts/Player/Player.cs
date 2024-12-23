@@ -68,7 +68,8 @@ public class Player : MonoBehaviour
         if (currentHealth > 0)
         {
             currentHealth--;
-            GameplayUIController.Instance.UpdateHealthSlider(currentHealth, maxHealth);
+            if (GameplayUIController.Instance) GameplayUIController.Instance.UpdateHealthSlider(currentHealth, maxHealth);
+            else Debug.LogWarning("No Game UI?");
         }
 
         if (currentHealth <= 0)

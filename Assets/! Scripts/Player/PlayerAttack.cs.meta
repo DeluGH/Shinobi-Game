@@ -8,13 +8,14 @@ MonoImporter:
   - GhostSwingAffect: {fileID: 4919092195301282347, guid: 60284ce370ad98d46a5d20e0e2d9899b, type: 3}
   - SwingAffect: {fileID: 4919092195301282347, guid: 6fdcd2ee4dc42534e8e158eeb8df5797, type: 3}
   - blockParticle: {fileID: 4914658440447471751, guid: 9ca92957e88009548950b81d6481584e, type: 3}
-  - swordsClash: {fileID: 8300000, guid: 3ad7b1f437e067d4f83344e370aa9a71, type: 3}
-  - enemyHit: {fileID: 8300000, guid: a92922a7375482b4b8d47040651aa444, type: 3}
+  - heavySwingAffect: {fileID: 4919092195301282347, guid: c14de2da31917a44795f70b2bef4eb46, type: 3}
+  - heavyGhostSwingAffect: {fileID: 4919092195301282347, guid: c1b8352fbe47837478525597a1884366, type: 3}
+  - swordsClash: {fileID: 8300000, guid: b90608a5213088942985e16a054f1a01, type: 3}
+  - enemyHit: {fileID: 8300000, guid: 6cc3bfdf1ea8f0748ab7e683711c4e77, type: 3}
   - swordSwing: {fileID: 8300000, guid: a50ddaad0ecf347409d27a821e2d42e2, type: 3}
-  - swordParry: {fileID: 8300000, guid: 62c1aaef19184e749acd49180c5a4225, type: 3}
-  - assSound: {fileID: 8300000, guid: ddd63906988741c48b628f3dbee91bd1, type: 3}
+  - swordParry: {fileID: 8300000, guid: 50a383e3ea1793b468b22cea5e5c17bb, type: 3}
+  - assSound: {fileID: 8300000, guid: 57086434b87d6044983790535c103220, type: 3}
   - fallingSound: {fileID: 8300000, guid: 18eddb5dd01f35149bdb0337e73d698f, type: 3}
-  - cameraFacing: {instanceID: 0}
   - lookingAtEnemy: {instanceID: 0}
   - MainHandObject: {instanceID: 0}
   - currentHighlight: {instanceID: 0}

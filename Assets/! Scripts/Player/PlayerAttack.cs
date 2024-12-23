@@ -14,6 +14,8 @@ public class PlayerAttack : MonoBehaviour
     public GameObject GhostSwingAffect;  // can be null
     public GameObject SwingAffect;  // can be null
     public GameObject blockParticle;
+    public GameObject heavySwingAffect;
+    public GameObject heavyGhostSwingAffect;
 
     [Header("Sounds (Assign pls)")]
     public AudioClip swordsClash;   // Enemy blocked
@@ -49,8 +51,8 @@ public class PlayerAttack : MonoBehaviour
     public float meleeAnimTime = 0.2f;        // Time taken to Swing after attack is called
 
     [Header("Heavy")] // Destroys blocks, stuns, damage them if not blocking, no damage if their blocking
-    public float heavyRange = 4.5f;
-    public float heavyAngle = 70f;
+    public float heavyRange = 4.25f;
+    public float heavyAngle = 40f;
     public float heavyAnimTime = 0.1f;     // Time taken to Swing after attack is called
 
     public float heavyStunTime = 1.5f;
@@ -334,6 +336,7 @@ public class PlayerAttack : MonoBehaviour
             {
                 isPlayingFallingAudio = false;
                 playerScript.audioSource.Stop();
+                playerScript.fpsController.PlayLandingSound();
             }
             return false;
         }
@@ -454,6 +457,18 @@ public class PlayerAttack : MonoBehaviour
         // Animate swinging here
         if (isHeavy) // heavy
         {
+            GameObject swingEffect;
+            if (heavySwingAffect && !ghostMode) //slash effect
+            {
+                swingEffect = Instantiate(heavySwingAffect, playerScript.cameraFacing.transform.position, Quaternion.identity, playerScript.cameraFacing.transform);
+                swingEffect.transform.localRotation = Quaternion.identity;
+            }
+            else if (heavyGhostSwingAffect)
+            {
+                swingEffect = Instantiate(heavyGhostSwingAffect, playerScript.cameraFacing.transform.position, Quaternion.identity, playerScript.cameraFacing.transform);
+                swingEffect.transform.localRotation = Quaternion.identity;
+            }
+
             //animate heavy
             Animator anim = MainHandObject.GetComponentInChildren<Animator>();
             if (anim != null) anim.SetTrigger("Attack");
@@ -468,18 +483,15 @@ public class PlayerAttack : MonoBehaviour
             playerScript.audioSource.PlayOneShot(swordSwing);
 
             GameObject swingEffect;
-            if (SwingAffect != null)
+            if (SwingAffect && !ghostMode) //slash effect
             {
-                if (!ghostMode) //slash effect
-                {
-                    swingEffect = Instantiate(SwingAffect, playerScript.cameraFacing.transform.position, Quaternion.identity, playerScript.cameraFacing.transform);
-                    swingEffect.transform.localRotation = Quaternion.identity;
-                }
-                else
-                {
-                    swingEffect = Instantiate(GhostSwingAffect, playerScript.cameraFacing.transform.position, Quaternion.identity, playerScript.cameraFacing.transform);
-                    swingEffect.transform.localRotation = Quaternion.identity;
-                }
+                swingEffect = Instantiate(SwingAffect, playerScript.cameraFacing.transform.position, Quaternion.identity, playerScript.cameraFacing.transform);
+                swingEffect.transform.localRotation = Quaternion.identity;
+            }
+            else if (GhostSwingAffect)
+            {
+                swingEffect = Instantiate(GhostSwingAffect, playerScript.cameraFacing.transform.position, Quaternion.identity, playerScript.cameraFacing.transform);
+                swingEffect.transform.localRotation = Quaternion.identity;
             }
 
             // light animation

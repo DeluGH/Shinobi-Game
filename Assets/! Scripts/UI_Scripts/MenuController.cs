@@ -154,6 +154,22 @@ public class MenuController : MonoBehaviour
             currentMenuState = MenuState.MainMenu;
         }
     }
+    // Missions Panel
+    public void OpenMissions()
+    {
+        missionSelectPanel.SetActive(true);
+        currentMenuState = MenuState.MissionSelect;
+
+        mainMenuUI.SetActive(false);
+    }
+    public void CloseMissions()
+    {
+        missionSelectPanel.SetActive(false);
+        currentMenuState = MenuState.MainMenu;
+
+        mainMenuUI.SetActive(true);
+    }
+
     //Keybinds menu
     public void ToggleKeybindsMenu()
     {
@@ -299,7 +315,7 @@ public class MenuController : MonoBehaviour
     // LOADING
     public void LoadScene(string sceneName)
     {
-        mainMenuUI.SetActive(false);
+        missionSelectPanel.SetActive(false);
 
         StartCoroutine(LoadSceneAsync(sceneName));
     }

@@ -110,7 +110,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         }
 
 
-        private void PlayLandingSound()
+        public void PlayLandingSound()
         {
             m_AudioSource.clip = m_LandSound;
             m_AudioSource.Play();
@@ -187,7 +187,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         }
 
 
-        private void PlayFootStepAudio()
+        public void PlayFootStepAudio()
         {
             if (!m_CharacterController.isGrounded)
             {

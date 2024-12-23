@@ -2367,37 +2367,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8200000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: m_PlayOnAwake
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: assSound
+      propertyPath: heavySwingAffect
       value: 
-      objectReference: {fileID: 8300000, guid: ddd63906988741c48b628f3dbee91bd1, type: 3}
+      objectReference: {fileID: 4919092195301282347, guid: c14de2da31917a44795f70b2bef4eb46, type: 3}
     - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: swordSwing
+      propertyPath: heavyGhostSwingAffect
       value: 
-      objectReference: {fileID: 8300000, guid: a50ddaad0ecf347409d27a821e2d42e2, type: 3}
-    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: fallingSound
-      value: 
-      objectReference: {fileID: 8300000, guid: 18eddb5dd01f35149bdb0337e73d698f, type: 3}
-    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: blockParticle
-      value: 
-      objectReference: {fileID: 4914658440447471751, guid: 9ca92957e88009548950b81d6481584e, type: 3}
-    - target: {fileID: 7491280175671438195, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: m_CullingMask.m_Bits
-      value: 12087
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 4919092195301282347, guid: c1b8352fbe47837478525597a1884366, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 100000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      insertIndex: 1
-      addedObject: {fileID: 1936288377}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
 --- !u!1 &714030706
 GameObject:
@@ -6993,30 +6974,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1865343066}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1936288367 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 100000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-  m_PrefabInstance: {fileID: 639299619}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1936288377
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1936288367}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cbf047084aa05eb43a76b873ff42d281, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  interactRange: 3
-  scanAngle: 35
-  lookingAt: {fileID: 0}
-  playerScript: {fileID: 0}
-  interactLayer:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!1 &1942001932
 GameObject:
   m_ObjectHideFlags: 0
