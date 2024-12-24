@@ -17,6 +17,7 @@ public class KeybindManager : MonoBehaviour // Saving, Loading Keybinds
         { "Attack", KeyCode.Mouse0 },  // Left Click
         { "Use Utility", KeyCode.Mouse1 },  // Right Click
         { "Jump", KeyCode.Space },
+        { "Sprint", KeyCode.LeftShift },
         { "Interact", KeyCode.E },
         { "Crouch", KeyCode.LeftControl },
         { "Ghost Ultimate", KeyCode.Z },

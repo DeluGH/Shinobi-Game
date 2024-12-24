@@ -7,6 +7,9 @@ public class Player : MonoBehaviour
     public int maxHealth = 6;
     public bool assingImmunity = true;
 
+    [Header("Sounds")]
+    public AudioClip playerGetHit;
+
     [Header("Debug References")]
     public int currentHealth;
     public bool isBlocking = false;
@@ -63,11 +66,21 @@ public class Player : MonoBehaviour
         //either assing or blocking
         if ((assingImmunity && isAssassinating)) return;
 
-        if (isBlocking) attackScript.Blocked();
+        if (isBlocking)
+        {
+            attackScript.Blocked();
+            return;
+        }
 
         if (currentHealth > 0)
         {
             currentHealth--;
+
+            //Sound
+            audioSource.PlayOneShot(playerGetHit);
+
+            if (fpsController) fpsController.OnPlayerHit();
+
             if (GameplayUIController.Instance) GameplayUIController.Instance.UpdateHealthSlider(currentHealth, maxHealth);
             else Debug.LogWarning("No Game UI?");
         }

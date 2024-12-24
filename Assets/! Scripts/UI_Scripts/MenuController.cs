@@ -120,7 +120,8 @@ public class MenuController : MonoBehaviour
         gameplayPanel.SetActive(true);
         currentMenuState = MenuState.Gameplay;
 
-        //GameplayUIController.Instance.UpdateHealthSlider(playerScript.currentHealth, playerScript.maxHealth);
+        GameplayUIController.Instance.UpdateHealthSlider(playerScript.currentHealth, playerScript.maxHealth);
+        GameplayUIController.Instance.UpdateGhostSlider(playerScript.attackScript.ghostCurrentChargeAmount, playerScript.attackScript.ghostChargeAmount);
 
         LockCursor();
     }
@@ -249,6 +250,7 @@ public class MenuController : MonoBehaviour
         Time.timeScale = 1f;
         pauseMenuPanel.SetActive(false);
         gameplayPanel.SetActive(true);
+        gameOverPanel.SetActive(false);
         fpsController.enabled = true;
         characterController.enabled = true;
 
@@ -363,6 +365,7 @@ public class MenuController : MonoBehaviour
 
         // DONE
         currentMenuState = MenuState.Gameplay;
+        gameOverPanel.SetActive(false);
         gameplayPanel.SetActive(true);
         loadingScreen.SetActive(false);
 

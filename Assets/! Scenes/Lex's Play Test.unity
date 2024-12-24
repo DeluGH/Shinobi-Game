@@ -2367,18 +2367,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 11400000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: m_JumpSpeed
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 3563442200341450424, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: tip.key
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3563442200341450424, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
-      propertyPath: tip.tipMessage
-      value: Interact
-      objectReference: {fileID: 0}
+    - target: {fileID: 1277757305491851741, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
+      propertyPath: playerGetHit
+      value: 
+      objectReference: {fileID: 8300000, guid: 42abf90704d76a04197c9bbd5d1662e4, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

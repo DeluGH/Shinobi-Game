@@ -140,29 +140,13 @@ public class PlayerAttack : MonoBehaviour
         {
             if (!ghostMode && ghostCurrentChargeAmount >= ghostChargeAmount)
             {
-                //Enter ghost mode
-                GhostModeStun();
-
-                ghostMode = true;
-                ghostTimer = 0f;
-                ghostCurrentChargeAmount = 0;
-                currentAttackCooldown = ghostAttackCooldown;
-
-                RendererToggleManager.Instance.ToggleRendererFeature("Kurosawa Filter", true);
+                GhostMode(true);
             }
         }
         //Ghost Timer - Disabler
         if (ghostMode)
         {
-            ghostTimer += Time.deltaTime;
-            if (ghostTimer >= ghostDuration)
-            {
-                ghostMode = false;
-                ghostTimer = 0f;
-                currentAttackCooldown = attackCooldown;
-
-                RendererToggleManager.Instance.ToggleRendererFeature("Kurosawa Filter", false);
-            }
+            GhostMode(false);
         }
 
         // !! Set attackCooldown to 0 in Frenzy, or just change attackCooldown for anything
@@ -183,11 +167,15 @@ public class PlayerAttack : MonoBehaviour
                     chargeStartTime = Time.time; // Record when charging started
                     startedCharging = true;
                 }
-                chargeTime = Time.time - chargeStartTime;
+                
+                if (startedCharging) chargeTime = Time.time - chargeStartTime;
 
-                Animator anim = MainHandObject.GetComponentInChildren<Animator>();
-                if (anim != null) anim.SetBool("isCharging", true);
-                else Debug.LogWarning("No Sword Anim detected!");
+                if (chargeTime >= 0.125f)
+                {
+                    Animator anim = MainHandObject.GetComponentInChildren<Animator>();
+                    if (anim != null) anim.SetBool("isCharging", true);
+                    else Debug.LogWarning("No Sword Anim detected!");
+                }
 
                 //if (chargeTime < heavyChargeTime) Debug.Log($"Charging... {chargeTime}");
                 //else Debug.Log($"Heavy Ready!");
@@ -206,6 +194,7 @@ public class PlayerAttack : MonoBehaviour
                 else if (chargeTime >= heavyChargeTime * (ghostMode ? ghostHeavyChargeTimePercentage : 1f)) // Heavy
                 {
                     Swing(true); //isHeavy
+                    startedCharging = false;
                 }
                 else
                 {
@@ -246,11 +235,42 @@ public class PlayerAttack : MonoBehaviour
         Instantiate(blockParticle, transform.position, Quaternion.identity, transform);
     }
 
+    public void GhostMode(bool state)
+    {
+        if (state == true)
+        {
+            //Enter ghost mode
+            GhostModeStun();
+
+            ghostMode = true;
+            ghostTimer = 0f;
+            ghostCurrentChargeAmount = 0;
+            currentAttackCooldown = ghostAttackCooldown;
+
+            GameplayUIController.Instance.UpdateGhostSlider(ghostCurrentChargeAmount, ghostChargeAmount);
+            RendererToggleManager.Instance.ToggleRendererFeature("Kurosawa Filter", true);
+        }
+        else
+        {
+            ghostTimer += Time.deltaTime;
+            if (ghostTimer >= ghostDuration)
+            {
+                ghostMode = false;
+                ghostTimer = 0f;
+                currentAttackCooldown = attackCooldown;
+
+                GameplayUIController.Instance.UpdateGhostSlider(ghostCurrentChargeAmount, ghostChargeAmount);
+                RendererToggleManager.Instance.ToggleRendererFeature("Kurosawa Filter", false);
+            }
+        }
+    }
     public void IncreaseGhostCharge()
     {
         if (!ghostMode && ghostCurrentChargeAmount < ghostChargeAmount)
         {
             ghostCurrentChargeAmount++;
+
+            GameplayUIController.Instance.UpdateGhostSlider(ghostCurrentChargeAmount, ghostChargeAmount);
         }
     }
 
@@ -380,7 +400,6 @@ public class PlayerAttack : MonoBehaviour
             {
                 enemy.Stun(ghostStunDuration);
             }
-
         }
     }
 
@@ -493,7 +512,7 @@ public class PlayerAttack : MonoBehaviour
 
     public void Swing(bool isHeavy)
     {
-        Debug.Log($"Swing! Heavy: {isHeavy}");
+        //Debug.Log($"Swing! Heavy: {isHeavy}");
         // Animate swinging here
         if (isHeavy) // heavy
         {

@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -54,8 +56,14 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private Vector3 defaultCenter;
         private Vector3 m_CrouchedCameraPosition;
 
-        [Header("Player Reference")]
+        [Header("Reference (Auto)")]
         public Player playerScript;
+        public Volume volume;
+        private Vignette vignette;
+
+        private bool isFlashing = false;
+        private float flashDuration = 1f; // Flash duration (in seconds)
+        private float flashStartTime;
 
         // Use this for initialization
         private void Start()
@@ -78,6 +86,25 @@ namespace UnityStandardAssets.Characters.FirstPerson
             //Lex's code
             playerScript = GetComponent<Player>();
             if (playerScript == null) Debug.LogWarning("No playerScript reference!");
+
+            if (volume == null) volume = GameObject.FindGameObjectWithTag("Global Volume").GetComponent<Volume>();
+            if (volume == null) Debug.LogWarning("No Global Volume Found!");
+            if (volume != null && volume.profile != null)
+            {
+                // Try to get the Vignette effect
+                if (volume.profile.TryGet<Vignette>(out vignette))
+                {
+                    vignette.active = false; // Ensure it's initially off
+                }
+                else
+                {
+                    Debug.LogWarning("Vignette effect not found in the Volume Profile.");
+                }
+            }
+            else
+            {
+                Debug.LogError("Volume or Volume Profile is missing.");
+            }
         }
 
 
@@ -107,6 +134,50 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
 
             m_PreviouslyGrounded = m_CharacterController.isGrounded;
+
+            //Lex's Code
+            // Handle the red vignette flashing timer
+            if (isFlashing)
+            {
+                vignette.color.value = Color.red;
+
+                float elapsed = Time.time - flashStartTime;
+
+                if (elapsed < flashDuration)
+                {
+                    // Fade in (alpha from 0 to 1) over the first half of the duration
+                    float alpha = Mathf.Lerp(0f, 1f, elapsed / flashDuration);
+                    vignette.smoothness.value = alpha;
+                }
+                else if (elapsed < flashDuration * 1.5f)
+                {
+                    // Hold the vignette fully visible for a brief moment
+                    vignette.smoothness.value = 1f;
+                }
+                else if (elapsed < flashDuration * 2f)
+                {
+                    // Fade out (alpha from 1 to 0) over the last part of the duration
+                    float alpha = Mathf.Lerp(1f, 0f, (elapsed - flashDuration * 1.5f) / flashDuration);
+                    vignette.smoothness.value = alpha;
+                }
+                else
+                {
+                    // Finish the flash effect
+                    vignette.smoothness.value = 0f;
+                    vignette.color.value = Color.black;  // Reset to default color (black)
+                    isFlashing = false;
+
+                    // Re-apply crouching vignette if the player is still crouching
+                    if (m_IsCrouched)
+                    {
+                        ToggleCrouchingVignette(true);  // Re-enable the crouching vignette
+                    }
+                    else
+                    {
+                        vignette.active = false;  // Disable vignette when not crouching
+                    }
+                }
+            }
         }
 
 
@@ -244,10 +315,10 @@ namespace UnityStandardAssets.Characters.FirstPerson
 #if !MOBILE_INPUT
             // On standalone builds, walk/run speed is modified by a key press.
             // keep track of whether or not the character is walking or running
-            m_IsWalking = !Input.GetKey(KeyCode.LeftShift);
+            m_IsWalking = !Input.GetKey(KeybindManager.Instance.keybinds["Sprint"]);
 
             //check if crouch key was pressed to change isCrouched state
-            if (Input.GetKeyDown(KeyCode.LeftControl))
+            if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Crouch"]))
             {
                 m_IsCrouched = !m_IsCrouched;
                 ToggleCrouch();
@@ -308,13 +379,11 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void ToggleCrouchingVignette(bool isOn)
         {
-            Volume volume = GameObject.Find("Global Volume").GetComponent<Volume>();
-
             // Check if the Volume has a profile
             if (volume != null && volume.profile != null)
             {
                 // Check if the Vignette effect exists in the profile
-                if (volume.profile.TryGet<Vignette>(out Vignette vignette))
+                if (volume.profile.TryGet<Vignette>(out vignette))
                 {
                     // Enable the Vignette effect
                     vignette.active = isOn;
@@ -328,6 +397,28 @@ namespace UnityStandardAssets.Characters.FirstPerson
             else
             {
                 Debug.LogError("Volume or Volume Profile is missing.");
+            }
+        }
+
+        // Call this method when the player is hit
+        public void OnPlayerHit()
+        {
+            // Start the flash effect if it's not already active
+            if (!isFlashing)
+            {
+                isFlashing = true;
+                flashStartTime = Time.time;
+                vignette.active = true; // Ensure vignette is active during the flash
+
+                // Set the vignette to red
+                if (vignette != null)
+                {
+                    vignette.color.value = Color.red;  // Set color to red
+                    vignette.intensity.value = 0.5f;  // Adjust the intensity as needed
+                }
+
+                // Begin flashing effect
+                vignette.smoothness.value = 0f;  // Start with no vignette smoothness (fully transparent)
             }
         }
 

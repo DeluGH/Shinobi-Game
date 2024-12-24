@@ -12,6 +12,7 @@ TagManager:
   - Util Hand
   - EnemyWeapon
   - Interactable
+  - Global Volume
   layers:
   - Default
   - TransparentFX

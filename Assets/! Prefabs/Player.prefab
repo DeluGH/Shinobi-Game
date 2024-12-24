@@ -128,6 +128,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 6
   assingImmunity: 1
+  playerGetHit: {fileID: 8300000, guid: 42abf90704d76a04197c9bbd5d1662e4, type: 3}
   currentHealth: 0
   isBlocking: 0
   isAssassinating: 0
@@ -279,6 +280,7 @@ MonoBehaviour:
   m_Jumping: 0
   m_IsVaulting: 0
   playerScript: {fileID: 0}
+  volume: {fileID: 0}
 --- !u!114 &7697938410488673884
 MonoBehaviour:
   m_ObjectHideFlags: 0

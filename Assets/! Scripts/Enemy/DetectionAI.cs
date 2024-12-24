@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using Unity.VisualScripting;
+using UnityEditor.Build;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
@@ -283,14 +284,20 @@ public class DetectionAI : MonoBehaviour
 
         //BEHAVIORS
         // Rotate towards the player during Aware if they are in the green or yellow zones
-        if (susMeter >= awareMeter && enemyScript.playerInDetectionArea && enemyScript.HasLineOfSight(enemyScript.player))
+        if (!enemyScript.combatMode && susMeter >= awareMeter && enemyScript.playerInDetectionArea && enemyScript.HasLineOfSight(enemyScript.player))
         {
             RotateTowardsPlayer(); //Aware ++
+        }
+        else if (enemyScript.combatMode)
+        {
+            RotateTowardsPlayer();
         }
         else if (susMeter >= awareMeter && susMeter <= inveMeter && !enemyScript.playerInDetectionArea && !enemyScript.HasLineOfSight(enemyScript.player))
         {
             RotateTowardsLastKnown(); //Aware, but no sight of Player
         }
+
+
         //Tell other AI to be alert too, give the other AIs lastKnownLocation, alertBuff true, isAlert true, susMeter 150
         if (alertBuffs) //alertbuffs means has been alerted which is also isAlert
         {

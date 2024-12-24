@@ -137,6 +137,7 @@ public class Enemy : MonoBehaviour
             if (chokingTimer >= chokingDuration)
             {
                 isChoking = false;
+                anim.SetBool("isChoke", false);
                 chokingTimer = 0f;
                 chokingDuration = 0f;
             }
@@ -148,6 +149,7 @@ public class Enemy : MonoBehaviour
             if (stunnedTimer >= stunnedDuration)
             {
                 isStunned = false;
+                anim.SetBool("isStun", false);
                 if (agent.isActiveAndEnabled) agent.isStopped = false;
 
                 stunnedTimer = 0f;
@@ -201,7 +203,6 @@ public class Enemy : MonoBehaviour
                 anim.SetTrigger("Back");
             }
         }
-        
 
         // Strafing instead of walking/running?
         if (isStrafing)
@@ -359,7 +360,9 @@ public class Enemy : MonoBehaviour
         if (agent.isActiveAndEnabled) agent.isStopped = true; // fix while moving, they get stunned, stops them from moving
 
         isStunned = true;
-        
+        anim.SetBool("isStun", true);
+        anim.SetTrigger("Stun");
+
         if (duration >= stunnedDuration) stunnedDuration = duration; // Overwrite if its a stronger stun
         
         stunnedTimer = 0f;
@@ -430,6 +433,8 @@ public class Enemy : MonoBehaviour
 
         inSmoke = true;
         isChoking = true; // start choke in smoke
+        anim.SetBool("isChoke", true);
+        anim.SetTrigger("Choke");
         chokingTimer = 0f; // Reset timer jic
 
         // choke until smoke ends + after smoke effects
