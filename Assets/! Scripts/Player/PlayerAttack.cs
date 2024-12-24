@@ -148,7 +148,7 @@ public class PlayerAttack : MonoBehaviour
                 ghostCurrentChargeAmount = 0;
                 currentAttackCooldown = ghostAttackCooldown;
 
-                
+                RendererToggleManager.Instance.ToggleRendererFeature("Kurosawa Filter", true);
             }
         }
         //Ghost Timer - Disabler
@@ -160,6 +160,8 @@ public class PlayerAttack : MonoBehaviour
                 ghostMode = false;
                 ghostTimer = 0f;
                 currentAttackCooldown = attackCooldown;
+
+                RendererToggleManager.Instance.ToggleRendererFeature("Kurosawa Filter", false);
             }
         }
 
@@ -311,7 +313,7 @@ public class PlayerAttack : MonoBehaviour
                 (!enemyScript.playerInDetectionArea || enemyScript.isChoking || enemyScript.isStunned)) // not in view OR enemy is busy choking
             {
                 assEnemyTarget = lookingAtEnemy;
-                Debug.Log("AIR ASS");
+                //Debug.Log("AIR ASS");
                 Debug.DrawLine(transform.position, lookingAtEnemy.transform.position, Color.magenta, 1f);
                 return true;
             }
@@ -324,7 +326,7 @@ public class PlayerAttack : MonoBehaviour
             (IsPlayerBehindEnemy(lookingAtEnemy.transform) && !enemyScript.playerInDetectionArea || enemyScript.isChoking || enemyScript.isStunned)) // is behind & not in view OR enemy is busy choking
             {
                 assEnemyTarget = lookingAtEnemy;
-                Debug.Log("LAND ASS");
+                //Debug.Log("LAND ASS");
                 Debug.DrawLine(transform.position, lookingAtEnemy.transform.position, Color.magenta, 1f);
                 return true;
             }
