@@ -59,6 +59,9 @@ MonoBehaviour:
   interactRange: 3
   scanAngle: 35
   lookingAt: {fileID: 0}
+  tip:
+    key: 0
+    tipMessage: Interact
   playerScript: {fileID: 0}
   interactLayer:
     serializedVersion: 2
@@ -163,7 +166,7 @@ MonoBehaviour:
   m_CrouchSpeed: 3
   m_RunSpeed: 10
   m_RunstepLenghten: 0.7
-  m_JumpSpeed: 10
+  m_JumpSpeed: 8
   m_StickToGroundForce: 10
   m_GravityMultiplier: 2
   m_MouseLook:
@@ -321,6 +324,9 @@ MonoBehaviour:
   vaultDuration: 0.7
   vaultingSound: {fileID: 0}
   playAudioWhilstVaulting: 0
+  tip:
+    key: 0
+    tipMessage: Vault
 --- !u!82 &8200000
 AudioSource:
   m_ObjectHideFlags: 0
@@ -523,7 +529,6 @@ MonoBehaviour:
   walkNoiseRadius: 5
   runNoiseRadius: 10
   playerScript: {fileID: 0}
-  playerTransform: {fileID: 0}
 --- !u!1 &2465859581343874915
 GameObject:
   m_ObjectHideFlags: 0
@@ -963,11 +968,13 @@ MonoBehaviour:
   MainHandObject: {fileID: 0}
   ghostMode: 0
   ghostChargeAmount: 7
-  ghostDuration: 12
+  ghostDuration: 7.5
   ghostRangeBuff: 1
   ghostAngleBuff: 20
   ghostAttackCooldown: 0.25
   ghostHeavyChargeTimePercentage: 0.5
+  ghostStunRadius: 12
+  ghostStunDuration: 7.5
   meleeRange: 4
   meleeAngle: 100
   meleeAnimTime: 0.2
@@ -990,6 +997,9 @@ MonoBehaviour:
   airAssAnimTime: 0.1
   airAssLerpMinDistance: 0.15
   airAssLerpTime: 0.1
+  tip:
+    key: 0
+    tipMessage: Assassinate
   currentHighlight: {fileID: 0}
   playerScript: {fileID: 0}
   maxRaycastRange: 10

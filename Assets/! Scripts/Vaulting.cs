@@ -22,6 +22,8 @@ public class Vaulting : MonoBehaviour
     [SerializeField] private AudioClip vaultingSound;
     [SerializeField] private bool playAudioWhilstVaulting;
 
+    [Header("Cursor Tip")]
+    public CursorTipsManager.Tip tip;
 
     void Start()
     {
@@ -38,14 +40,27 @@ public class Vaulting : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (IsGrappleValid())
+        {
+            tip.key = KeybindManager.Instance.keybinds["Jump"];
+            tip.tipMessage = "Vault";
+            CursorTipsManager.Instance.MakeTip(tip);
+        }
+        else
+        {
+            tip.key = KeybindManager.Instance.keybinds["Jump"];
+            tip.tipMessage = "Vault";
+            CursorTipsManager.Instance.RemoveTip(tip);
+        }
+
         Vault();
     }
 
     private void Vault()
     {
-        if (Input.GetKey(KeyCode.Space) && !isVaulting)
-        {
 
+        if ((Input.GetKeyDown(KeybindManager.Instance.keybinds["Jump"])) && !isVaulting)
+        {
             //cast a ray to see if in range to vault and check if its a vaultable object
             if (Physics.Raycast(cam.transform.position, cam.transform.forward, out var firstHit, vaultRange))
             {
@@ -81,6 +96,30 @@ public class Vaulting : MonoBehaviour
         }
 
     }
+
+    private bool IsGrappleValid()
+    {
+        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out var firstHit, vaultRange))
+        {
+            Grappable grappable = null;
+            bool grappableValid = false;
+
+            if (firstHit.collider.gameObject.tag == "Grappable")
+            {
+                grappable = firstHit.collider.gameObject.GetComponent<Grappable>();
+                grappableValid = grappable.climbable;
+            }
+
+            if ((firstHit.collider.gameObject.tag == "Vaultable" || grappableValid)
+                && Physics.Raycast(firstHit.point + (cam.transform.forward * characterController.radius) + (Vector3.up * vaultHeightLimit * characterController.height), Vector3.down, out var secondHit, characterController.height))
+            {
+                return grappableValid;
+            }
+            
+        }
+        return false;
+    }
+
     IEnumerator LerpVault(Vector3 targetPosition, float duration)
     {
         fpsController.m_IsVaulting = true; // Start vaulting

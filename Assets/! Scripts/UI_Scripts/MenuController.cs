@@ -376,6 +376,13 @@ public class MenuController : MonoBehaviour
 
         gameOverPanel.SetActive(true);
         gameplayPanel.SetActive(false);
+
+        fpsController.enabled = false;
+        characterController.enabled = false;
+
+        ReanimateCursor();
+
+        Debug.Log("Game paused.");
     }
 
     //Lex's simple functions

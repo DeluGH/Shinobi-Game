@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityStandardAssets.Characters.FirstPerson;
 using UnityStandardAssets.Utility;
+using static CursorTipsManager;
 
 public class PlayerAttack : MonoBehaviour
 {
@@ -39,11 +40,13 @@ public class PlayerAttack : MonoBehaviour
     [Header("Ghost Mode")]
     public bool ghostMode = false;
     public int ghostChargeAmount = 7; // needed to charge
-    public float ghostDuration = 12f;
+    public float ghostDuration = 7.5f;
     public float ghostRangeBuff = 1f; // adds to all range
     public float ghostAngleBuff = 20f; // adds to all angles
     public float ghostAttackCooldown = 0.25f; // adds to all angles
     public float ghostHeavyChargeTimePercentage = 0.5f; // charge 0.5 = 50% less time
+    public float ghostStunRadius = 12f;
+    public float ghostStunDuration = 7.5f;
 
     [Header("Light")]
     public float meleeRange = 4f;
@@ -80,6 +83,9 @@ public class PlayerAttack : MonoBehaviour
     public float airAssLerpMinDistance = 0.15f;     // Min. Distance player will be from the AI after assassinating it  // Default: 0.15
     public float airAssLerpTime = 0.1f;             // Time taken for player to lerp/reach the AI                       // Default: 0.1
 
+    [Header("Tip")]
+    public CursorTipsManager.Tip tip;
+
     [Header("References (Auto)")]
     public GameObject currentHighlight; // Only highlights if currentHighlight = null, currentHighlight changes parents and follows above them
     public Player playerScript;
@@ -111,8 +117,22 @@ public class PlayerAttack : MonoBehaviour
     void Update()
     {
         canAssassinate = isEnemyAssable(); // Check for any assable enemies
-        if (canAssassinate && assEnemyTarget && !isAssing) HighlightEnemy(assEnemyTarget);
-        else RemoveHighlight();
+        if (canAssassinate && assEnemyTarget && !isAssing)
+        {
+            HighlightEnemy(assEnemyTarget);
+
+            tip.key = KeybindManager.Instance.keybinds["Attack"];
+            tip.tipMessage = "Assassinate";
+            CursorTipsManager.Instance.MakeTip(tip);
+        }
+        else
+        {
+            RemoveHighlight();
+
+            tip.key = KeybindManager.Instance.keybinds["Attack"];
+            tip.tipMessage = "Assassinate";
+            CursorTipsManager.Instance.RemoveTip(tip);
+        }
 
 
         //Ghost Mode
@@ -121,10 +141,14 @@ public class PlayerAttack : MonoBehaviour
             if (!ghostMode && ghostCurrentChargeAmount >= ghostChargeAmount)
             {
                 //Enter ghost mode
+                GhostModeStun();
+
                 ghostMode = true;
                 ghostTimer = 0f;
                 ghostCurrentChargeAmount = 0;
                 currentAttackCooldown = ghostAttackCooldown;
+
+                
             }
         }
         //Ghost Timer - Disabler
@@ -342,7 +366,21 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
+    public void GhostModeStun()
+    {
+        // Find all colliders within the noise radius on the enemy layer
+        Collider[] hitColliders = Physics.OverlapSphere(playerScript.transform.position, ghostStunRadius, playerScript.enemyLayer);
 
+        foreach (Collider collider in hitColliders)
+        {
+            Enemy enemy = collider.GetComponent<Enemy>();
+            if (enemy != null && !enemy.isDead)
+            {
+                enemy.Stun(ghostStunDuration);
+            }
+
+        }
+    }
 
     public void Assassinate(bool isAirAssassinate)
     {

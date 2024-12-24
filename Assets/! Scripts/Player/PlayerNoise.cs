@@ -8,14 +8,11 @@ public class PlayerNoise : MonoBehaviour
 
     [Header("References (Auto)")]
     public Player playerScript;
-    public Transform playerTransform;
 
     void Start()
     {
         playerScript = GetComponentInParent<Player>();
         if (playerScript == null) Debug.LogWarning("No playerScript reference!");
-
-        if (playerScript != null) playerTransform = playerScript.GetComponent<Transform>();
     }
 
     public void NotifyEnemies(bool isWalking)
@@ -24,14 +21,14 @@ public class PlayerNoise : MonoBehaviour
         float noiseRadius = isWalking ? walkNoiseRadius : runNoiseRadius;
 
         // Find all colliders within the noise radius on the enemy layer
-        Collider[] hitColliders = Physics.OverlapSphere(playerTransform.position, noiseRadius, playerScript.enemyLayer);
+        Collider[] hitColliders = Physics.OverlapSphere(playerScript.transform.position, noiseRadius, playerScript.enemyLayer);
 
         foreach (Collider collider in hitColliders)
         {
             Enemy enemy = collider.GetComponent<Enemy>();
             if (enemy != null && !enemy.isDead)
             {
-                enemy.HeardNoise(playerTransform, isWalking);
+                enemy.HeardNoise(playerScript.transform, isWalking);
             }
         }
     }

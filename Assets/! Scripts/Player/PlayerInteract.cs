@@ -1,6 +1,7 @@
 using UnityEditor.Build;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
+using static CursorTipsManager;
 
 public class PlayerInteract : MonoBehaviour
 {
@@ -8,10 +9,12 @@ public class PlayerInteract : MonoBehaviour
     [SerializeField] private float interactRange = 3;
     public float scanAngle = 35f;
     private Interactable interactable;
-    private RaycastHit interactionHit;
 
     [Header("Debug Refer")]
     public GameObject lookingAt;
+
+    [Header("Tip")]
+    public CursorTipsManager.Tip tip;
 
     [Header("References (Auto)")]
     public Player playerScript;
@@ -29,34 +32,6 @@ public class PlayerInteract : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //  To whover is gonna be fixing this, there are two problems
-        // 1. interactable.DoInteraction(); is not being ran
-        // 2. after hovering over an interactable for a while, player control is just gone for some reason
-
-
-        //if (Physics.Raycast(transform.position, playerScript.cameraFacing.forward, out interactionHit, interactRange))
-        //{
-        //    if (interactionHit.collider.CompareTag(interactTag))
-        //    {
-        //        interactable = interactionHit.collider.GetComponent<Interactable>();
-        //        interactable.DoHoverOverActions();
-
-
-        //        if (interactable != null) // Ensure it's not null
-        //        {
-        //            // Perform hover-over actions
-        //            interactable.DoHoverOverActions();
-
-        //            // Check for interaction input
-        //            if (Input.GetKeyDown(KeybindManager.Instance.keybinds[interactKeyString]))
-        //            {
-        //                interactable.DoInteraction();
-        //            }
-        //        }
-
-        //    }
-        //}
-
         if (ScanForInteractable())
         {
             interactable = lookingAt?.GetComponent<Interactable>();
@@ -64,6 +39,13 @@ public class PlayerInteract : MonoBehaviour
             if (interactable != null)
             {
                 interactable.DoHoverOverActions();
+
+                if (CursorTipsManager.Instance != null)
+                {
+                    tip.key = KeybindManager.Instance.keybinds["Interact"];
+                    tip.tipMessage = "Interact";
+                    CursorTipsManager.Instance.MakeTip(tip);
+                }
 
                 if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Interact"]))
                 {
@@ -73,7 +55,11 @@ public class PlayerInteract : MonoBehaviour
         }
         else
         {
-            interactable = null; 
+            interactable = null;
+
+            tip.key = KeybindManager.Instance.keybinds["Interact"];
+            tip.tipMessage = "Interact";
+            CursorTipsManager.Instance.RemoveTip(tip);
         }
 
     }
@@ -111,4 +97,5 @@ public class PlayerInteract : MonoBehaviour
         lookingAt = null;
         return false;
     }
+
 }

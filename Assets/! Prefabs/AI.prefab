@@ -88,6 +88,7 @@ MonoBehaviour:
   player: {fileID: 0}
   agent: {fileID: 0}
   anim: {fileID: 0}
+  capsuleCollider: {fileID: 0}
   detectionScript: {fileID: 0}
   activityScript: {fileID: 0}
   attackScript: {fileID: 0}
@@ -143,6 +144,7 @@ MonoBehaviour:
   enemyScript: {fileID: 0}
   attackPosition: {x: 0, y: 0, z: 0}
   attackGoToTimer: 0
+  playerIsKilled: 0
 --- !u!114 &5742486413366494391
 MonoBehaviour:
   m_ObjectHideFlags: 0
