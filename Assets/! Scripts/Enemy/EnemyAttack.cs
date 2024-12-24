@@ -90,7 +90,7 @@ public class EnemyAttack : MonoBehaviour
                 attackWaitTimer = 0f;
                 attackGoToTimer = 0f;
 
-                GetAttackGoToPosition();
+                CalculateAttackPosition();
                 StartCoroutine(PerformAttack());
             }
             else if (canRepositionNow)
@@ -115,36 +115,32 @@ public class EnemyAttack : MonoBehaviour
         }
     }
 
-    public void GetAttackGoToPosition()
-    {
-        int maxAttempts = 7;
-        int attempts = 0;
-
-        Vector3 destination = CalculateAttackPosition(attempts);
-
-        //Success!
-        while (!enemyScript.HasClearLineOfSightForRepositionOrStrafe(destination) && attempts < maxAttempts)
-        {
-            attempts++;
-            destination = CalculateAttackPosition(attempts);
-        }
-
-        attackPosition = destination;
-    }
-
-    public Vector3 CalculateAttackPosition(int attempts)
+    public void CalculateAttackPosition()
     {
         // Feature: moves a little forward to attack
         float distanceFromPlayer = Vector3.Distance(enemyScript.player.transform.position, transform.position);
         Vector3 directionToPlayer = (enemyScript.player.transform.position - transform.position).normalized;
-        return transform.position + directionToPlayer * ((distanceFromPlayer + 1f) - attackRange - (attempts * 0.1f)); // + 1f for player radius and enemy radius
+        Vector3 destination = transform.position + directionToPlayer * ((distanceFromPlayer + 1f) - attackRange); // + 1f for player radius and enemy radius
+
+        attackPosition = destination;
     }
 
     private IEnumerator PerformAttack()
     {
         while (Vector3.Distance(attackPosition, transform.position) > attackRange)
         {
-            if (enemyScript.agent.isActiveAndEnabled) enemyScript.agent.SetDestination(attackPosition);
+            if (enemyScript.agent.isActiveAndEnabled)
+            {
+                Vector3 validatedPosition = ValidateNavMeshPosition(attackPosition);
+                if (validatedPosition != Vector3.zero)
+                {
+                    enemyScript.agent.SetDestination(validatedPosition);
+                }
+                else
+                {
+                    Debug.LogWarning("Invalid target position on NavMesh!");
+                }
+            }
             else break;
             //MOVEMENT ANIMATION
             enemyScript.SetMovementAnimation();
@@ -189,6 +185,17 @@ public class EnemyAttack : MonoBehaviour
         attackAvailable = false;
         attackWaitTime = GetAttackWait(); // Get Random Wait Time
     }
+
+    private Vector3 ValidateNavMeshPosition(Vector3 targetPosition)
+    {
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(targetPosition, out hit, 1.0f, NavMesh.AllAreas))
+        {
+            return hit.position; // Return the closest valid NavMesh position
+        }
+        return Vector3.zero; // Return invalid position if none found
+    }
+
 
     public float GetAttackWait()
     {
@@ -334,30 +341,24 @@ public class EnemyAttack : MonoBehaviour
         Vector3 strafeDirection = Vector3.Cross(directionToPlayer, Vector3.up).normalized;
 
         // Decide whether to strafe left or right
-        if (!enemyScript.strafingRight)
-        {
-            strafeDirection = -strafeDirection;
-        }
+        if (!enemyScript.strafingRight) strafeDirection = -strafeDirection;
 
         // Calculate the target position
         Vector3 targetPosition = transform.position + strafeDirection * strafeSpeed;
 
-        // Check if the target position is valid
-        if (enemyScript.HasClearLineOfSightForRepositionOrStrafe(targetPosition))
-        {
-            
-            if (enemyScript.agent.isActiveAndEnabled) enemyScript.agent.SetDestination(targetPosition);
-            // ANIMATION
-            enemyScript.isStrafing = true;
-            //MOVEMENT ANIMATION
-            enemyScript.SetMovementAnimation();
+        // Validate strafing target
+        Vector3 validatedPosition = ValidateNavMeshPosition(targetPosition);
 
+        if (validatedPosition != Vector3.zero && enemyScript.HasClearLineOfSightForRepositionOrStrafe(validatedPosition))
+        {
+            if (enemyScript.agent.isActiveAndEnabled) enemyScript.agent.SetDestination(validatedPosition);
+            enemyScript.isStrafing = true;
+            enemyScript.SetMovementAnimation();
             ToggleStrafeDirection();
-            Debug.Log("Strafing!");
         }
         else
         {
-            Debug.LogWarning("Failed to strafe, path blocked!");
+            Debug.LogWarning("Strafe path blocked or invalid!");
         }
     }
 

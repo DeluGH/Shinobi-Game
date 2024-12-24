@@ -121,17 +121,25 @@ public class PlayerAttack : MonoBehaviour
         {
             HighlightEnemy(assEnemyTarget);
 
-            tip.key = KeybindManager.Instance.keybinds["Attack"];
-            tip.tipMessage = "Assassinate";
-            CursorTipsManager.Instance.MakeTip(tip);
+            if (CursorTipsManager.Instance != null)
+            {
+                tip.key = KeybindManager.Instance.keybinds["Attack"];
+                tip.tipMessage = "Assassinate";
+                CursorTipsManager.Instance.MakeTip(tip);
+            }
+                
         }
         else
         {
             RemoveHighlight();
 
-            tip.key = KeybindManager.Instance.keybinds["Attack"];
-            tip.tipMessage = "Assassinate";
-            CursorTipsManager.Instance.RemoveTip(tip);
+            if (CursorTipsManager.Instance != null)
+            {
+                tip.key = KeybindManager.Instance.keybinds["Attack"];
+                tip.tipMessage = "Assassinate";
+                CursorTipsManager.Instance.RemoveTip(tip);
+            }
+               
         }
 
 

@@ -57,9 +57,13 @@ public class PlayerInteract : MonoBehaviour
         {
             interactable = null;
 
-            tip.key = KeybindManager.Instance.keybinds["Interact"];
-            tip.tipMessage = "Interact";
-            CursorTipsManager.Instance.RemoveTip(tip);
+            if (CursorTipsManager.Instance != null)
+            {
+                tip.key = KeybindManager.Instance.keybinds["Interact"];
+                tip.tipMessage = "Interact";
+                CursorTipsManager.Instance.RemoveTip(tip);
+            }
+                
         }
 
     }

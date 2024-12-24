@@ -12,23 +12,56 @@ public class ActivityAI : MonoBehaviour
     public int currentActivityIndex = 0; // Tracks which activity is being executed
     public int currentPathIndex = 0; // Tracks current pathpoint for GoTo activities
 
+    [Header("Idle Sounds Setting")]
+    public float minimumSeconds = 10f;
+    public float maximumSeconds = 30f;
+    public int minimumActivitiesComplete = 2;
+    public int maximumctivitiesComplete = 4;
+    public float soundInSeconds;
+    public int activitiesToComplete;
+
     [Header("References (Auto Assign)")]
     public Enemy enemyScript;
+
+    [Header("Debug")]
+    public float soundInSecondsTimer = 0f;
+    public int activitiesCompleted;
 
     private void Start()
     {
         enemyScript = GetComponent<Enemy>();
         if (enemyScript == null) Debug.LogWarning("No Enemy Script found!");
+
+        ResetIdleSoundRequirements();
     }
 
     private void Update()
     {
+        //Sounds Timer
+        if (soundInSecondsTimer < soundInSeconds)
+        {
+            soundInSecondsTimer += Time.deltaTime;
+        }
+        // Can Play Sound?
+        if (soundInSecondsTimer >= soundInSeconds && activitiesCompleted >= activitiesToComplete && !enemyScript.isActivityPaused)
+        {
+            ResetIdleSoundRequirements();
+            enemyScript.soundScript.PlayAmbience();
+        }
+
         if (enemyScript.canEnemyPerform() && !enemyScript.isActivityPaused) // Only run activities if not paused
         {
             RunActivity();
         }
     }
     
+    public void ResetIdleSoundRequirements()
+    {
+        soundInSecondsTimer = 0f;
+        activitiesCompleted = 0;
+        soundInSeconds = Random.Range(minimumSeconds, maximumSeconds);
+        activitiesToComplete = Random.Range(minimumActivitiesComplete, maximumctivitiesComplete + 1);
+    }
 
     private void RunActivity()
     {
@@ -142,6 +175,7 @@ public class ActivityAI : MonoBehaviour
 
     private void NextActivity()
     {
+        if (activitiesCompleted < activitiesToComplete) activitiesCompleted += 1;
         currentActivityIndex = (currentActivityIndex + 1) % Activities.Count; // Loop back to the start after the last activity
     }
 

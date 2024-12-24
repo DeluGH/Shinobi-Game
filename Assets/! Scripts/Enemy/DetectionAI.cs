@@ -22,13 +22,6 @@ public class DetectionAI : MonoBehaviour
     [Tooltip("True:AI is rotating towards the randomDirection generated in LookAround()\nFalse:Not Looking Around or waiting to be idle during Investigation Mode.")]
     public bool isLookingAround = false; // Flag to track if the AI is currently looking around
 
-    [Tooltip("Display current Detect Distance value.")] // DISABLE-ABLE disable disablable
-    public float currentDetectDistance = 0f;
-    [Tooltip("Display current Green Angle Zone value.")] // DISABLE-ABLE disable disablable
-    public float currentGreenAngle = 0f;
-    [Tooltip("Display current Yellow Angle Zone value.")] // DISABLE-ABLE disable disablable
-    public float currentYellowAngle = 0f;
-
     [Header("Detection Settings")]
     [Tooltip("Default detection range.\nAffectable by invDetectDistanceInc and alertDetectionDistanceInc.\nDefault: 15")]
     public float detectDistance = 16.5f;   // Detection range
@@ -195,6 +188,7 @@ public class DetectionAI : MonoBehaviour
     public float alertTimer = 0f;
     public List<GameObject> corpsesSeen = new List<GameObject>();
     public float noiseHeardTimer = 0f;
+    public DetectionState previousState;
 
     private void Start()
     {
@@ -208,16 +202,7 @@ public class DetectionAI : MonoBehaviour
         {
             HandleDetection();
             HandleCurrentState();
-
-            DebugCurrentValues();
         }
-    }
-
-    public void DebugCurrentValues() // DISABLE-ABLE disable disablable
-    {
-        currentDetectDistance = GetCurrentDetectionDistance();
-        currentGreenAngle = GetCurrentGreenAngle();
-        currentYellowAngle = GetCurrentYellowAngle();
     }
 
     private void HandleDetection()
@@ -315,6 +300,32 @@ public class DetectionAI : MonoBehaviour
     {
         // Manages buffs, states, etc
         currentState = state;
+
+        //Sounds
+        if (currentState != previousState)
+        {
+            previousState = currentState;
+            switch (currentState)
+            {
+                case DetectionState.Alerted:
+                    enemyScript.soundScript.PlayAlerted();
+                    break;
+
+                case DetectionState.Investigating:
+                    enemyScript.soundScript.PlayInvestigate();
+                    break;
+
+                case DetectionState.Aware:
+                    enemyScript.soundScript.PlayAware();
+                    break;
+
+                case DetectionState.Normal:
+                    enemyScript.soundScript.PlayBackToNormal();
+                    break;
+            }
+        }
+        
+        // Speed/Rotation change depending on state
         float speedMult = 1;
         float rotationMult = 1;
 

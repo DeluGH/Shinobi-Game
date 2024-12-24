@@ -28,11 +28,6 @@ public class Enemy : MonoBehaviour
     public float combatModeOutDecayTime = 0.5f; // If player steps out, wait for this amount of time before continuing chase
     public bool combatMode = false;
 
-    [Header("Sounds")]
-    public AudioClip[] dieSounds;
-    public AudioClip[] hitSounds;
-    public AudioClip[] finalHitSounds;
-
     [Header("Smoked Settings")]
     public bool inSmoke = false;
     public float smokeChokeAfterDisappear = 2f; // Extra choking time after smoke disappears
@@ -72,6 +67,7 @@ public class Enemy : MonoBehaviour
     public DetectionAI detectionScript;
     public ActivityAI activityScript;
     public EnemyAttack attackScript;
+    public EnemySounds soundScript;
 
     public LayerMask playerLayer;       // Layer mask for detecting players
     public LayerMask enemyLayer;       // Layer mask for detecting enemies
@@ -105,6 +101,8 @@ public class Enemy : MonoBehaviour
         if (activityScript == null) Debug.LogWarning("This Enemy is Missing activityScript!");
         if (attackScript == null) attackScript = GetComponent<EnemyAttack>();
         if (attackScript == null) Debug.LogWarning("This Enemy is Missing attackScript!");
+        if (soundScript == null) soundScript = GetComponentInChildren<EnemySounds>(); // CHILD OBJECT
+        if (soundScript == null) Debug.LogWarning("This Enemy is Missing soundScript!");
         if (agent == null) agent = GetComponent<NavMeshAgent>();
         if (agent == null) Debug.LogWarning("This Enemy is Missing NavMeshAgent! Other AI Scripts will not be able to run!");
         if (anim == null) anim = GetComponentInChildren<Animator>();
@@ -239,23 +237,6 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    //Sound
-    public void PlayDyingSound()
-    {
-        int random = Random.Range(0, dieSounds.Length);
-        audioSource.PlayOneShot(dieSounds[random]);
-    }
-    public void PlayHitSound()
-    {
-        int random = Random.Range(0, hitSounds.Length);
-        audioSource.PlayOneShot(hitSounds[random]);
-    }
-    public void PlayFinalHitSound()
-    {
-        int random = Random.Range(0, finalHitSounds.Length);
-        audioSource.PlayOneShot(finalHitSounds[random]);
-    }
-
     // Blocking
     public void SeeAttack()
     {
@@ -294,8 +275,8 @@ public class Enemy : MonoBehaviour
 
             //SOUND
             //Neutral
-            if (currentHealth == 1) PlayFinalHitSound();
-            else PlayHitSound();
+            if (currentHealth == 1) soundScript.PlayFinalHitSound();
+            else soundScript.PlayHitSound();
         }
         else // success block
         {
@@ -385,7 +366,7 @@ public class Enemy : MonoBehaviour
     public void Die()
     {
         //Sound
-        PlayDyingSound();
+        soundScript.PlayDyingSound();
         //ANIMATION
         anim.SetBool("isDead", true);
         anim.SetTrigger("Dieded");

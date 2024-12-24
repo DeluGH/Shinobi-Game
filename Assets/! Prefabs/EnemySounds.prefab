@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3792715072435802037
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 378887010267498742}
+  - component: {fileID: -6221221562086959915}
+  m_Layer: 0
+  m_Name: EnemySounds
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &378887010267498742
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3792715072435802037}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 164.48584, y: -139.7037, z: -98.417725}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-6221221562086959915
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3792715072435802037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a441251732f2b964b934b9aad5b8adc1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dieSounds:
+  - {fileID: 8300000, guid: 336d5816d7589d24f9091408b3465a43, type: 3}
+  - {fileID: 8300000, guid: 4eb637b792660b04ea2437653ed15348, type: 3}
+  hitSounds:
+  - {fileID: 8300000, guid: dde0b1afb8a8f8e4dada58487480b4c4, type: 3}
+  - {fileID: 8300000, guid: 0f010e6adeeff6c4cbe7bcda64abbb80, type: 3}
+  - {fileID: 8300000, guid: 86ea85a6b1fb2f445882303e988fbe00, type: 3}
+  finalHitSounds: []
+  aware:
+  - {fileID: 8300000, guid: fd043b9edb3e1164b826bc296fda5936, type: 3}
+  investigate:
+  - {fileID: 8300000, guid: fceb106d0618a8a4184a43c825e36b1a, type: 3}
+  alerted:
+  - {fileID: 8300000, guid: 9750e27248c732946b6dc986c9889d3c, type: 3}
+  - {fileID: 8300000, guid: 77fcb1e9aa328774dafef2ea7d4d867c, type: 3}
+  backToNormal:
+  - {fileID: 8300000, guid: b42bdf81f688b2a4b877af1d7289633d, type: 3}
+  ambience:
+  - {fileID: 8300000, guid: 9833d7f2c0f7aba46b58430221105207, type: 3}
+  enemyScript: {fileID: 0}

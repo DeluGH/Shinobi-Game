@@ -42,15 +42,23 @@ public class Vaulting : MonoBehaviour
     {
         if (IsGrappleValid())
         {
-            tip.key = KeybindManager.Instance.keybinds["Jump"];
-            tip.tipMessage = "Vault";
-            CursorTipsManager.Instance.MakeTip(tip);
+            if (CursorTipsManager.Instance != null)
+            {
+                tip.key = KeybindManager.Instance.keybinds["Jump"];
+                tip.tipMessage = "Vault";
+                CursorTipsManager.Instance.MakeTip(tip);
+            }
+                
         }
         else
         {
-            tip.key = KeybindManager.Instance.keybinds["Jump"];
-            tip.tipMessage = "Vault";
-            CursorTipsManager.Instance.RemoveTip(tip);
+            if (CursorTipsManager.Instance != null)
+            {
+                tip.key = KeybindManager.Instance.keybinds["Jump"];
+                tip.tipMessage = "Vault";
+                CursorTipsManager.Instance.RemoveTip(tip);
+            }
+                
         }
 
         Vault();
