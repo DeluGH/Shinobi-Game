@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3358992}
   - component: {fileID: 2354946}
   - component: {fileID: 64016551302373840}
+  - component: {fileID: 7589913966469709753}
   m_Layer: 0
   m_Name: SM_Env_Tree_04
   m_TagString: Untagged
@@ -110,6 +111,33 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 57c6914eef04c8941839588af6e17adc, type: 3}
+--- !u!205 &7589913966469709753
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 110288}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0, y: 0, z: 0}
+  m_Size: 1
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.6
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 2354946}
+  - screenRelativeHeight: 0.3
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 2354946}
+  - screenRelativeHeight: 0.00491716
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 2354946}
+  m_Enabled: 1
 --- !u!1001 &5931200980638909439
 PrefabInstance:
   m_ObjectHideFlags: 0
