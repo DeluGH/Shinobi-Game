@@ -66,6 +66,14 @@ MonoBehaviour:
   combatModeProximity: 8
   combatModeOutDecayTime: 0.5
   combatMode: 0
+  dieSounds:
+  - {fileID: 8300000, guid: 336d5816d7589d24f9091408b3465a43, type: 3}
+  - {fileID: 8300000, guid: 4eb637b792660b04ea2437653ed15348, type: 3}
+  hitSounds:
+  - {fileID: 8300000, guid: dde0b1afb8a8f8e4dada58487480b4c4, type: 3}
+  - {fileID: 8300000, guid: 0f010e6adeeff6c4cbe7bcda64abbb80, type: 3}
+  - {fileID: 8300000, guid: 86ea85a6b1fb2f445882303e988fbe00, type: 3}
+  finalHitSounds: []
   inSmoke: 0
   smokeChokeAfterDisappear: 2
   currentHealth: 0
@@ -89,6 +97,7 @@ MonoBehaviour:
   agent: {fileID: 0}
   anim: {fileID: 0}
   capsuleCollider: {fileID: 0}
+  audioSource: {fileID: 0}
   detectionScript: {fileID: 0}
   activityScript: {fileID: 0}
   attackScript: {fileID: 0}
@@ -118,9 +127,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29b1fd4a377f0a24ea42c8c0f621bf5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRange: 3
+  attackRange: 3.5
   attackAngle: 80
-  attackAnimTime: 0.3
+  attackAnimTime: 0.5
   minAttackInterval: 3
   maxAttackInterval: 8
   blockTime: 2

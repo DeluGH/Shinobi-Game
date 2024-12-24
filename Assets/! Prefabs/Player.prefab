@@ -128,7 +128,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 6
   assingImmunity: 1
-  playerGetHit: {fileID: 8300000, guid: 42abf90704d76a04197c9bbd5d1662e4, type: 3}
+  playerGetHit: {fileID: 8300000, guid: 66663140174bc8b40b25efaa1f62256a, type: 3}
   currentHealth: 0
   isBlocking: 0
   isAssassinating: 0
@@ -956,11 +956,11 @@ MonoBehaviour:
   blockParticle: {fileID: 4914658440447471751, guid: 9ca92957e88009548950b81d6481584e, type: 3}
   heavySwingAffect: {fileID: 4919092195301282347, guid: c14de2da31917a44795f70b2bef4eb46, type: 3}
   heavyGhostSwingAffect: {fileID: 4919092195301282347, guid: c1b8352fbe47837478525597a1884366, type: 3}
-  swordsClash: {fileID: 8300000, guid: b90608a5213088942985e16a054f1a01, type: 3}
-  enemyHit: {fileID: 8300000, guid: 6cc3bfdf1ea8f0748ab7e683711c4e77, type: 3}
-  swordSwing: {fileID: 8300000, guid: a50ddaad0ecf347409d27a821e2d42e2, type: 3}
-  swordParry: {fileID: 8300000, guid: 50a383e3ea1793b468b22cea5e5c17bb, type: 3}
-  assSound: {fileID: 8300000, guid: 57086434b87d6044983790535c103220, type: 3}
+  swordsClash: {fileID: 8300000, guid: 30c4d096fd3484c4998bb095db6cd476, type: 3}
+  enemyHit: {fileID: 8300000, guid: 451876c21bdadde4394ee9e64e4b03e4, type: 3}
+  swordSwing: {fileID: 8300000, guid: 7fe44c6e3b3f98844bb41ddd2aa502b0, type: 3}
+  swordParry: {fileID: 8300000, guid: da1a690a28e5140429aa95dbfe378f44, type: 3}
+  assSound: {fileID: 8300000, guid: e883a80fadaeeae41a872c3022f88f14, type: 3}
   fallingSound: {fileID: 8300000, guid: 18eddb5dd01f35149bdb0337e73d698f, type: 3}
   lookingAtEnemy: {fileID: 0}
   ghostCurrentChargeAmount: 0
@@ -1001,7 +1001,7 @@ MonoBehaviour:
   airAssLerpTime: 0.1
   tip:
     key: 0
-    tipMessage: Assassinate
+    tipMessage: 
   currentHighlight: {fileID: 0}
   playerScript: {fileID: 0}
   maxRaycastRange: 10

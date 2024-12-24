@@ -28,6 +28,11 @@ public class Enemy : MonoBehaviour
     public float combatModeOutDecayTime = 0.5f; // If player steps out, wait for this amount of time before continuing chase
     public bool combatMode = false;
 
+    [Header("Sounds")]
+    public AudioClip[] dieSounds;
+    public AudioClip[] hitSounds;
+    public AudioClip[] finalHitSounds;
+
     [Header("Smoked Settings")]
     public bool inSmoke = false;
     public float smokeChokeAfterDisappear = 2f; // Extra choking time after smoke disappears
@@ -61,6 +66,8 @@ public class Enemy : MonoBehaviour
     public NavMeshAgent agent;
     public Animator anim;
     public CapsuleCollider capsuleCollider;
+
+    public AudioSource audioSource;
 
     public DetectionAI detectionScript;
     public ActivityAI activityScript;
@@ -116,6 +123,10 @@ public class Enemy : MonoBehaviour
 
         if (detectionScript != null) detectionScript.enabled = true;
         if (activityScript != null) activityScript.enabled = true;
+
+        //Sound
+        if (!audioSource) audioSource = GetComponent<AudioSource>();
+        if (!audioSource) Debug.LogWarning("No AudioSource Found!!");
     }
 
     private void Update()
@@ -158,6 +169,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    //Animation
     public void SetMovementAnimation()
     {
         if (!canEnemyPerform()) return;
@@ -227,28 +239,30 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public bool canEnemyPerform()
+    //Sound
+    public void PlayDyingSound()
     {
-        if (isDead || isChoking || isStunned || isBlocking || isAttacking) return false;
-        else return true;
+        int random = Random.Range(0, dieSounds.Length);
+        audioSource.PlayOneShot(dieSounds[random]);
+    }
+    public void PlayHitSound()
+    {
+        int random = Random.Range(0, hitSounds.Length);
+        audioSource.PlayOneShot(hitSounds[random]);
+    }
+    public void PlayFinalHitSound()
+    {
+        int random = Random.Range(0, finalHitSounds.Length);
+        audioSource.PlayOneShot(finalHitSounds[random]);
     }
 
-    private void FindPlayer()
+    // Blocking
+    public void SeeAttack()
     {
-        //find the player within range
-        Collider[] colliders = Physics.OverlapSphere(transform.position, Mathf.Infinity, playerLayer); // Since it's a singleplayer game, it uses Mathf.Inf to find the player!!!
-
-        if (colliders.Length > 0)
-        {
-            player = colliders[0].transform; //get first player found
-            //Debug.Log($"Player found: {player.name}");
-        }
-        else
-        {
-            //Debug.Log("No player detected within the specified range.");
-        }
+        attackScript.TryToBlock();
     }
 
+    // Combat
     public void EnterCombatMode()
     {
         Debug.Log("Combat ON");
@@ -262,19 +276,12 @@ public class Enemy : MonoBehaviour
         combatMode = true;
         combatModeTimer = 0f;
     }
-
     public void DisableCombatMode()
     {
         Debug.Log("Combat OFF");
         combatMode = false;
         if (agent.isActiveAndEnabled) agent.updateRotation = true;
     }
-
-    public void SeeAttack()
-    {
-        attackScript.TryToBlock();
-    }
-
     public void DamangeTaken(int hitPoints, bool ignoresBlocks, bool isHeavy)
     {
         // No Minus if blocking
@@ -284,6 +291,11 @@ public class Enemy : MonoBehaviour
             anim.SetTrigger("TakeDamage");
                 
             currentHealth -= hitPoints;
+
+            //SOUND
+            //Neutral
+            if (currentHealth == 1) PlayFinalHitSound();
+            else PlayHitSound();
         }
         else // success block
         {
@@ -306,7 +318,7 @@ public class Enemy : MonoBehaviour
             Die();
         }
     }
-
+    // Light
     public void HitByMelee(int hitPoints)
     {
         if (hitCauseAlert && currentHealth > 0) detectionScript.InstantAggroMelee(); //pass player location and alert
@@ -319,7 +331,7 @@ public class Enemy : MonoBehaviour
     {
         HitByMelee(1);
     }
-
+    // Heavy
     public void HitByHeavyMelee(int hitPoints, float stunDuration) //+ STUNNED
     {
         if (hitCauseAlert && currentHealth > 0) detectionScript.InstantAggroMelee(); //pass player location and alert
@@ -333,7 +345,7 @@ public class Enemy : MonoBehaviour
     {
         HitByHeavyMelee(1, 1);
     }
-
+    // Range
     public void HitByRange(int hitPoints, bool canInstaKill)
     {
         if (canInstaKill)
@@ -354,6 +366,7 @@ public class Enemy : MonoBehaviour
         HitByRange(1, false);
     }
 
+    // Stunning
     public void Stun(float duration)
     {
         PauseActivity();
@@ -368,8 +381,11 @@ public class Enemy : MonoBehaviour
         stunnedTimer = 0f;
     }
 
+    // Dying
     public void Die()
     {
+        //Sound
+        PlayDyingSound();
         //ANIMATION
         anim.SetBool("isDead", true);
         anim.SetTrigger("Dieded");
@@ -390,6 +406,7 @@ public class Enemy : MonoBehaviour
         Destroy(gameObject, despawnTime);
     }
 
+    //Speed & Rotation Agent
     public void SpeedMult(float rate)
     {
         movementSpeed = baseMovementSpeed * rate;
@@ -405,6 +422,7 @@ public class Enemy : MonoBehaviour
         else agent.angularSpeed = rotationSpeed;
     }
 
+    // Activity
     public void ContinueActivity()
     {
         if (agent.pathPending && agent.isActiveAndEnabled) agent.isStopped = true;
@@ -418,6 +436,7 @@ public class Enemy : MonoBehaviour
         isActivityPaused = true;
     }
 
+    //Smoke
     private void OnTriggerEnter(Collider collider)
     {
         if ((smokeLayer.value & (1 << collider.gameObject.layer)) != 0) // Code for checking if collider layer is smoke layer
@@ -451,7 +470,6 @@ public class Enemy : MonoBehaviour
 
         overlappingSmokes++;
     }
-    // Either exit trigger, or smoke ends, calls OnSmokeDisabled()
     private void OnTriggerExit(Collider collider)
     {
         if ((smokeLayer.value & (1 << collider.gameObject.layer)) != 0) // Code for checking if collider layer is smoke layer
@@ -482,11 +500,13 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    //Noise Hearing
     public void HeardNoise(Transform playerTransform, bool isWalking)
     {
         detectionScript.HeardNoise(playerTransform, isWalking);
     }
 
+    // Has
     public bool HasLineOfSight(Transform target)
     {
         RaycastHit hit;
@@ -498,7 +518,6 @@ public class Enemy : MonoBehaviour
         }
         return false;
     }
-
     public bool HasClearLineOfSightForRepositionOrStrafe(Vector3 targetPosition)
     {
         RaycastHit hit;
@@ -517,7 +536,6 @@ public class Enemy : MonoBehaviour
         // If no obstacles are detected, return true (line-of-sight is clear)
         return true;
     }
-
     public bool HasReachedDestination()
     {
         if (!agent.pathPending && !isDead) // Ensure the path is ready
@@ -527,5 +545,25 @@ public class Enemy : MonoBehaviour
             return remainingDistance != Mathf.Infinity && remainingDistance <= agent.stoppingDistance;
         }
         return false;
+    }
+    public bool canEnemyPerform()
+    {
+        if (isDead || isChoking || isStunned || isBlocking || isAttacking) return false;
+        else return true;
+    }
+    private void FindPlayer()
+    {
+        //find the player within range
+        Collider[] colliders = Physics.OverlapSphere(transform.position, Mathf.Infinity, playerLayer); // Since it's a singleplayer game, it uses Mathf.Inf to find the player!!!
+
+        if (colliders.Length > 0)
+        {
+            player = colliders[0].transform; //get first player found
+            //Debug.Log($"Player found: {player.name}");
+        }
+        else
+        {
+            //Debug.Log("No player detected within the specified range.");
+        }
     }
 }

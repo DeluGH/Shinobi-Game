@@ -471,6 +471,14 @@ MonoBehaviour:
   combatModeProximity: 8
   combatModeOutDecayTime: 0.5
   combatMode: 0
+  dieSounds:
+  - {fileID: 8300000, guid: 4eb637b792660b04ea2437653ed15348, type: 3}
+  - {fileID: 8300000, guid: 336d5816d7589d24f9091408b3465a43, type: 3}
+  hitSounds:
+  - {fileID: 8300000, guid: dde0b1afb8a8f8e4dada58487480b4c4, type: 3}
+  - {fileID: 8300000, guid: 0f010e6adeeff6c4cbe7bcda64abbb80, type: 3}
+  - {fileID: 8300000, guid: 86ea85a6b1fb2f445882303e988fbe00, type: 3}
+  finalHitSounds: []
   inSmoke: 0
   smokeChokeAfterDisappear: 2
   currentHealth: 0
@@ -494,6 +502,7 @@ MonoBehaviour:
   agent: {fileID: 0}
   anim: {fileID: 0}
   capsuleCollider: {fileID: 0}
+  audioSource: {fileID: 0}
   detectionScript: {fileID: 0}
   activityScript: {fileID: 0}
   attackScript: {fileID: 0}
@@ -1816,6 +1825,14 @@ MonoBehaviour:
   combatModeProximity: 8
   combatModeOutDecayTime: 0.5
   combatMode: 0
+  dieSounds:
+  - {fileID: 8300000, guid: 4eb637b792660b04ea2437653ed15348, type: 3}
+  - {fileID: 8300000, guid: 336d5816d7589d24f9091408b3465a43, type: 3}
+  hitSounds:
+  - {fileID: 8300000, guid: dde0b1afb8a8f8e4dada58487480b4c4, type: 3}
+  - {fileID: 8300000, guid: 0f010e6adeeff6c4cbe7bcda64abbb80, type: 3}
+  - {fileID: 8300000, guid: 86ea85a6b1fb2f445882303e988fbe00, type: 3}
+  finalHitSounds: []
   inSmoke: 0
   smokeChokeAfterDisappear: 2
   currentHealth: 0
@@ -1839,6 +1856,7 @@ MonoBehaviour:
   agent: {fileID: 0}
   anim: {fileID: 0}
   capsuleCollider: {fileID: 0}
+  audioSource: {fileID: 0}
   detectionScript: {fileID: 0}
   activityScript: {fileID: 0}
   attackScript: {fileID: 0}
@@ -2370,7 +2388,31 @@ PrefabInstance:
     - target: {fileID: 1277757305491851741, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: playerGetHit
       value: 
-      objectReference: {fileID: 8300000, guid: 42abf90704d76a04197c9bbd5d1662e4, type: 3}
+      objectReference: {fileID: 8300000, guid: 66663140174bc8b40b25efaa1f62256a, type: 3}
+    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
+      propertyPath: assSound
+      value: 
+      objectReference: {fileID: 8300000, guid: e883a80fadaeeae41a872c3022f88f14, type: 3}
+    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
+      propertyPath: enemyHit
+      value: 
+      objectReference: {fileID: 8300000, guid: 451876c21bdadde4394ee9e64e4b03e4, type: 3}
+    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
+      propertyPath: swordParry
+      value: 
+      objectReference: {fileID: 8300000, guid: da1a690a28e5140429aa95dbfe378f44, type: 3}
+    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
+      propertyPath: swordSwing
+      value: 
+      objectReference: {fileID: 8300000, guid: 7fe44c6e3b3f98844bb41ddd2aa502b0, type: 3}
+    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
+      propertyPath: swordsClash
+      value: 
+      objectReference: {fileID: 8300000, guid: 30c4d096fd3484c4998bb095db6cd476, type: 3}
+    - target: {fileID: 4144198157715950556, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
+      propertyPath: tip.tipMessage
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2723,6 +2765,14 @@ MonoBehaviour:
   combatModeProximity: 8
   combatModeOutDecayTime: 0.5
   combatMode: 0
+  dieSounds:
+  - {fileID: 8300000, guid: 4eb637b792660b04ea2437653ed15348, type: 3}
+  - {fileID: 8300000, guid: 336d5816d7589d24f9091408b3465a43, type: 3}
+  hitSounds:
+  - {fileID: 8300000, guid: dde0b1afb8a8f8e4dada58487480b4c4, type: 3}
+  - {fileID: 8300000, guid: 0f010e6adeeff6c4cbe7bcda64abbb80, type: 3}
+  - {fileID: 8300000, guid: 86ea85a6b1fb2f445882303e988fbe00, type: 3}
+  finalHitSounds: []
   inSmoke: 0
   smokeChokeAfterDisappear: 2
   currentHealth: 0
@@ -2746,6 +2796,7 @@ MonoBehaviour:
   agent: {fileID: 0}
   anim: {fileID: 0}
   capsuleCollider: {fileID: 0}
+  audioSource: {fileID: 0}
   detectionScript: {fileID: 0}
   activityScript: {fileID: 0}
   attackScript: {fileID: 0}
@@ -4653,6 +4704,14 @@ MonoBehaviour:
   combatModeProximity: 8
   combatModeOutDecayTime: 0.5
   combatMode: 0
+  dieSounds:
+  - {fileID: 8300000, guid: 4eb637b792660b04ea2437653ed15348, type: 3}
+  - {fileID: 8300000, guid: 336d5816d7589d24f9091408b3465a43, type: 3}
+  hitSounds:
+  - {fileID: 8300000, guid: dde0b1afb8a8f8e4dada58487480b4c4, type: 3}
+  - {fileID: 8300000, guid: 0f010e6adeeff6c4cbe7bcda64abbb80, type: 3}
+  - {fileID: 8300000, guid: 86ea85a6b1fb2f445882303e988fbe00, type: 3}
+  finalHitSounds: []
   inSmoke: 0
   smokeChokeAfterDisappear: 2
   currentHealth: 0
@@ -4676,6 +4735,7 @@ MonoBehaviour:
   agent: {fileID: 0}
   anim: {fileID: 0}
   capsuleCollider: {fileID: 0}
+  audioSource: {fileID: 0}
   detectionScript: {fileID: 0}
   activityScript: {fileID: 0}
   attackScript: {fileID: 0}
@@ -6219,6 +6279,14 @@ MonoBehaviour:
   combatModeProximity: 8
   combatModeOutDecayTime: 0.5
   combatMode: 0
+  dieSounds:
+  - {fileID: 8300000, guid: 4eb637b792660b04ea2437653ed15348, type: 3}
+  - {fileID: 8300000, guid: 336d5816d7589d24f9091408b3465a43, type: 3}
+  hitSounds:
+  - {fileID: 8300000, guid: dde0b1afb8a8f8e4dada58487480b4c4, type: 3}
+  - {fileID: 8300000, guid: 0f010e6adeeff6c4cbe7bcda64abbb80, type: 3}
+  - {fileID: 8300000, guid: 86ea85a6b1fb2f445882303e988fbe00, type: 3}
+  finalHitSounds: []
   inSmoke: 0
   smokeChokeAfterDisappear: 2
   currentHealth: 0
@@ -6242,6 +6310,7 @@ MonoBehaviour:
   agent: {fileID: 0}
   anim: {fileID: 0}
   capsuleCollider: {fileID: 0}
+  audioSource: {fileID: 0}
   detectionScript: {fileID: 0}
   activityScript: {fileID: 0}
   attackScript: {fileID: 0}
@@ -6714,6 +6783,14 @@ MonoBehaviour:
   combatModeProximity: 8
   combatModeOutDecayTime: 0.5
   combatMode: 0
+  dieSounds:
+  - {fileID: 8300000, guid: 4eb637b792660b04ea2437653ed15348, type: 3}
+  - {fileID: 8300000, guid: 336d5816d7589d24f9091408b3465a43, type: 3}
+  hitSounds:
+  - {fileID: 8300000, guid: dde0b1afb8a8f8e4dada58487480b4c4, type: 3}
+  - {fileID: 8300000, guid: 0f010e6adeeff6c4cbe7bcda64abbb80, type: 3}
+  - {fileID: 8300000, guid: 86ea85a6b1fb2f445882303e988fbe00, type: 3}
+  finalHitSounds: []
   inSmoke: 0
   smokeChokeAfterDisappear: 2
   currentHealth: 0
@@ -6737,6 +6814,7 @@ MonoBehaviour:
   agent: {fileID: 0}
   anim: {fileID: 0}
   capsuleCollider: {fileID: 0}
+  audioSource: {fileID: 0}
   detectionScript: {fileID: 0}
   activityScript: {fileID: 0}
   attackScript: {fileID: 0}
@@ -8686,6 +8764,14 @@ MonoBehaviour:
   combatModeProximity: 8
   combatModeOutDecayTime: 0.5
   combatMode: 0
+  dieSounds:
+  - {fileID: 8300000, guid: 4eb637b792660b04ea2437653ed15348, type: 3}
+  - {fileID: 8300000, guid: 336d5816d7589d24f9091408b3465a43, type: 3}
+  hitSounds:
+  - {fileID: 8300000, guid: dde0b1afb8a8f8e4dada58487480b4c4, type: 3}
+  - {fileID: 8300000, guid: 0f010e6adeeff6c4cbe7bcda64abbb80, type: 3}
+  - {fileID: 8300000, guid: 86ea85a6b1fb2f445882303e988fbe00, type: 3}
+  finalHitSounds: []
   inSmoke: 0
   smokeChokeAfterDisappear: 2
   currentHealth: 0
@@ -8709,6 +8795,7 @@ MonoBehaviour:
   agent: {fileID: 0}
   anim: {fileID: 0}
   capsuleCollider: {fileID: 0}
+  audioSource: {fileID: 0}
   detectionScript: {fileID: 0}
   activityScript: {fileID: 0}
   attackScript: {fileID: 0}
@@ -11347,7 +11434,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3227700178642686701, guid: 84463fb725bdc444c8c963658a718bbe, type: 3}
       propertyPath: m_Name
-      value: Cube
+      value: Vaultable
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -11380,6 +11467,14 @@ MonoBehaviour:
   combatModeProximity: 8
   combatModeOutDecayTime: 0.5
   combatMode: 0
+  dieSounds:
+  - {fileID: 8300000, guid: 4eb637b792660b04ea2437653ed15348, type: 3}
+  - {fileID: 8300000, guid: 336d5816d7589d24f9091408b3465a43, type: 3}
+  hitSounds:
+  - {fileID: 8300000, guid: dde0b1afb8a8f8e4dada58487480b4c4, type: 3}
+  - {fileID: 8300000, guid: 0f010e6adeeff6c4cbe7bcda64abbb80, type: 3}
+  - {fileID: 8300000, guid: 86ea85a6b1fb2f445882303e988fbe00, type: 3}
+  finalHitSounds: []
   inSmoke: 0
   smokeChokeAfterDisappear: 2
   currentHealth: 0
@@ -11403,6 +11498,7 @@ MonoBehaviour:
   agent: {fileID: 0}
   anim: {fileID: 0}
   capsuleCollider: {fileID: 0}
+  audioSource: {fileID: 0}
   detectionScript: {fileID: 0}
   activityScript: {fileID: 0}
   attackScript: {fileID: 0}
@@ -17040,6 +17136,14 @@ MonoBehaviour:
   combatModeProximity: 8
   combatModeOutDecayTime: 0.5
   combatMode: 0
+  dieSounds:
+  - {fileID: 8300000, guid: 4eb637b792660b04ea2437653ed15348, type: 3}
+  - {fileID: 8300000, guid: 336d5816d7589d24f9091408b3465a43, type: 3}
+  hitSounds:
+  - {fileID: 8300000, guid: dde0b1afb8a8f8e4dada58487480b4c4, type: 3}
+  - {fileID: 8300000, guid: 0f010e6adeeff6c4cbe7bcda64abbb80, type: 3}
+  - {fileID: 8300000, guid: 86ea85a6b1fb2f445882303e988fbe00, type: 3}
+  finalHitSounds: []
   inSmoke: 0
   smokeChokeAfterDisappear: 2
   currentHealth: 0
@@ -17063,6 +17167,7 @@ MonoBehaviour:
   agent: {fileID: 0}
   anim: {fileID: 0}
   capsuleCollider: {fileID: 0}
+  audioSource: {fileID: 0}
   detectionScript: {fileID: 0}
   activityScript: {fileID: 0}
   attackScript: {fileID: 0}
@@ -18793,6 +18898,14 @@ MonoBehaviour:
   combatModeProximity: 8
   combatModeOutDecayTime: 0.5
   combatMode: 0
+  dieSounds:
+  - {fileID: 8300000, guid: 4eb637b792660b04ea2437653ed15348, type: 3}
+  - {fileID: 8300000, guid: 336d5816d7589d24f9091408b3465a43, type: 3}
+  hitSounds:
+  - {fileID: 8300000, guid: dde0b1afb8a8f8e4dada58487480b4c4, type: 3}
+  - {fileID: 8300000, guid: 0f010e6adeeff6c4cbe7bcda64abbb80, type: 3}
+  - {fileID: 8300000, guid: 86ea85a6b1fb2f445882303e988fbe00, type: 3}
+  finalHitSounds: []
   inSmoke: 0
   smokeChokeAfterDisappear: 2
   currentHealth: 0
@@ -18816,6 +18929,7 @@ MonoBehaviour:
   agent: {fileID: 0}
   anim: {fileID: 0}
   capsuleCollider: {fileID: 0}
+  audioSource: {fileID: 0}
   detectionScript: {fileID: 0}
   activityScript: {fileID: 0}
   attackScript: {fileID: 0}
@@ -20085,6 +20199,14 @@ MonoBehaviour:
   combatModeProximity: 8
   combatModeOutDecayTime: 0.5
   combatMode: 0
+  dieSounds:
+  - {fileID: 8300000, guid: 4eb637b792660b04ea2437653ed15348, type: 3}
+  - {fileID: 8300000, guid: 336d5816d7589d24f9091408b3465a43, type: 3}
+  hitSounds:
+  - {fileID: 8300000, guid: dde0b1afb8a8f8e4dada58487480b4c4, type: 3}
+  - {fileID: 8300000, guid: 0f010e6adeeff6c4cbe7bcda64abbb80, type: 3}
+  - {fileID: 8300000, guid: 86ea85a6b1fb2f445882303e988fbe00, type: 3}
+  finalHitSounds: []
   inSmoke: 0
   smokeChokeAfterDisappear: 2
   currentHealth: 0
@@ -20108,6 +20230,7 @@ MonoBehaviour:
   agent: {fileID: 0}
   anim: {fileID: 0}
   capsuleCollider: {fileID: 0}
+  audioSource: {fileID: 0}
   detectionScript: {fileID: 0}
   activityScript: {fileID: 0}
   attackScript: {fileID: 0}
@@ -20267,6 +20390,14 @@ MonoBehaviour:
   combatModeProximity: 8
   combatModeOutDecayTime: 0.5
   combatMode: 0
+  dieSounds:
+  - {fileID: 8300000, guid: 4eb637b792660b04ea2437653ed15348, type: 3}
+  - {fileID: 8300000, guid: 336d5816d7589d24f9091408b3465a43, type: 3}
+  hitSounds:
+  - {fileID: 8300000, guid: dde0b1afb8a8f8e4dada58487480b4c4, type: 3}
+  - {fileID: 8300000, guid: 0f010e6adeeff6c4cbe7bcda64abbb80, type: 3}
+  - {fileID: 8300000, guid: 86ea85a6b1fb2f445882303e988fbe00, type: 3}
+  finalHitSounds: []
   inSmoke: 0
   smokeChokeAfterDisappear: 2
   currentHealth: 0
@@ -20290,6 +20421,7 @@ MonoBehaviour:
   agent: {fileID: 0}
   anim: {fileID: 0}
   capsuleCollider: {fileID: 0}
+  audioSource: {fileID: 0}
   detectionScript: {fileID: 0}
   activityScript: {fileID: 0}
   attackScript: {fileID: 0}
@@ -22982,6 +23114,14 @@ MonoBehaviour:
   combatModeProximity: 8
   combatModeOutDecayTime: 0.5
   combatMode: 0
+  dieSounds:
+  - {fileID: 8300000, guid: 4eb637b792660b04ea2437653ed15348, type: 3}
+  - {fileID: 8300000, guid: 336d5816d7589d24f9091408b3465a43, type: 3}
+  hitSounds:
+  - {fileID: 8300000, guid: dde0b1afb8a8f8e4dada58487480b4c4, type: 3}
+  - {fileID: 8300000, guid: 0f010e6adeeff6c4cbe7bcda64abbb80, type: 3}
+  - {fileID: 8300000, guid: 86ea85a6b1fb2f445882303e988fbe00, type: 3}
+  finalHitSounds: []
   inSmoke: 0
   smokeChokeAfterDisappear: 2
   currentHealth: 0
@@ -23005,6 +23145,7 @@ MonoBehaviour:
   agent: {fileID: 0}
   anim: {fileID: 0}
   capsuleCollider: {fileID: 0}
+  audioSource: {fileID: 0}
   detectionScript: {fileID: 0}
   activityScript: {fileID: 0}
   attackScript: {fileID: 0}
