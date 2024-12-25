@@ -7,6 +7,9 @@ public class Player : MonoBehaviour
     public int maxHealth = 6;
     public bool assingImmunity = true;
 
+    [Header("Abilities")]
+    public bool hasGhostSword = false;
+
     [Header("Sounds")]
     public AudioClip playerGetHit;
 

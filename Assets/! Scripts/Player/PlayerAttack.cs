@@ -27,7 +27,6 @@ public class PlayerAttack : MonoBehaviour
     public AudioClip fallingSound;
     public AudioClip assHighlightSound;
 
-
     [Header("Debug References")]
     public GameObject lookingAtEnemy; // Enemy player is looking at
     public int ghostCurrentChargeAmount = 0;
@@ -85,7 +84,8 @@ public class PlayerAttack : MonoBehaviour
     public float airAssLerpTime = 0.1f;             // Time taken for player to lerp/reach the AI                       // Default: 0.1
 
     [Header("Tip")]
-    public CursorTipsManager.Tip tip;
+    public CursorTipsManager.Tip assTip;
+    public CursorTipsManager.Tip ghostTip;
 
     [Header("References (Auto)")]
     public GameObject currentHighlight; // Only highlights if currentHighlight = null, currentHighlight changes parents and follows above them
@@ -124,9 +124,9 @@ public class PlayerAttack : MonoBehaviour
 
             if (CursorTipsManager.Instance != null)
             {
-                tip.key = KeybindManager.Instance.keybinds["Attack"];
-                tip.tipMessage = "Assassinate";
-                CursorTipsManager.Instance.MakeTip(tip);
+                assTip.key = KeybindManager.Instance.keybinds["Attack"];
+                assTip.tipMessage = "Assassinate";
+                CursorTipsManager.Instance.MakeTip(assTip);
             }
                 
         }
@@ -136,19 +136,29 @@ public class PlayerAttack : MonoBehaviour
 
             if (CursorTipsManager.Instance != null)
             {
-                tip.key = KeybindManager.Instance.keybinds["Attack"];
-                tip.tipMessage = "Assassinate";
-                CursorTipsManager.Instance.RemoveTip(tip);
+                assTip.key = KeybindManager.Instance.keybinds["Attack"];
+                assTip.tipMessage = "Assassinate";
+                CursorTipsManager.Instance.RemoveTip(assTip);
             }
                
         }
 
 
         //Ghost Mode
+        if (ghostCurrentChargeAmount >= ghostChargeAmount && playerScript.hasGhostSword)
+        {
+            ghostTip.key = KeybindManager.Instance.keybinds["Ghost Ultimate"];
+            ghostTip.tipMessage = "Ghost Mode";
+            CursorTipsManager.Instance.MakeTip(ghostTip);
+        }
         if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Ghost Ultimate"]) && !playerScript.isDead)
         {
-            if (!ghostMode && ghostCurrentChargeAmount >= ghostChargeAmount)
+            if (!ghostMode && ghostCurrentChargeAmount >= ghostChargeAmount && playerScript.hasGhostSword)
             {
+                ghostTip.key = KeybindManager.Instance.keybinds["Ghost Ultimate"];
+                ghostTip.tipMessage = "Ghost Mode";
+                CursorTipsManager.Instance.RemoveTip(ghostTip);
+
                 GhostMode(true);
             }
         }

@@ -115,7 +115,7 @@ public class MenuController : MonoBehaviour
     //Main Menu Song
     public void PlayMainMenuSong()
     {
-        PlayOneShotDelayed(musicSource, MainMenuSong, 2f);
+        PlayOneShotDelayed(musicSource, MainMenuSong, 1f);
     }
     public void PlayOneShotDelayed(AudioSource audioSource, AudioClip clip, float delay)
     {
@@ -125,7 +125,7 @@ public class MenuController : MonoBehaviour
     private IEnumerator PlayOneShotCoroutine(AudioSource audioSource, AudioClip clip, float delay)
     {
         yield return new WaitForSeconds(delay);
-        audioSource.PlayOneShot(clip);
+        if (currentMenuState == MenuState.MainMenu) audioSource.PlayOneShot(clip);
     }
     //Sounds
     public void PlayButton()

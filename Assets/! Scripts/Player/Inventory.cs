@@ -166,6 +166,7 @@ public class Inventory : MonoBehaviour
             holdingAmount--; // Decrease the amount being held by 1
             if (holdingAmount <= 0) // If no more items are being held
             {
+                if (GameplayUIController.Instance.isActiveAndEnabled) GameplayUIController.Instance.UpdateEquippedImage(null);
                 utilHand = null; // Clear the utilHand
                 holdingAmount = 0; // Ensure holdingAmount does not go below 0
             }
@@ -199,6 +200,8 @@ public class Inventory : MonoBehaviour
         // Clear the slot
         slot.item = null;
         slot.count = 0;
+
+        if (GameplayUIController.Instance.isActiveAndEnabled) GameplayUIController.Instance.UpdateEquippedImage(utilHand.itemImage);
 
         UpdateItemPositions(); // Update Model Hand
         UpdateItemCount(); // Update UI

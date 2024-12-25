@@ -56,16 +56,25 @@ public class GameplayUIController : MonoBehaviour
         if (buttonIcons.Length == 0) Debug.LogError("No Buttons ICONS set! Pls set them.");
     }
 
+    public void UpdateEquippedImage(Sprite image)
+    {
+        if (image != null) selectedItem.sprite = image;
+        else selectedItem.sprite = noImage;
+    }
+
     public void OpenInventoryWheel(List<InventorySlot> inventory)
     {
         currentInventory = inventory;
 
-        foreach (var slot in currentInventory)
+        for (int i = 0; i < buttons.Length; i++)
         {
-            for (int i = 0; i < buttons.Length; i++)
+            if (buttonIcons[i] == null || currentInventory.Count <= i || currentInventory[i].item == null)
             {
-                if (buttonIcons[i] != null)
-                    buttonIcons[i].sprite = currentInventory[i].item.itemImage;
+                buttonIcons[i].sprite = noImage; // Assign a default "no image" sprite
+            }
+            else
+            {
+                buttonIcons[i].sprite = currentInventory[i].item.itemImage;
             }
         }
 

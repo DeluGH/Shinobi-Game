@@ -321,7 +321,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73c49918ccfe6f645a9c6e4f7b6d7710, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vaultRange: 0.5
+  vaultRange: 0.6
   vaultHeightLimit: 0.6
   vaultDuration: 0.7
   vaultingSound: {fileID: 0}
