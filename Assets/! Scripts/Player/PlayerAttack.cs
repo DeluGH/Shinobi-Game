@@ -54,6 +54,7 @@ public class PlayerAttack : MonoBehaviour
     public float meleeAnimTime = 0.2f;        // Time taken to Swing after attack is called
 
     [Header("Heavy")] // Destroys blocks, stuns, damage them if not blocking, no damage if their blocking
+    public bool isCharging = false;
     public float heavyRange = 4.25f;
     public float heavyAngle = 40f;
     public float heavyAnimTime = 0.1f;     // Time taken to Swing after attack is called
@@ -98,7 +99,6 @@ public class PlayerAttack : MonoBehaviour
     public GameObject assEnemyTarget; // Enemy within assRange & looking at
     public bool canAssassinate = false; // use this to change UI (add ass UI on screen)
     public GameObject currentAssEnemyTarget;    // Different from assEnemyTarget, what if during animation assEnemyTarget moves away/changes target
-    public bool isAssing = false;               // If True, shouldn't receive player input, is playing Animation
     [Space(5f)]
     public bool isPlayingFallingAudio = false;
     public bool startedCharging = false;
@@ -118,7 +118,7 @@ public class PlayerAttack : MonoBehaviour
     void Update()
     {
         canAssassinate = isEnemyAssable(); // Check for any assable enemies
-        if (canAssassinate && assEnemyTarget && !isAssing)
+        if (canAssassinate && assEnemyTarget && !playerScript.isAssassinating)
         {
             HighlightEnemy(assEnemyTarget);
 
@@ -169,7 +169,7 @@ public class PlayerAttack : MonoBehaviour
         }
 
         // !! Set attackCooldown to 0 in Frenzy, or just change attackCooldown for anything
-        if (meleeTimer < currentAttackCooldown && !isSwinging && !isAssing && !playerScript.isDead) meleeTimer += Time.deltaTime;
+        if (meleeTimer < currentAttackCooldown && !isSwinging && !playerScript.isAssassinating && !playerScript.isDead) meleeTimer += Time.deltaTime;
         // Check for holding left click
         //CHARGING ONLY
         if (meleeTimer >= currentAttackCooldown && !playerScript.isDead && !playerScript.isBlocking)
@@ -178,6 +178,7 @@ public class PlayerAttack : MonoBehaviour
             {
                 chargeStartTime = Time.time; // Record when charging started
                 startedCharging = true;
+                isCharging = true;
             }
             if (Input.GetKey(KeybindManager.Instance.keybinds["Attack"]))
             {
@@ -185,10 +186,12 @@ public class PlayerAttack : MonoBehaviour
                 {
                     chargeStartTime = Time.time; // Record when charging started
                     startedCharging = true;
+                    isCharging = true;
                 }
                 
                 if (startedCharging) chargeTime = Time.time - chargeStartTime;
 
+                //Animation checker
                 if (chargeTime >= 0.125f)
                 {
                     Animator anim = MainHandObject.GetComponentInChildren<Animator>();
@@ -201,6 +204,9 @@ public class PlayerAttack : MonoBehaviour
             }
             if (Input.GetKeyUp(KeybindManager.Instance.keybinds["Attack"]))
             {
+                startedCharging = false;
+                isCharging = false;
+
                 Animator anim = MainHandObject.GetComponentInChildren<Animator>();
                 if (anim != null) anim.SetBool("isCharging", false);
                 else Debug.LogWarning("No Sword Anim detected!");
@@ -213,7 +219,7 @@ public class PlayerAttack : MonoBehaviour
                 else if (chargeTime >= heavyChargeTime * (ghostMode ? ghostHeavyChargeTimePercentage : 1f)) // Heavy
                 {
                     Swing(true); //isHeavy
-                    startedCharging = false;
+                    
                 }
                 else
                 {
@@ -226,7 +232,7 @@ public class PlayerAttack : MonoBehaviour
         }
 
         //BLOCKING
-        if (!isSwinging && !isAssing && !playerScript.isDead)
+        if (!isSwinging && !playerScript.isAssassinating && !playerScript.isDead && !isCharging)
         {   
             if (Input.GetKey(KeybindManager.Instance.keybinds["Block"]))
             {
@@ -433,7 +439,7 @@ public class PlayerAttack : MonoBehaviour
             {
                 //Ass
                 Debug.Log("ASS");
-                isAssing = true;
+                playerScript.isAssassinating = true;
                 playerScript.DoingAss(); // Disables fpscontroller and charcontroller
                 IncreaseGhostCharge();
 
@@ -517,7 +523,7 @@ public class PlayerAttack : MonoBehaviour
     {
         yield return new WaitForSeconds(assAnimTime);
 
-        isAssing = false;
+        playerScript.isAssassinating = false;
         playerScript.DoneAss();
 
         Enemy enemyScript = currentAssEnemyTarget.GetComponent<Enemy>();

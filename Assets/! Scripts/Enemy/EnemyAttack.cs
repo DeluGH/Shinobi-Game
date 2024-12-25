@@ -83,7 +83,7 @@ public class EnemyAttack : MonoBehaviour
                 else canStrafeNow = true;
             }
 
-            if (attackAvailable)
+            if (attackAvailable && !enemyScript.player.GetComponent<Player>().isAssassinating)
             {
                 //ATTACK
                 enemyScript.isAttacking = true;

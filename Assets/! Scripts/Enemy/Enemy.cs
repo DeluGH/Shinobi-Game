@@ -374,11 +374,11 @@ public class Enemy : MonoBehaviour
         currentHealth = 0; // Make sure health is ded
         isDead = true;
 
-        agent.isStopped = true;
+        if (agent.isActiveAndEnabled) agent.isStopped = true;
         isActivityPaused = true;
         isExecutingActivity = false;
 
-        agent.enabled = false;
+        if (agent.isActiveAndEnabled) agent.enabled = false;
 
         //Disable collider
         capsuleCollider.excludeLayers = LayerMask.GetMask("Player");
@@ -392,15 +392,15 @@ public class Enemy : MonoBehaviour
     {
         movementSpeed = baseMovementSpeed * rate;
 
-        if (agent == null) Debug.LogWarning("No NavMesh Agent found! Can't update Agent Speed");
-        else agent.speed = movementSpeed;
+        if (agent == null && agent.isActiveAndEnabled) Debug.LogWarning("No NavMesh Agent found! Can't update Agent Speed");
+        else if (agent.isActiveAndEnabled) agent.speed = movementSpeed;
     }
     public void RotationMult(float rate)
     {
         rotationSpeed = baseRotationSpeed * rate;
 
-        if (agent == null) Debug.LogWarning("No NavMesh Agent found! Can't update Agent Rotation Speed");
-        else agent.angularSpeed = rotationSpeed;
+        if (agent == null && agent.isActiveAndEnabled) Debug.LogWarning("No NavMesh Agent found! Can't update Agent Rotation Speed");
+        else if (agent.isActiveAndEnabled) agent.angularSpeed = rotationSpeed;
     }
 
     // Activity
@@ -519,7 +519,7 @@ public class Enemy : MonoBehaviour
     }
     public bool HasReachedDestination()
     {
-        if (!agent.pathPending && !isDead) // Ensure the path is ready
+        if (agent.isActiveAndEnabled && !agent.pathPending && !isDead) // Ensure the path is ready
         {
             // Check if the agent is close enough to its destination
             float remainingDistance = agent.remainingDistance;

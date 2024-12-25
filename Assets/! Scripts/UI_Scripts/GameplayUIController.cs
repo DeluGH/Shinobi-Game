@@ -56,11 +56,7 @@ public class GameplayUIController : MonoBehaviour
         if (buttonIcons.Length == 0) Debug.LogError("No Buttons ICONS set! Pls set them.");
     }
 
-    public void UpdateEquippedImage(Sprite image)
-    {
-        if (image != null) selectedItem.sprite = image;
-        else selectedItem.sprite = noImage;
-    }
+    
 
     public void OpenInventoryWheel(List<InventorySlot> inventory)
     {
@@ -146,10 +142,15 @@ public class GameplayUIController : MonoBehaviour
         ghostSlider.value = targetGhost;
     }
 
+    public void UpdateEquippedImage(Sprite image)
+    {
+        if (image != null) selectedItem.sprite = image;
+        else selectedItem.sprite = noImage;
+    }
     public void UpdateItemText(int currentItems, int maxItems)
     {
         itemText.text = $"{currentItems}/{maxItems}";
 
-        if (currentItems == 0 && maxItems == 0) itemText.text = $"";
+        if (currentItems == 0 || maxItems == 0) itemText.text = $"";
     }
 }
