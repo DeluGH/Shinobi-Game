@@ -44,23 +44,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a441251732f2b964b934b9aad5b8adc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audibleDistance: 24
   dieSounds:
-  - {fileID: 8300000, guid: 336d5816d7589d24f9091408b3465a43, type: 3}
-  - {fileID: 8300000, guid: 4eb637b792660b04ea2437653ed15348, type: 3}
+  - audioClip: {fileID: 8300000, guid: 336d5816d7589d24f9091408b3465a43, type: 3}
+    subtitles: '[Enemy dies]'
+  - audioClip: {fileID: 8300000, guid: 4eb637b792660b04ea2437653ed15348, type: 3}
+    subtitles: '[Enemy dies]'
   hitSounds:
-  - {fileID: 8300000, guid: dde0b1afb8a8f8e4dada58487480b4c4, type: 3}
-  - {fileID: 8300000, guid: 0f010e6adeeff6c4cbe7bcda64abbb80, type: 3}
-  - {fileID: 8300000, guid: 86ea85a6b1fb2f445882303e988fbe00, type: 3}
+  - audioClip: {fileID: 8300000, guid: dde0b1afb8a8f8e4dada58487480b4c4, type: 3}
+    subtitles: '[Enemy gets hit]'
+  - audioClip: {fileID: 8300000, guid: 0f010e6adeeff6c4cbe7bcda64abbb80, type: 3}
+    subtitles: '[Enemy gets hit]'
+  - audioClip: {fileID: 8300000, guid: 86ea85a6b1fb2f445882303e988fbe00, type: 3}
+    subtitles: '[Enemy gets hit]'
   finalHitSounds: []
   aware:
-  - {fileID: 8300000, guid: fd043b9edb3e1164b826bc296fda5936, type: 3}
+  - audioClip: {fileID: 8300000, guid: fd043b9edb3e1164b826bc296fda5936, type: 3}
+    subtitles: Huh?
+  - audioClip: {fileID: 8300000, guid: 714cf1dddd05e614fb10c6dedffa7fce, type: 3}
+    subtitles: Hm?
   investigate:
-  - {fileID: 8300000, guid: fceb106d0618a8a4184a43c825e36b1a, type: 3}
+  - audioClip: {fileID: 8300000, guid: fceb106d0618a8a4184a43c825e36b1a, type: 3}
+    subtitles: '[japanese accent] I am going to check that out-'
   alerted:
-  - {fileID: 8300000, guid: 9750e27248c732946b6dc986c9889d3c, type: 3}
-  - {fileID: 8300000, guid: 77fcb1e9aa328774dafef2ea7d4d867c, type: 3}
+  - audioClip: {fileID: 8300000, guid: 9750e27248c732946b6dc986c9889d3c, type: 3}
+    subtitles: Oi!
   backToNormal:
-  - {fileID: 8300000, guid: b42bdf81f688b2a4b877af1d7289633d, type: 3}
+  - audioClip: {fileID: 8300000, guid: b42bdf81f688b2a4b877af1d7289633d, type: 3}
+    subtitles: '[japanese accent] I think I drank too much sake...'
   ambience:
-  - {fileID: 8300000, guid: 9833d7f2c0f7aba46b58430221105207, type: 3}
+  - audioClip: {fileID: 8300000, guid: 9833d7f2c0f7aba46b58430221105207, type: 3}
+    subtitles: '[suspicious humming]'
   enemyScript: {fileID: 0}
+  currentVoiceline:
+    audioClip: {fileID: 0}
+    subtitles: 

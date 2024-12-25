@@ -29,11 +29,19 @@ public class GameplayUIController : MonoBehaviour
     public Sprite noImage;
     public static int weaponID;
 
-    private void Awake()
+    void Awake()
     {
-        Instance = this;
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
-    
+
     void Update()
     {
         switch (weaponID)

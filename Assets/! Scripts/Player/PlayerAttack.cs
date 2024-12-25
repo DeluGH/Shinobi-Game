@@ -25,6 +25,7 @@ public class PlayerAttack : MonoBehaviour
     public AudioClip swordParry;      // Enemy hit by attack
     public AudioClip assSound;
     public AudioClip fallingSound;
+    public AudioClip assHighlightSound;
 
 
     [Header("Debug References")]
@@ -638,7 +639,7 @@ public class PlayerAttack : MonoBehaviour
                 Vector3 directionToEnemy = (enemy.transform.position - transform.position).normalized;
                 float angleToEnemy = Vector3.Angle(transform.forward, directionToEnemy);
 
-                if (angleToEnemy <= (angle + 10f) / 2)
+                if (angleToEnemy <= (angle + 10f) / 2 && enemy.playerInDetectionArea)
                 {
                     enemy.SeeAttack(); // Enemies react to attacks
                 }
@@ -649,7 +650,11 @@ public class PlayerAttack : MonoBehaviour
 
     public void HighlightEnemy(GameObject target)
     {
-        if (currentHighlight == null) currentHighlight = Instantiate(highlightPrefab, target.transform.position, Quaternion.identity);
+        if (currentHighlight == null)
+        {
+            currentHighlight = Instantiate(highlightPrefab, target.transform.position, Quaternion.identity);
+            playerScript.audioSource.PlayOneShot(assHighlightSound);
+        }
 
         AssassinateIndicatorHighlight highlightScript = currentHighlight.GetComponent<AssassinateIndicatorHighlight>();
         highlightScript.SetTarget(target);

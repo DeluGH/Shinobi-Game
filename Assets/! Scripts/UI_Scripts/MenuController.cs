@@ -120,8 +120,13 @@ public class MenuController : MonoBehaviour
         gameplayPanel.SetActive(true);
         currentMenuState = MenuState.Gameplay;
 
-        GameplayUIController.Instance.UpdateHealthSlider(playerScript.currentHealth, playerScript.maxHealth);
-        GameplayUIController.Instance.UpdateGhostSlider(playerScript.attackScript.ghostCurrentChargeAmount, playerScript.attackScript.ghostChargeAmount);
+        if (playerScript && GameplayUIController.Instance.isActiveAndEnabled)
+        {
+            GameplayUIController.Instance.UpdateHealthSlider(playerScript.currentHealth, playerScript.maxHealth);
+            GameplayUIController.Instance.UpdateGhostSlider(playerScript.attackScript.ghostCurrentChargeAmount, playerScript.attackScript.ghostChargeAmount);
+        }
+
+        if (SubtitleManager.Instance.isActiveAndEnabled) SubtitleManager.Instance.ClearAllSubtitles();
 
         LockCursor();
     }

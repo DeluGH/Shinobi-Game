@@ -308,19 +308,19 @@ public class DetectionAI : MonoBehaviour
             switch (currentState)
             {
                 case DetectionState.Alerted:
-                    enemyScript.soundScript.PlayAlerted();
+                    if (enemyScript.soundScript) enemyScript.soundScript.PlayAlerted();
                     break;
 
                 case DetectionState.Investigating:
-                    enemyScript.soundScript.PlayInvestigate();
+                    if (enemyScript.soundScript) enemyScript.soundScript.PlayInvestigate();
                     break;
 
                 case DetectionState.Aware:
-                    enemyScript.soundScript.PlayAware();
+                    if (enemyScript.soundScript) enemyScript.soundScript.PlayAware();
                     break;
 
                 case DetectionState.Normal:
-                    enemyScript.soundScript.PlayBackToNormal();
+                    if (enemyScript.soundScript) enemyScript.soundScript.PlayBackToNormal();
                     break;
             }
         }

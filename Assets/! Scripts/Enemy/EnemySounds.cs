@@ -1,25 +1,36 @@
 using UnityEngine;
 using UnityEngine.Audio;
 
-public class EnemySounds : MonoBehaviour
-    // THIS NEEDS TO BE A CHILD OBJECT
+[System.Serializable]
+public class Voiceline
 {
+    public AudioClip audioClip; // The audio file for the voiceline
+    [TextArea(2, 5)]           // Allows multiline editing in the Inspector
+    public string subtitles;    // The subtitles for the voiceline
+}
+
+public class EnemySounds : MonoBehaviour
+{
+    [Header("DO NOT RESET SCRIPT")]
+    public float audibleDistance = 24;
+
     [Header("Combat")]
-    public AudioClip[] dieSounds;
-    public AudioClip[] hitSounds;
-    public AudioClip[] finalHitSounds;
+    public Voiceline[] dieSounds;
+    public Voiceline[] hitSounds;
+    public Voiceline[] finalHitSounds;
 
     [Header("Detection")]
-    public AudioClip[] aware;
-    public AudioClip[] investigate;
-    public AudioClip[] alerted;
-    public AudioClip[] backToNormal;
+    public Voiceline[] aware;
+    public Voiceline[] investigate;
+    public Voiceline[] alerted;
+    public Voiceline[] backToNormal;
 
     [Header("Activity")]
-    public AudioClip[] ambience;
+    public Voiceline[] ambience;
 
     [Header("References (Auto)")]
     public Enemy enemyScript;
+    public Voiceline currentVoiceline;
 
     private void Start()
     {
@@ -27,73 +38,43 @@ public class EnemySounds : MonoBehaviour
         if (enemyScript == null) Debug.LogWarning("No enemyScript!!");
     }
 
-    //Combat
-    public void PlayDyingSound()
+    public void StopSpeaking()
     {
-        int random = Random.Range(0, dieSounds.Length);
-        enemyScript.audioSource.PlayOneShot(dieSounds[random]);
+        enemyScript.audioSource.Stop();
+        SubtitleManager.Instance.RemoveSubtitle(currentVoiceline);
     }
-    public void PlayHitSound()
+
+    private void PlayVoiceline(Voiceline[] voicelines)
     {
-        if (enemyScript != null && !enemyScript.isDead)
+        StopSpeaking();
+
+        if (enemyScript != null && !enemyScript.isDead && voicelines.Length > 0
+            && Vector3.Distance(enemyScript.transform.position, enemyScript.player.transform.position) <= audibleDistance)
         {
-            int random = Random.Range(0, hitSounds.Length);
-            enemyScript.audioSource.PlayOneShot(hitSounds[random]);
-        }
-            
-    }
-    public void PlayFinalHitSound()
-    {
-        if (enemyScript != null && !enemyScript.isDead)
-        {
-            int random = Random.Range(0, finalHitSounds.Length);
-            enemyScript.audioSource.PlayOneShot(finalHitSounds[random]);
+            int random = Random.Range(0, voicelines.Length);
+            currentVoiceline = voicelines[random]; // Set the current voiceline
+
+            // Play the audio clip
+            enemyScript.audioSource.PlayOneShot(currentVoiceline.audioClip);
+
+            // Show the subtitle
+            float clipDuration = currentVoiceline.audioClip != null ? currentVoiceline.audioClip.length : 3f; // Default duration if no audio
+            SubtitleManager.Instance.ShowSubtitle(currentVoiceline.subtitles, currentVoiceline, clipDuration + 2f); //add 2 seconds extra
         }
     }
 
-    //Detection
-    public void PlayBackToNormal()
-    {
-        if (enemyScript != null && !enemyScript.isDead)
-        {
-            int random = Random.Range(0, backToNormal.Length);
-            enemyScript.audioSource.PlayOneShot(backToNormal[random]);
-        }
-    }
-    public void PlayAware()
-    {
-        if (enemyScript != null && !enemyScript.isDead)
-        {
-            int random = Random.Range(0, aware.Length);
-            enemyScript.audioSource.PlayOneShot(aware[random]);
-        }
-    }
-    public void PlayInvestigate()
-    {
-        if (enemyScript != null && !enemyScript.isDead)
-        {
-            int random = Random.Range(0, investigate.Length);
-            enemyScript.audioSource.PlayOneShot(investigate[random]);
-        }
-    }
-    public void PlayAlerted()
-    {
-        if (enemyScript != null && !enemyScript.isDead)
-        {
-            int random = Random.Range(0, alerted.Length);
-            enemyScript.audioSource.PlayOneShot(alerted[random]);
-        }
-            
-    }
+    // Combat
+    public void PlayDyingSound() => PlayVoiceline(dieSounds);
+    public void PlayHitSound() => PlayVoiceline(hitSounds);
+    public void PlayFinalHitSound() => PlayVoiceline(finalHitSounds);
 
-    //Ambience
-    public void PlayAmbience()
-    {
-        if (enemyScript != null && !enemyScript.isDead)
-        {
-            int random = Random.Range(0, ambience.Length);
-            enemyScript.audioSource.PlayOneShot(ambience[random]);
-        }
-            
-    }
+    // Detection
+    public void PlayBackToNormal() => PlayVoiceline(backToNormal);
+    public void PlayAware() => PlayVoiceline(aware);
+    public void PlayInvestigate() => PlayVoiceline(investigate);
+    public void PlayAlerted() => PlayVoiceline(alerted);
+
+    // Ambience
+    public void PlayAmbience() => PlayVoiceline(ambience);
 }
+

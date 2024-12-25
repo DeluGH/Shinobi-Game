@@ -962,6 +962,7 @@ MonoBehaviour:
   swordParry: {fileID: 8300000, guid: da1a690a28e5140429aa95dbfe378f44, type: 3}
   assSound: {fileID: 8300000, guid: e883a80fadaeeae41a872c3022f88f14, type: 3}
   fallingSound: {fileID: 8300000, guid: 18eddb5dd01f35149bdb0337e73d698f, type: 3}
+  assHighlightSound: {fileID: 8300000, guid: c37fe8274bfa8a04ab2a8cf0e242d315, type: 3}
   lookingAtEnemy: {fileID: 0}
   ghostCurrentChargeAmount: 0
   currentAttackCooldown: 0

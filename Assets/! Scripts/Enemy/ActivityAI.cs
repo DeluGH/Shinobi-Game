@@ -46,7 +46,7 @@ public class ActivityAI : MonoBehaviour
         if (soundInSecondsTimer >= soundInSeconds && activitiesCompleted >= activitiesToComplete && !enemyScript.isActivityPaused)
         {
             ResetIdleSoundRequirements();
-            enemyScript.soundScript.PlayAmbience();
+            if (enemyScript.soundScript) enemyScript.soundScript.PlayAmbience();
         }
 
         if (enemyScript.canEnemyPerform() && !enemyScript.isActivityPaused) // Only run activities if not paused
