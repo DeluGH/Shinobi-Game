@@ -63,7 +63,7 @@ public class AudioManager : MonoBehaviour
     // Set and save the master volume
     public void SetMasterVolume(float volume)
     {
-        currentMasterVolume = Mathf.Clamp(volume, -80f, 0f); // Unity mixes in dB, so -80 is the minimum
+        currentMasterVolume = Mathf.Clamp(volume, -80f, 20f); // Unity mixes in dB, so -80 is the minimum
         audioMixer.SetFloat("Master", currentMasterVolume);
         PlayerPrefs.SetFloat(MasterVolumeKey, currentMasterVolume); // Save to PlayerPrefs
     }
@@ -71,20 +71,20 @@ public class AudioManager : MonoBehaviour
     // Set and save the enemy volume
     public void SetEnemyVolume(float volume)
     {
-        currentEnemyVolume = Mathf.Clamp(volume, -80f, 0f);
+        currentEnemyVolume = Mathf.Clamp(volume, -80f, 20f);
         audioMixer.SetFloat("Enemy", currentEnemyVolume);
         PlayerPrefs.SetFloat(EnemyVolumeKey, currentEnemyVolume); // Save to PlayerPrefs
     }
     public void SetNPCVolume(float volume)
     {
-        currentNPCVolume = Mathf.Clamp(volume, -80f, 0f);
+        currentNPCVolume = Mathf.Clamp(volume, -80f, 20f);
         audioMixer.SetFloat("NPC", currentNPCVolume);
         PlayerPrefs.SetFloat(NPCVolumeKey, currentNPCVolume); // Save to PlayerPrefs
     }
     // Set and save the ambience volume
     public void SetAmbienceVolume(float volume)
     {
-        currentAmbienceVolume = Mathf.Clamp(volume, -80f, 0f);
+        currentAmbienceVolume = Mathf.Clamp(volume, -80f, 20f);
         audioMixer.SetFloat("Ambience", currentAmbienceVolume);
         PlayerPrefs.SetFloat(AmbienceVolumeKey, currentAmbienceVolume); // Save to PlayerPrefs
     }
@@ -92,7 +92,7 @@ public class AudioManager : MonoBehaviour
     // Set and save the music volume
     public void SetMusicVolume(float volume)
     {
-        currentMusicVolume = Mathf.Clamp(volume, -80f, 0f);
+        currentMusicVolume = Mathf.Clamp(volume, -80f, 20f);
         audioMixer.SetFloat("Music", currentMusicVolume);
         PlayerPrefs.SetFloat(MusicVolumeKey, currentMusicVolume); // Save to PlayerPrefs
     }
@@ -100,7 +100,7 @@ public class AudioManager : MonoBehaviour
     // Set and save the player volume
     public void SetPlayerVolume(float volume)
     {
-        currentPlayerVolume = Mathf.Clamp(volume, -80f, 0f);
+        currentPlayerVolume = Mathf.Clamp(volume, -80f, 20f);
         audioMixer.SetFloat("Player", currentPlayerVolume);
         PlayerPrefs.SetFloat(PlayerVolumeKey, currentPlayerVolume); // Save to PlayerPrefs
     }
@@ -108,7 +108,7 @@ public class AudioManager : MonoBehaviour
     // Set and save the UI volume
     public void SetUIVolume(float volume)
     {
-        currentUIVolume = Mathf.Clamp(volume, -80f, 0f);
+        currentUIVolume = Mathf.Clamp(volume, -80f, 20f);
         audioMixer.SetFloat("UI", currentUIVolume);
         PlayerPrefs.SetFloat(UIVolumeKey, currentUIVolume); // Save to PlayerPrefs
     }

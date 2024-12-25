@@ -102,13 +102,13 @@ public class VolumeUI : MonoBehaviour
 
     private float DbToPercentage(float dbValue)
     {
-        // Convert dB (-80 to 0) to a percentage (0 to 100)
-        return Mathf.Clamp01((dbValue + 80f) / 80f) * 100f;
+        // Convert dB (-80 to 20) to a percentage (0 to 100)
+        return Mathf.Clamp01((dbValue + 80f) / 100f) * 100f;
     }
 
     private float PercentageToDb(float percentageValue)
     {
-        // Convert a percentage (0 to 100) to dB (-80 to 0)
-        return Mathf.Lerp(-80f, 0f, percentageValue / 100f);
+        // Convert a percentage (0 to 100) to dB (-80 to 20)
+        return Mathf.Lerp(-80f, 20f, percentageValue / 100f);
     }
 }

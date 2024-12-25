@@ -94,7 +94,7 @@ public class Inventory : MonoBehaviour
             // Open wheel
             if (inventoryPressTime >= openWheelKeyPressTime)
             {
-                GameplayUIController.Instance.OpenInventoryWheel();
+                GameplayUIController.Instance.OpenInventoryWheel(inventorySlots);
             }
         }
         //Swap Back w Hand / Hand w Back

@@ -38,6 +38,13 @@ public class MenuController : MonoBehaviour
     public TextMeshProUGUI loadingText; // Optional: Text to display the percentage as a number (e.g., "50%")
     public Toggle fullscreenToggle;
 
+    [Header("Sounds")]
+    public AudioSource uiSource;
+    public AudioSource musicSource;
+    public AudioClip MainMenuSong;
+    public AudioClip buttonSelect;
+    public AudioClip menuOpen;
+
     [Header("Auto")]
     public GameObject player;
     public Player playerScript;
@@ -61,7 +68,6 @@ public class MenuController : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Multiple MainMenuController instances detected. Destroying the duplicate.");
             Destroy(gameObject); // Destroy duplicate instance
         }
     }
@@ -70,6 +76,10 @@ public class MenuController : MonoBehaviour
     {
         //Fix toggle tick being wrong
         isFullscreen = Screen.fullScreen;
+
+        if (!musicSource || !uiSource) Debug.LogError("Oi, no audiosources!! double check");
+
+        PlayMainMenuSong();
     }
 
     void Update()
@@ -95,9 +105,36 @@ public class MenuController : MonoBehaviour
                 case MenuState.Volume:
                     ToggleVolumesMenu();
                     break;
-
+                case MenuState.MissionSelect:
+                    CloseMissions();
+                    break;
             }
         }
+    }
+
+    //Main Menu Song
+    public void PlayMainMenuSong()
+    {
+        PlayOneShotDelayed(musicSource, MainMenuSong, 2f);
+    }
+    public void PlayOneShotDelayed(AudioSource audioSource, AudioClip clip, float delay)
+    {
+        StartCoroutine(PlayOneShotCoroutine(audioSource, clip, delay));
+    }
+
+    private IEnumerator PlayOneShotCoroutine(AudioSource audioSource, AudioClip clip, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        audioSource.PlayOneShot(clip);
+    }
+    //Sounds
+    public void PlayButton()
+    {
+        uiSource.PlayOneShot(buttonSelect);
+    }
+    public void PlayMenuOpen()
+    {
+        uiSource.PlayOneShot(menuOpen);
     }
 
     // Start game
@@ -133,6 +170,8 @@ public class MenuController : MonoBehaviour
     // Open settings
     public void OpenSettings()
     {
+        PlayMenuOpen();
+
         ReanimateCursor();
         settingsPanel.SetActive(true);
         currentMenuState = MenuState.Settings;
@@ -163,6 +202,8 @@ public class MenuController : MonoBehaviour
     // Missions Panel
     public void OpenMissions()
     {
+        PlayMenuOpen();
+
         missionSelectPanel.SetActive(true);
         currentMenuState = MenuState.MissionSelect;
 
@@ -181,6 +222,7 @@ public class MenuController : MonoBehaviour
     {
         if (!isSettingsSubMenuOpen) // false, open
         {
+            PlayMenuOpen();
             currentMenuState = MenuState.Keybinds;
             keybindsPanel.SetActive(true);
         }
@@ -196,6 +238,7 @@ public class MenuController : MonoBehaviour
     {
         if (!isSettingsSubMenuOpen) // false, open
         {
+            PlayMenuOpen();
             currentMenuState = MenuState.Volume;
             volumePanel.SetActive(true);
         }
@@ -322,6 +365,9 @@ public class MenuController : MonoBehaviour
     // LOADING
     public void LoadScene(string sceneName)
     {
+        uiSource.Stop();
+        musicSource.Stop();
+
         missionSelectPanel.SetActive(false);
 
         StartCoroutine(LoadSceneAsync(sceneName));
@@ -369,12 +415,19 @@ public class MenuController : MonoBehaviour
         }
 
         // DONE
-        currentMenuState = MenuState.Gameplay;
-        gameOverPanel.SetActive(false);
-        gameplayPanel.SetActive(true);
-        loadingScreen.SetActive(false);
+        if (currentMenuState == MenuState.MainMenu)
+        {
+            PlayMainMenuSong();
+        }
+        else
+        {
+            currentMenuState = MenuState.Gameplay;
+            gameOverPanel.SetActive(false);
+            gameplayPanel.SetActive(true);
 
-        InitializePlayerVariables();
+            InitializePlayerVariables();
+        }
+        loadingScreen.SetActive(false);
     }
 
     // GAME OVER

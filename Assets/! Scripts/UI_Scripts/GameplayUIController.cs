@@ -1,8 +1,10 @@
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 public class GameplayUIController : MonoBehaviour
 {
@@ -28,6 +30,11 @@ public class GameplayUIController : MonoBehaviour
     public Image selectedItem;
     public Sprite noImage;
     public static int weaponID;
+    public Button[] buttons;
+    public Image[] buttonIcons;
+
+    [Header("Inventory")]
+    public List<InventorySlot> currentInventory = new List<InventorySlot>();
 
     void Awake()
     {
@@ -42,30 +49,26 @@ public class GameplayUIController : MonoBehaviour
         }
     }
 
-    void Update()
+    private void Start()
     {
-        switch (weaponID)
-        {
-            case 0: // nothing is selected
-                selectedItem.sprite = noImage;
-                break;
-            case 1: // Item 1
-                Debug.Log("Kunai");
-                break;
-            case 2: // Item 2
-                Debug.Log("Shuriken");
-                break;
-            case 3: // Item 3
-                Debug.Log("Smokebomb");
-                break;
-            case 4: // Item 4
-                Debug.Log("Windchime");
-                break;
-        }
+        if (buttons.Length == 0) Debug.LogError("No Buttons set! Pls set them.");
+        
+        if (buttonIcons.Length == 0) Debug.LogError("No Buttons ICONS set! Pls set them.");
     }
 
-    public void OpenInventoryWheel()
+    public void OpenInventoryWheel(List<InventorySlot> inventory)
     {
+        currentInventory = inventory;
+
+        foreach (var slot in currentInventory)
+        {
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                if (buttonIcons[i] != null)
+                    buttonIcons[i].sprite = currentInventory[i].item.itemImage;
+            }
+        }
+
         isOpen = true;
         weaponWheelSelected = true;
         anim.SetBool("OpenWeaponWheel", true);

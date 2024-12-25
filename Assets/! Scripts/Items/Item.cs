@@ -7,6 +7,7 @@ public abstract class Item : ScriptableObject
     public bool removeOnUse = true;
     public bool canHoldCharge = false;
     public bool isDoubleHanded = false;
+    public Sprite itemImage;
 
     public GameObject itemHoldModel;
 

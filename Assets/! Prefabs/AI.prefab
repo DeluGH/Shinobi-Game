@@ -164,9 +164,6 @@ MonoBehaviour:
   currentState: 0
   isSusPause: 0
   isLookingAround: 0
-  currentDetectDistance: 0
-  currentGreenAngle: 0
-  currentYellowAngle: 0
   detectDistance: 16.5
   greenAngle: 110
   yellowAngle: 65
@@ -233,6 +230,7 @@ MonoBehaviour:
   alertTimer: 0
   corpsesSeen: []
   noiseHeardTimer: 0
+  previousState: 0
 --- !u!114 &429888840770217083
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -248,7 +246,15 @@ MonoBehaviour:
   Activities: []
   currentActivityIndex: 0
   currentPathIndex: 0
+  minimumSeconds: 10
+  maximumSeconds: 30
+  minimumActivitiesComplete: 2
+  maximumctivitiesComplete: 4
+  soundInSeconds: 0
+  activitiesToComplete: 0
   enemyScript: {fileID: 0}
+  soundInSecondsTimer: 0
+  activitiesCompleted: 0
 --- !u!195 &3238511630373101444
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -404,7 +410,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
