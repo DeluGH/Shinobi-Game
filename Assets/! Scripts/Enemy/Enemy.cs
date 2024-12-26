@@ -255,6 +255,8 @@ public class Enemy : MonoBehaviour
 
         combatMode = true;
         combatModeTimer = 0f;
+
+        attackScript.Reposition();
     }
     public void DisableCombatMode()
     {

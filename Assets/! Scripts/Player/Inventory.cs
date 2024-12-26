@@ -148,10 +148,11 @@ public class Inventory : MonoBehaviour
             try
             {
                 utilHand.Use(player); // Call the Use method on the equipped item
-                RemoveUtilHandObject();
-
+                
                 //Sound
                 playerScript.audioSource.PlayOneShot(utilHand.useSound);
+
+                RemoveUtilHandObject();
             }
             catch (System.Exception ex)
             {

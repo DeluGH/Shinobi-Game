@@ -42,8 +42,8 @@ public class MenuController : MonoBehaviour
     public AudioSource uiSource;
     public AudioSource musicSource;
     public AudioClip MainMenuSong;
-    public AudioClip buttonSelect;
     public AudioClip menuOpen;
+    public AudioClip gameOverSong;
 
     [Header("Auto")]
     public GameObject player;
@@ -129,10 +129,6 @@ public class MenuController : MonoBehaviour
         if (currentMenuState != MenuState.Gameplay || currentMenuState != MenuState.PauseMenu) audioSource.PlayOneShot(clip);
     }
     //Sounds
-    public void PlayButton()
-    {
-        uiSource.PlayOneShot(buttonSelect);
-    }
     public void PlayMenuOpen()
     {
         uiSource.PlayOneShot(menuOpen);
@@ -448,6 +444,9 @@ public class MenuController : MonoBehaviour
     public void GameOver()
     {
         currentMenuState = MenuState.Gameover;
+
+        //failed song
+        musicSource.PlayOneShot(gameOverSong);
 
         gameOverPanel.SetActive(true);
         gameplayPanel.SetActive(false);

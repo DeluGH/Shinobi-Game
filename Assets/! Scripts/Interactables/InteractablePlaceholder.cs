@@ -1,15 +1,36 @@
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class GhostSwordInteractable : Interactable
 {
     public bool disappearOnInteract = true;
-    public AudioSource audioSource;
+    
     public AudioClip pickUpClip;
+    public AudioClip ambientClip;
+
+    [Header("Auto")]
+    public AudioSource audioSource;
+    public GameObject player;
 
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null) Debug.LogWarning("No audio sauce!");
+
+        player = GameObject.FindGameObjectWithTag("Player");
+    }
+
+    private void Update()
+    {
+        if (player != null)
+        {
+            if (Vector3.Distance(player.transform.position, gameObject.transform.position) < 20f)
+            {
+                audioSource.loop = true;
+                audioSource.clip = ambientClip;
+                audioSource.Play();
+            }
+        }
     }
 
     public override void DoHoverOverActions()
@@ -27,5 +48,9 @@ public class GhostSwordInteractable : Interactable
         audioSource.PlayOneShot(pickUpClip);
 
         if (disappearOnInteract) Destroy(gameObject);
+        else
+        {
+            audioSource.Stop();
+        }
     }
 }

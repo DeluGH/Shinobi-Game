@@ -296,10 +296,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19077ce3474553e409a0548d6b9cafbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rope: {fileID: 0}
   fpsController: {fileID: 11400000}
   characterController: {fileID: 14300000}
-  grapplingHook: {fileID: 0}
   hookReachTime: 0.25
   hookRange: 50
   swingJumpForce: 1000
@@ -316,6 +314,8 @@ MonoBehaviour:
   tip:
     key: 0
     tipMessage: 
+  rope: {fileID: 0}
+  grapplingHook: {fileID: 0}
   playerScript: {fileID: 0}
 --- !u!114 &7435302451620342592
 MonoBehaviour:
@@ -1000,7 +1000,7 @@ MonoBehaviour:
   chargeStartTime: 0
   assRange: 3
   assScanAngle: 35
-  behindEnemyThreshold: -0.4
+  behindEnemyThreshold: -0.7
   assAnimTime: 0.4
   assLerpMinDistance: 0.15
   assLerpTime: 0.25
