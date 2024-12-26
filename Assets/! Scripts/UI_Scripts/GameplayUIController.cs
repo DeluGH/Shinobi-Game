@@ -58,7 +58,6 @@ public class GameplayUIController : MonoBehaviour
     }
 
     
-
     public void OpenInventoryWheel(List<InventorySlot> inventory)
     {
         currentInventory = inventory;

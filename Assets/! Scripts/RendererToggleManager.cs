@@ -27,6 +27,13 @@ public class RendererToggleManager : MonoBehaviour
         if (urpAsset == null) Debug.LogWarning("urpAsset is NULL!!");
         if (urpData == null) Debug.LogWarning("urpData is NULL!!");
 
+        ResetRendererFeatures();
+    }
+
+    public void ResetRendererFeatures()
+    {
+        ToggleRendererFeature("Kurosawa Filter", false);
+        ToggleRendererFeature("Highlight Enemies", false);
     }
 
     public void ToggleRendererFeature(string featureName, bool enable)

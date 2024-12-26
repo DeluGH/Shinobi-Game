@@ -17,6 +17,8 @@ MonoImporter:
   - assSound: {fileID: 8300000, guid: e883a80fadaeeae41a872c3022f88f14, type: 3}
   - fallingSound: {fileID: 8300000, guid: 18eddb5dd01f35149bdb0337e73d698f, type: 3}
   - assHighlightSound: {fileID: 8300000, guid: c37fe8274bfa8a04ab2a8cf0e242d315, type: 3}
+  - ghostModeEnabled: {fileID: 8300000, guid: 969498ffc9aa73a47baae8f37e58af1e, type: 3}
+  - ghostModeDisabled: {fileID: 8300000, guid: 5fd22a9b950caee4ab0e9b475eb92ea7, type: 3}
   - lookingAtEnemy: {instanceID: 0}
   - MainHandObject: {instanceID: 0}
   - currentHighlight: {instanceID: 0}

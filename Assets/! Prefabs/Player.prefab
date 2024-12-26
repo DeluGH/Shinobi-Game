@@ -972,6 +972,8 @@ MonoBehaviour:
   assSound: {fileID: 8300000, guid: e883a80fadaeeae41a872c3022f88f14, type: 3}
   fallingSound: {fileID: 8300000, guid: 18eddb5dd01f35149bdb0337e73d698f, type: 3}
   assHighlightSound: {fileID: 8300000, guid: c37fe8274bfa8a04ab2a8cf0e242d315, type: 3}
+  ghostModeEnabled: {fileID: 8300000, guid: 969498ffc9aa73a47baae8f37e58af1e, type: 3}
+  ghostModeDisabled: {fileID: 8300000, guid: 5fd22a9b950caee4ab0e9b475eb92ea7, type: 3}
   lookingAtEnemy: {fileID: 0}
   ghostCurrentChargeAmount: 0
   currentAttackCooldown: 0
@@ -980,7 +982,7 @@ MonoBehaviour:
   MainHandObject: {fileID: 0}
   ghostMode: 0
   ghostChargeAmount: 7
-  ghostDuration: 7.5
+  ghostDuration: 10
   ghostRangeBuff: 1
   ghostAngleBuff: 20
   ghostAttackCooldown: 0.25
@@ -1000,7 +1002,7 @@ MonoBehaviour:
   chargeStartTime: 0
   assRange: 3
   assScanAngle: 35
-  behindEnemyThreshold: -0.7
+  behindEnemyThreshold: -0.4
   assAnimTime: 0.4
   assLerpMinDistance: 0.15
   assLerpTime: 0.25

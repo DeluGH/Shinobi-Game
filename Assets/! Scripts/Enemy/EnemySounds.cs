@@ -16,8 +16,10 @@ public class EnemySounds : MonoBehaviour
 
     [Header("Combat")]
     public Voiceline[] dieSounds;
+    public Voiceline[] assedSounds;
     public Voiceline[] hitSounds;
     public Voiceline[] finalHitSounds;
+    public Voiceline[] chokingSounds;
 
     [Header("Detection")]
     public Voiceline[] aware;
@@ -65,8 +67,10 @@ public class EnemySounds : MonoBehaviour
 
     // Combat
     public void PlayDyingSound() => PlayVoiceline(dieSounds);
+    public void PlayAssedSound() => PlayVoiceline(assedSounds);
     public void PlayHitSound() => PlayVoiceline(hitSounds);
     public void PlayFinalHitSound() => PlayVoiceline(finalHitSounds);
+    public void PlayChokingSound() => PlayVoiceline(chokingSounds);
 
     // Detection
     public void PlayBackToNormal() => PlayVoiceline(backToNormal);

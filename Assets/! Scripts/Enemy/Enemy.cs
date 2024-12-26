@@ -298,7 +298,7 @@ public class Enemy : MonoBehaviour
         // Death check
         if (currentHealth <= 0)
         {
-            Die();
+            Die(false);
         }
     }
     // Light
@@ -334,7 +334,7 @@ public class Enemy : MonoBehaviour
         if (canInstaKill)
         {
             if (detectionScript.currentState == DetectionState.Alerted) DamangeTaken(hitPoints, true, false); //range is penetraing (not affected by block)
-            else Die();
+            else Die(false);
         }
         else
         {
@@ -365,10 +365,12 @@ public class Enemy : MonoBehaviour
     }
 
     // Dying
-    public void Die()
+    public void Die(bool assed)
     {
         //Sound
-        soundScript.PlayDyingSound();
+        if (!assed) soundScript.PlayDyingSound();
+        else if (assed) soundScript.PlayAssedSound();
+
         //ANIMATION
         anim.SetBool("isDead", true);
         anim.SetTrigger("Dieded");
@@ -430,6 +432,9 @@ public class Enemy : MonoBehaviour
     }
     public void EnteredSmoke(Collider collider)
     {
+        //Sound
+        soundScript.PlayChokingSound();
+
         PauseActivity();
         if (agent.isActiveAndEnabled) agent.isStopped = true; // fix while moving, they get somked
 
@@ -457,16 +462,7 @@ public class Enemy : MonoBehaviour
     {
         if ((smokeLayer.value & (1 << collider.gameObject.layer)) != 0) // Code for checking if collider layer is smoke layer
         {
-            if (agent.enabled) agent.isStopped = false; // fix while moving, they get smoked
-            overlappingSmokes--;
-
-            if (overlappingSmokes <= 0)
-            {
-                inSmoke = false;
-
-                //Fix smoke moved
-                if (isChoking && !inSmoke) chokingDuration = smokeChokeAfterDisappear;
-            }
+            OnSmokeDisabled();
         }
     }
     public void OnSmokeDisabled()

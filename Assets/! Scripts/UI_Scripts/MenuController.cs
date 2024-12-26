@@ -379,6 +379,12 @@ public class MenuController : MonoBehaviour
         uiSource.Stop();
         musicSource.Stop();
 
+        //Clear subtitles
+        //Clear tips
+        if (CursorTipsManager.Instance && CursorTipsManager.Instance.enabled == true) CursorTipsManager.Instance.ClearTips();
+        if (SubtitleManager.Instance && SubtitleManager.Instance.enabled == true) SubtitleManager.Instance.ClearAllSubtitles();
+        if (RendererToggleManager.Instance && RendererToggleManager.Instance.enabled == true) RendererToggleManager.Instance.ResetRendererFeatures();
+
         missionSelectPanel.SetActive(false);
 
         StartCoroutine(LoadSceneAsync(sceneName));

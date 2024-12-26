@@ -26,6 +26,8 @@ public class PlayerAttack : MonoBehaviour
     public AudioClip assSound;
     public AudioClip fallingSound;
     public AudioClip assHighlightSound;
+    public AudioClip ghostModeEnabled;
+    public AudioClip ghostModeDisabled;
 
     [Header("Debug References")]
     public GameObject lookingAtEnemy; // Enemy player is looking at
@@ -40,7 +42,7 @@ public class PlayerAttack : MonoBehaviour
     [Header("Ghost Mode")]
     public bool ghostMode = false;
     public int ghostChargeAmount = 7; // needed to charge
-    public float ghostDuration = 7.5f;
+    public float ghostDuration = 10f;
     public float ghostRangeBuff = 1f; // adds to all range
     public float ghostAngleBuff = 20f; // adds to all angles
     public float ghostAttackCooldown = 0.25f; // adds to all angles
@@ -169,7 +171,7 @@ public class PlayerAttack : MonoBehaviour
         }
 
         // !! Set attackCooldown to 0 in Frenzy, or just change attackCooldown for anything
-        if (meleeTimer < currentAttackCooldown && !isSwinging && !playerScript.isAssassinating && !playerScript.isDead) meleeTimer += Time.deltaTime;
+        if (meleeTimer < currentAttackCooldown && !isSwinging && !playerScript.isAssassinating && !playerScript.isDead && !playerScript.isBlocking) meleeTimer += Time.deltaTime;
         // Check for holding left click
         //CHARGING ONLY
         if (meleeTimer >= currentAttackCooldown && !playerScript.isDead && !playerScript.isBlocking)
@@ -274,6 +276,9 @@ public class PlayerAttack : MonoBehaviour
 
             GameplayUIController.Instance.UpdateGhostSlider(ghostCurrentChargeAmount, ghostChargeAmount);
             RendererToggleManager.Instance.ToggleRendererFeature("Kurosawa Filter", true);
+
+            // Sound
+            playerScript.audioSource.PlayOneShot(ghostModeEnabled);
         }
         else
         {
@@ -286,6 +291,9 @@ public class PlayerAttack : MonoBehaviour
 
                 GameplayUIController.Instance.UpdateGhostSlider(ghostCurrentChargeAmount, ghostChargeAmount);
                 RendererToggleManager.Instance.ToggleRendererFeature("Kurosawa Filter", false);
+                
+                //Sound
+                playerScript.audioSource.PlayOneShot(ghostModeDisabled);
             }
         }
     }
@@ -529,7 +537,7 @@ public class PlayerAttack : MonoBehaviour
         Enemy enemyScript = currentAssEnemyTarget.GetComponent<Enemy>();
         if (enemyScript)
         {
-            enemyScript.Die();
+            enemyScript.Die(true);
         }
         else Debug.LogWarning("NO ENEMY SCRIPT!!");
     }
