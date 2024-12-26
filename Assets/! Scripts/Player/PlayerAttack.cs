@@ -17,6 +17,7 @@ public class PlayerAttack : MonoBehaviour
     public GameObject blockParticle;
     public GameObject heavySwingAffect;
     public GameObject heavyGhostSwingAffect;
+    public GameObject dashAssSwingAffect;
 
     [Header("Sounds (Assign pls)")]
     public AudioClip swordsClash;   // Enemy blocked
@@ -216,7 +217,7 @@ public class PlayerAttack : MonoBehaviour
                 //ATTACK
                 if (canAssassinate && assEnemyTarget != null)
                 {
-                    Assassinate(isAirAss());
+                    Assassinate(isAirAss(), playerScript.fpsController.m_IsWalking);
                 }
                 else if (chargeTime >= heavyChargeTime * (ghostMode ? ghostHeavyChargeTimePercentage : 1f)) // Heavy
                 {
@@ -436,7 +437,7 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
-    public void Assassinate(bool isAirAssassinate)
+    public void Assassinate(bool isAirAssassinate, bool isWalking)
     {
         if (assEnemyTarget != null)
         {
@@ -462,20 +463,26 @@ public class PlayerAttack : MonoBehaviour
                 Animator anim = MainHandObject.GetComponentInChildren<Animator>();
                 if (anim != null)
                 {
-                    if (isAirAssassinate) anim.SetTrigger("Air Ass");
-                    else anim.SetTrigger("Ass");
+                    if (isAirAssassinate) anim.SetTrigger("Air Ass"); //air ass
+                    else if (!isWalking)
+                    {
+                        anim.SetTrigger("Dash Ass"); // Running dash ass
+                        GameObject swingEffect = Instantiate(dashAssSwingAffect, playerScript.cameraFacing.transform.position, Quaternion.identity, playerScript.cameraFacing.transform);
+                        swingEffect.transform.localRotation = Quaternion.identity;
+                    }
+                    else anim.SetTrigger("Ass"); // normal ass
                 }
                 else Debug.LogWarning("No Sword Anim detected!");
             }
             else Debug.LogWarning("NO ENEMY SCRIPT!!");
 
             //mving to Enemy Animation
-            StartCoroutine(MoveToEnemy(isAirAssassinate));
+            StartCoroutine(MoveToEnemy(isAirAssassinate, isWalking));
         }
         else Debug.LogWarning("NO assEnemyTarget!!");
     }
 
-    public IEnumerator MoveToEnemy(bool isAirAssassinate)
+    public IEnumerator MoveToEnemy(bool isAirAssassinate, bool isWalking)
     {
         Vector3 startPosition = playerScript.transform.position;
         Vector3 endPosition = currentAssEnemyTarget.transform.position;
@@ -500,11 +507,13 @@ public class PlayerAttack : MonoBehaviour
                 yield return null;
             }
         }
-        else
+        else // NON AIR (dash / normal)
         {
             //Distance/Position Player will be
             Vector3 directionToEnemy = (endPosition - startPosition).normalized;
-            Vector3 targetPosition = endPosition - directionToEnemy * (assLerpMinDistance + 0.75f); //+value cuz of playerRadius and enemyRadius
+            Vector3 targetPosition;
+            if (!isWalking) targetPosition = endPosition + directionToEnemy * (assLerpMinDistance + 0.75f); //+value cuz of playerRadius and enemyRadius
+            else targetPosition = endPosition - directionToEnemy * (assLerpMinDistance + 0.75f); //+value cuz of playerRadius and enemyRadius
 
             // Calculate distance to cover and speed (we'll use the time to get there)
             float journeyLength = Vector3.Distance(startPosition, targetPosition);  // Total distance to target position

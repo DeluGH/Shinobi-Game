@@ -222,7 +222,7 @@ public class DetectionAI : MonoBehaviour
                 if (enemyScript.playerInDetectionArea) outOfSightTimer = 0f;
 
                 //In range but not detected
-                if (!enemyScript.playerInDetectionArea && susMeter > 0)
+                if (!enemyScript.combatMode && !enemyScript.playerInDetectionArea && susMeter > 0)
                 {
                     DecreaseSuspicion();
                 }
@@ -230,7 +230,7 @@ public class DetectionAI : MonoBehaviour
             else // NOT IN RANGE
             {
                 enemyScript.playerInDetectionArea = false;
-                if (susMeter > 0) DecreaseSuspicion();
+                if (susMeter > 0 && !enemyScript.combatMode) DecreaseSuspicion();
             }
         }
     }
