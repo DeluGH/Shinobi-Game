@@ -41,7 +41,7 @@ public class EnemySounds : MonoBehaviour
     public void StopSpeaking()
     {
         enemyScript.audioSource.Stop();
-        SubtitleManager.Instance.RemoveSubtitle(currentVoiceline);
+        if (SubtitleManager.Instance.isActiveAndEnabled) SubtitleManager.Instance.RemoveSubtitle(currentVoiceline);
     }
 
     private void PlayVoiceline(Voiceline[] voicelines)
@@ -59,7 +59,7 @@ public class EnemySounds : MonoBehaviour
 
             // Show the subtitle
             float clipDuration = currentVoiceline.audioClip != null ? currentVoiceline.audioClip.length : 3f; // Default duration if no audio
-            SubtitleManager.Instance.ShowSubtitle(currentVoiceline.subtitles, currentVoiceline, clipDuration + 2f); //add 2 seconds extra
+            if (SubtitleManager.Instance.isActiveAndEnabled) SubtitleManager.Instance.ShowSubtitle(currentVoiceline.subtitles, currentVoiceline, clipDuration + 2f); //add 2 seconds extra
         }
     }
 

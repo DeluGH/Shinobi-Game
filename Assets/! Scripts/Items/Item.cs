@@ -1,5 +1,12 @@
 using UnityEngine;
 
+public enum ItemType
+{
+    Normal,
+    GrapplingHook,
+}
+
+
 public abstract class Item : ScriptableObject
 {
     public string itemName;
@@ -11,6 +18,8 @@ public abstract class Item : ScriptableObject
     public AudioClip useSound;
 
     public GameObject itemHoldModel;
+
+    public ItemType itemType = ItemType.Normal;
 
     public abstract void Use(GameObject player);
     public virtual void Charge(GameObject player, float chargeTime)

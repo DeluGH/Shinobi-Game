@@ -5,10 +5,6 @@ using UnityStandardAssets.Characters.FirstPerson;
 
 public class GrapplingHookScript : MonoBehaviour
 {
-    [Header("Input")]
-    public KeyCode swingKey = KeyCode.Mouse1;
-    public KeyCode climbKey = KeyCode.Space;
-    public KeyCode descendKey = KeyCode.LeftControl;
     [Header("Game Objects")]
     public ObiRope rope; // Reference to the Obi Rope for rendering
     public FirstPersonController fpsController;
@@ -28,6 +24,18 @@ public class GrapplingHookScript : MonoBehaviour
     [Header("Aim Prediction")]
     public float predictionSphereCastRadius;
 
+    [Header("Sounds")]
+    public AudioClip shootSound;
+    public AudioClip hookHit;
+    public AudioClip grapplingAscentDecent;
+    public bool grapplingClimbTriggered = false;
+
+    [Header("Tip")]
+    public CursorTipsManager.Tip tip;
+
+    [Header("References (Auto)")]
+    public Player playerScript;
+
     private string grappleTag = "Grappable";
     private Camera cam;
     private Vector3 startPosition;
@@ -44,6 +52,9 @@ public class GrapplingHookScript : MonoBehaviour
         cam = Camera.main;
         isHooking = false;
         timer = 0f;
+
+        if (playerScript == null) playerScript = GetComponent<Player>();
+        if (playerScript == null) Debug.LogWarning("No playerScript found!");
     }
 
     void Update()
@@ -52,15 +63,31 @@ public class GrapplingHookScript : MonoBehaviour
         if (timer > grapplingHookCooldown)
             timer = grapplingHookCooldown;  //  to prevent incrementing over max range of float
 
-        CheckForSwingPoints();  // todo : do when grappling hook is equipped or put it to to the start of ThrowGrapplingHook()
-
-        if (Input.GetKeyDown(swingKey) && timer >= grapplingHookCooldown) ThrowGrapplingHook();
-        if (Input.GetKeyUp(swingKey)) StopSwing();
-
-        if (joint != null)
+        if (playerScript.isGrapplingHookEquipped)
         {
-            HandleClimbing();
-            ApplySwingControl();
+            CheckForSwingPoints();  // todo : do when grappling hook is equipped or put it to to the start of ThrowGrapplingHook()
+            // Cursor Tip (can grapple or not)
+            if (predictionHit.point != Vector3.zero && predictionHit.collider.gameObject.tag.Equals(grappleTag) && !isHooking) // taken from ThrowGrapplingHook()
+            {
+                tip.key = KeybindManager.Instance.keybinds["Use Utility"];
+                tip.tipMessage = "Grapple";
+                CursorTipsManager.Instance.MakeTip(tip);
+            }
+            else
+            {
+                tip.key = KeybindManager.Instance.keybinds["Use Utility"];
+                tip.tipMessage = "Grapple";
+                CursorTipsManager.Instance.RemoveTip(tip);
+            }
+
+            if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Use Utility"]) && timer >= grapplingHookCooldown) ThrowGrapplingHook();
+            if (Input.GetKeyUp(KeybindManager.Instance.keybinds["Use Utility"])) StopSwing();
+
+            if (joint != null)
+            {
+                HandleClimbing();
+                ApplySwingControl();
+            }
         }
 
         var rb = fpsController.GetComponent<Rigidbody>();
@@ -68,7 +95,6 @@ public class GrapplingHookScript : MonoBehaviour
         //Debug.DrawRay(fpsController.transform.position, Vector3.down, Color.cyan, characterController.height / 2 + 0.1f);
         if (Physics.Raycast(fpsController.transform.position, Vector3.down, characterController.height / 2 + 0.1f) && !fpsController.m_IsGrappling)
         {
-
             inPhysicsMovementState = false;
 
             ReactivateCharacterController();
@@ -146,14 +172,15 @@ public class GrapplingHookScript : MonoBehaviour
 
     private void ThrowGrapplingHook()
     {
-
         if (predictionHit.point != Vector3.zero && predictionHit.collider.gameObject.tag.Equals(grappleTag) && !isHooking)
         {
-                startPosition = grapplingHook.transform.position = fpsController.transform.position;
+            startPosition = grapplingHook.transform.position = fpsController.transform.position;
 
-                StartCoroutine(LerpGrapplingHookTravel(predictionHit.point, hookReachTime));
-                RenderGrapplingHook(true);
+            //SOUND
+            playerScript.audioSource.PlayOneShot(shootSound);
 
+            StartCoroutine(LerpGrapplingHookTravel(predictionHit.point, hookReachTime));
+            RenderGrapplingHook(true);
         }
     }
 
@@ -207,6 +234,8 @@ public class GrapplingHookScript : MonoBehaviour
         grapplingHook.transform.position = targetPosition;
 
         // Once hooked, start swinging
+        //SOUND
+        playerScript.audioSource.PlayOneShot(hookHit);
         StartSwing(targetPosition);
     }
 
@@ -244,18 +273,31 @@ public class GrapplingHookScript : MonoBehaviour
 
     private void HandleClimbing()
     {
-        if (Input.GetKey(climbKey))
+        if (Input.GetKey(KeybindManager.Instance.keybinds["Jump"]))
         {
             AdjustRopeLength(-climbSpeed * Time.deltaTime);
         }
-        else if (Input.GetKey(descendKey))
+        else if (Input.GetKey(KeybindManager.Instance.keybinds["Crouch"]))
         {
             AdjustRopeLength(climbSpeed * Time.deltaTime);
+        }
+        else
+        {
+            //dont play sound
+            if (grapplingClimbTriggered)
+            {
+                playerScript.audioSource.Stop();
+                grapplingClimbTriggered = false;
+            }
         }
     }
 
     private void AdjustRopeLength(float adjustment)
     {
+        //SOUND
+        if (!grapplingClimbTriggered) playerScript.audioSource.PlayOneShot(grapplingAscentDecent);
+        grapplingClimbTriggered = true;
+        
         currentRopeLength = Mathf.Clamp(currentRopeLength + adjustment, 1f, hookRange);
 
         SoftJointLimit limit = joint.linearLimit;

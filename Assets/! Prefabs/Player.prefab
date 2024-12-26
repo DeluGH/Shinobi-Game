@@ -137,11 +137,13 @@ MonoBehaviour:
   isWalking: 0
   isCrouching: 0
   isFalling: 0
+  isGrapplingHookEquipped: 0
   enemyLayer:
     serializedVersion: 2
     m_Bits: 0
   fallHeight: 0
   cameraFacing: {fileID: 0}
+  inventoryScript: {fileID: 0}
   attackScript: {fileID: 0}
   fpsController: {fileID: 0}
   charController: {fileID: 0}
@@ -294,9 +296,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19077ce3474553e409a0548d6b9cafbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  swingKey: 324
-  climbKey: 32
-  descendKey: 306
   rope: {fileID: 0}
   fpsController: {fileID: 11400000}
   characterController: {fileID: 14300000}
@@ -310,6 +309,14 @@ MonoBehaviour:
   swingControlForce: 5
   grapplingCollider: {fileID: 439589083097121339}
   predictionSphereCastRadius: 2
+  shootSound: {fileID: 8300000, guid: 60b1ca5c78e2d3b4dbec0cd093a78414, type: 3}
+  hookHit: {fileID: 8300000, guid: 5b2a4d03cf81aeb42bcd2783e43b35a7, type: 3}
+  grapplingAscentDecent: {fileID: 8300000, guid: 368f24aae77d1fa46a249f342ce79744, type: 3}
+  grapplingClimbTriggered: 0
+  tip:
+    key: 0
+    tipMessage: 
+  playerScript: {fileID: 0}
 --- !u!114 &7435302451620342592
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -750,13 +757,14 @@ MonoBehaviour:
   holdingAmount: 0
   stackAmount: 0
   player: {fileID: 0}
+  playerScript: {fileID: 0}
   inventorySlots:
   - item: {fileID: 11400000, guid: c3f31c3a045697a49b579c75b8f4cb95, type: 2}
     count: 2
   - item: {fileID: 11400000, guid: f9963553ec03466469867503a31adabb, type: 2}
     count: 6
-  - item: {fileID: 0}
-    count: 0
+  - item: {fileID: 11400000, guid: 1163c1b6830c61e4fa9f67b576ab03b1, type: 2}
+    count: 1
   - item: {fileID: 0}
     count: 0
 --- !u!1 &5702449688543919312

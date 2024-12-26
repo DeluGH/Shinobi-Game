@@ -21,6 +21,7 @@ public class Player : MonoBehaviour
     public bool isWalking = false;
     public bool isCrouching = false;
     public bool isFalling = false;
+    public bool isGrapplingHookEquipped = false;
     public LayerMask enemyLayer;
 
     public float fallHeight = 0f;
@@ -29,6 +30,7 @@ public class Player : MonoBehaviour
 
     [Header("References (Auto)")]
     public Transform cameraFacing; // Important for aiming
+    public Inventory inventoryScript;
     public PlayerAttack attackScript;
     public FirstPersonController fpsController;
     public CharacterController charController;
@@ -43,15 +45,19 @@ public class Player : MonoBehaviour
 
         fpsController = GetComponent<FirstPersonController>();
         charController = GetComponent<CharacterController>();
-        noiseScript = GetComponentInChildren<PlayerNoise>();
         audioSource = GetComponent<AudioSource>();
+
+        // Children
+        noiseScript = GetComponentInChildren<PlayerNoise>();
         attackScript = GetComponentInChildren<PlayerAttack>();
+        inventoryScript = GetComponentInChildren<Inventory>();
 
         if (fpsController == null) Debug.LogWarning("No fpsController reference!!");
         if (charController == null) Debug.LogWarning("No charController reference!!");
         if (noiseScript == null) Debug.LogWarning("No noiseScript reference!!");
         if (audioSource == null) Debug.LogWarning("No audioSource reference!!");
         if (attackScript == null) Debug.LogWarning("No attackScript reference!!");
+        if (inventoryScript == null) Debug.LogWarning("No inventoryScript reference!!");
 
         enemyLayer = LayerMask.GetMask("Enemy");
         if (enemyLayer == 0) Debug.LogWarning("Enemy layer reference is missing!");

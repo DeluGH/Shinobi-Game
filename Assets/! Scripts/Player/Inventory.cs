@@ -39,8 +39,9 @@ public class Inventory : MonoBehaviour
     private void Start()
     {
         player = gameObject ?? GameObject.FindWithTag("Player");
-        if (player) playerScript = player.GetComponent<Player>();
-        else Debug.LogWarning("No Player!! Can't get script!");
+        if (playerScript == null) playerScript = player.GetComponentInParent<Player>();
+        else if (playerScript == null)  Debug.LogWarning("No playerScript!! Can't get script!");
+
 
         if (utilHandPos == null) utilHandPos = GameObject.FindWithTag("Util Hand").transform;
         if (mainHandPos == null) mainHandPos = GameObject.FindWithTag("Main Hand").transform;
@@ -203,6 +204,16 @@ public class Inventory : MonoBehaviour
         utilHand = slot.item;
         holdingAmount = slot.count; // Set the holdingAmount to the number of items in the stack
         stackAmount = utilHand.maxStackCount; // Set stackAmount to the maximum stack size of the item
+
+        //Grappling Hook???
+        if (slot.item.itemType == ItemType.GrapplingHook)
+        {
+            playerScript.isGrapplingHookEquipped = true;
+        }
+        else
+        {
+            playerScript.isGrapplingHookEquipped = false;
+        }
 
         // Clear the slot
         slot.item = null;

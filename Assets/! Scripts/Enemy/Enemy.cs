@@ -252,7 +252,6 @@ public class Enemy : MonoBehaviour
         detectionScript.isLookingAround = false; //bug fix 
 
         if (agent.isActiveAndEnabled) agent.isStopped = false; //Reenable to reposition
-        attackScript.Reposition();
 
         combatMode = true;
         combatModeTimer = 0f;
