@@ -512,7 +512,7 @@ public class PlayerAttack : MonoBehaviour
             //Distance/Position Player will be
             Vector3 directionToEnemy = (endPosition - startPosition).normalized;
             Vector3 targetPosition;
-            if (!isWalking) targetPosition = endPosition + directionToEnemy * (assLerpMinDistance + 0.75f); //+value cuz of playerRadius and enemyRadius
+            if (!isWalking) targetPosition = endPosition + directionToEnemy * (assLerpMinDistance + 1.25f); //+value cuz of playerRadius and enemyRadius
             else targetPosition = endPosition - directionToEnemy * (assLerpMinDistance + 0.75f); //+value cuz of playerRadius and enemyRadius
 
             // Calculate distance to cover and speed (we'll use the time to get there)
