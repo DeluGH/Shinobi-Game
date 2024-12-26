@@ -989,7 +989,7 @@ MonoBehaviour:
   ghostAttackCooldown: 0.25
   ghostHeavyChargeTimePercentage: 0.5
   ghostStunRadius: 12
-  ghostStunDuration: 7.5
+  ghostStunDuration: 7
   meleeRange: 4
   meleeAngle: 100
   meleeAnimTime: 0.2
