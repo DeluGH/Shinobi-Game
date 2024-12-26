@@ -47,6 +47,8 @@ public class EnemyAttack : MonoBehaviour
     public Vector3 attackPosition;
     public float attackGoToTimer = 0f;
     public bool playerIsKilled = false;
+    
+    private Coroutine attackCoroutine;
 
     private void Start()
     {
@@ -91,7 +93,8 @@ public class EnemyAttack : MonoBehaviour
                 attackGoToTimer = 0f;
 
                 CalculateAttackPosition();
-                StartCoroutine(PerformAttack());
+                if (attackCoroutine != null) StopCoroutine(attackCoroutine);
+                attackCoroutine = StartCoroutine(PerformAttack());
             }
             else if (canRepositionNow)
             {
@@ -144,9 +147,9 @@ public class EnemyAttack : MonoBehaviour
             //MOVEMENT ANIMATION
             enemyScript.SetMovementAnimation();
 
-            // Safeguard: Timeout after 5 seconds
+            // Safeguard: Timeout after 4 seconds
             attackGoToTimer += Time.deltaTime;
-            if (attackGoToTimer >= 5f) break;
+            if (attackGoToTimer >= 4f) break;
 
             // Yield control to avoid freezing Unity
             yield return null;
@@ -190,6 +193,15 @@ public class EnemyAttack : MonoBehaviour
         enemyScript.isAttacking = false;
         attackAvailable = false;
         attackWaitTime = GetAttackWait(); // Get Random Wait Time
+    }
+    public void onEnemyHit()
+    {
+        if (attackCoroutine != null)
+        {
+            StopCoroutine(attackCoroutine);
+            attackCoroutine = null;
+        }
+        Debug.Log("Attack interrupted because the enemy was hit!");
     }
 
     private Vector3 ValidateNavMeshPosition(Vector3 targetPosition)

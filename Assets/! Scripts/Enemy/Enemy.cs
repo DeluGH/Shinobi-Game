@@ -275,9 +275,10 @@ public class Enemy : MonoBehaviour
             currentHealth -= hitPoints;
 
             //SOUND
-            //Neutral
-            if (currentHealth == 1) soundScript.PlayFinalHitSound();
-            else soundScript.PlayHitSound();
+            if (currentHealth == 1) soundScript.PlayFinalHitSound(); // in pain, boutto die
+            else soundScript.PlayHitSound(); //neutral
+
+            attackScript.onEnemyHit();
         }
         else // success block
         {
