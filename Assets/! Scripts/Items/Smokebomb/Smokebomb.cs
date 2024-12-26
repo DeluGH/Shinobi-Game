@@ -62,6 +62,8 @@ public class SmokeBomb : MonoBehaviour
         audioSource.clip = smokeHissLoop;
         audioSource.Play();
 
+        effect.enabled = true;
+
         //VFX Duration
         effect.SetFloat("smokeBombLifetime", duration);
 

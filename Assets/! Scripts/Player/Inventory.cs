@@ -317,7 +317,6 @@ public class Inventory : MonoBehaviour
             GameplayUIController.Instance.UpdateItemText(holdingAmount, stackAmount);
 
         }
-        
     }
 
 }
