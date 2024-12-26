@@ -28,6 +28,7 @@ public class GameplayUIController : MonoBehaviour
     public bool isOpen = false;
     private bool weaponWheelSelected = false;
     public Image selectedItem;
+    public TextMeshProUGUI selectedText;
     public Sprite noImage;
     public static int weaponID;
     public Button[] buttons;
@@ -142,10 +143,12 @@ public class GameplayUIController : MonoBehaviour
         ghostSlider.value = targetGhost;
     }
 
-    public void UpdateEquippedImage(Sprite image)
+    public void UpdateEquipped(Sprite image, string selectedText)
     {
         if (image != null) selectedItem.sprite = image;
         else selectedItem.sprite = noImage;
+
+        this.selectedText.text = selectedText;
     }
     public void UpdateItemText(int currentItems, int maxItems)
     {

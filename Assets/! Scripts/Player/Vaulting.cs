@@ -16,11 +16,11 @@ public class Vaulting : MonoBehaviour
     private AudioSource audioSource;
     //[SerializeField] private float playerHeight = 2f;
     //[SerializeField] private float playerRadius = 0.5f;
-    [SerializeField] private float vaultRange = 1.0f;   //  max distance to be able to vault
+    [SerializeField] private float vaultRange = 0.7f;   //  max distance to be able to vault
     [SerializeField] private float vaultHeightLimit = 0.6f; //  prevents vaulting objects that are too high
     [SerializeField] private float vaultDuration = 0.7f;
     [SerializeField] private AudioClip vaultingSound;
-    [SerializeField] private bool playAudioWhilstVaulting;
+    [SerializeField] private bool playAudioWhilstVaulting = true;
 
     [Header("Cursor Tip")]
     public CursorTipsManager.Tip tip;
@@ -33,8 +33,6 @@ public class Vaulting : MonoBehaviour
         fpsController = GetComponent<FirstPersonController>();
         isVaulting = false;
         audioSource = GetComponent<AudioSource>();
-        if (vaultingSound != null)
-            audioSource.clip = vaultingSound;
     }
 
     // Update is called once per frame
@@ -96,7 +94,7 @@ public class Vaulting : MonoBehaviour
 
                     //play vaulting sound
                     if (vaultingSound != null && playAudioWhilstVaulting)
-                        audioSource.Play();
+                        audioSource.PlayOneShot(vaultingSound);
 
                     StartCoroutine(LerpVault(secondHit.point + Vector3.up * (characterController.height / 2f - 0.1f), vaultDuration));
                 }

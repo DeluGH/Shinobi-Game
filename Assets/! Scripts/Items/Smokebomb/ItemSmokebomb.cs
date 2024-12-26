@@ -20,9 +20,7 @@ public class ItemSmokebomb : Item
             SmokeBomb smokeBombScript = smokeBomb.GetComponent<SmokeBomb>();
             if (smokeBombScript != null)
             {
-                smokeBombScript.ActivateSmokeBomb();
-
-                //Applu velocity
+                //Apply velocity
                 Rigidbody rb = smokeBomb.GetComponent<Rigidbody>();
                 if (rb != null)
                 {

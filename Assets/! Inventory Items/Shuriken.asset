@@ -18,6 +18,7 @@ MonoBehaviour:
   canHoldCharge: 0
   isDoubleHanded: 0
   itemImage: {fileID: 21300000, guid: b699f6982eb9da9479263b2b12238acc, type: 3}
+  useSound: {fileID: 8300000, guid: 53535fb0ef3eab7478079794450dd8f0, type: 3}
   itemHoldModel: {fileID: 7519036591067216111, guid: 39e323751c3eccf4cae0a654c0d5af3f, type: 3}
   shurikenPrefab: {fileID: 283935703760885940, guid: b368a0332a0b62e4b80559a6a689368f, type: 3}
   throwForce: 40

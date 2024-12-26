@@ -18,6 +18,7 @@ MonoBehaviour:
   canHoldCharge: 1
   isDoubleHanded: 0
   itemImage: {fileID: 21300000, guid: 512843101f6bfd64a95be538725bef4a, type: 3}
+  useSound: {fileID: 8300000, guid: 6a55d1b3f8998074181b31a847f6d359, type: 3}
   itemHoldModel: {fileID: 3511712228393649475, guid: 8ba035344739677408f08144f6c7065e, type: 3}
   smokeEffectPrefab: {fileID: 3630025784223747243, guid: 8a2e739c7423381448f19fea18446a4b, type: 3}
   minCharge: 1

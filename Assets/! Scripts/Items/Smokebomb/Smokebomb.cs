@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.VFX;
 
 public class SmokeBomb : MonoBehaviour
@@ -10,6 +11,11 @@ public class SmokeBomb : MonoBehaviour
     public float timeForFullRadius = 4f; // Time it takes for the radius to reach the maximum size
     public SphereCollider smokeCollider; // The collider that blocks raycasts
     public VisualEffect effect;
+
+    public AudioClip smokeHissLoop;
+    public AudioSource audioSource;
+    
+    public bool isSmokeReleased = false;
 
     [Header("Debug Stats")]
     public float durationRemaining;
@@ -24,6 +30,9 @@ public class SmokeBomb : MonoBehaviour
 
     private void Start()
     {
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null) Debug.LogWarning("No AudioSource Found!");
+
         // Ensure the SphereCollider is set up
         if (smokeCollider == null)
         {
@@ -37,9 +46,22 @@ public class SmokeBomb : MonoBehaviour
         if (enemyLayer == 0) Debug.LogWarning("Enemy Layer reference is missing!");
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!isSmokeReleased && collision.collider.gameObject.layer != LayerMask.NameToLayer("Player"))
+        {
+            ActivateSmokeBomb();
+            isSmokeReleased = true;
+        }
+    }
+
     // Call this function to activate the smoke bomb
     public void ActivateSmokeBomb()
     {
+        audioSource.loop = true; // Ensure looping is enabled
+        audioSource.clip = smokeHissLoop;
+        audioSource.Play();
+
         //VFX Duration
         effect.SetFloat("smokeBombLifetime", duration);
 

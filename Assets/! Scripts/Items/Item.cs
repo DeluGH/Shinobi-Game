@@ -8,6 +8,7 @@ public abstract class Item : ScriptableObject
     public bool canHoldCharge = false;
     public bool isDoubleHanded = false;
     public Sprite itemImage;
+    public AudioClip useSound;
 
     public GameObject itemHoldModel;
 

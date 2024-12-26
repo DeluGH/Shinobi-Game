@@ -47,16 +47,16 @@ MonoBehaviour:
   audibleDistance: 24
   dieSounds:
   - audioClip: {fileID: 8300000, guid: 336d5816d7589d24f9091408b3465a43, type: 3}
-    subtitles: '[Enemy dies]'
+    subtitles: '[Enemy dies] AAUGH!'
   - audioClip: {fileID: 8300000, guid: 4eb637b792660b04ea2437653ed15348, type: 3}
-    subtitles: '[Enemy dies]'
+    subtitles: '[Enemy dies] OO-'
   hitSounds:
   - audioClip: {fileID: 8300000, guid: dde0b1afb8a8f8e4dada58487480b4c4, type: 3}
-    subtitles: '[Enemy gets hit]'
+    subtitles: '[Enemy gets hit] ugh!'
   - audioClip: {fileID: 8300000, guid: 0f010e6adeeff6c4cbe7bcda64abbb80, type: 3}
-    subtitles: '[Enemy gets hit]'
+    subtitles: '[Enemy gets hit] ouch!'
   - audioClip: {fileID: 8300000, guid: 86ea85a6b1fb2f445882303e988fbe00, type: 3}
-    subtitles: '[Enemy gets hit]'
+    subtitles: '[Enemy gets hit] egh!'
   finalHitSounds: []
   aware:
   - audioClip: {fileID: 8300000, guid: fd043b9edb3e1164b826bc296fda5936, type: 3}

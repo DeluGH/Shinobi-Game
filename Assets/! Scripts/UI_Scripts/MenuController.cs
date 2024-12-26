@@ -48,6 +48,7 @@ public class MenuController : MonoBehaviour
     [Header("Auto")]
     public GameObject player;
     public Player playerScript;
+    public AudioListener playerAudioListener;
     public FirstPersonController fpsController; // FPSController
     public Rigidbody rb; // FPSController
     public CharacterController characterController; // FPSController character controller
@@ -141,7 +142,11 @@ public class MenuController : MonoBehaviour
     public void InitializePlayerVariables()
     {
         if (player == null) player = GameObject.FindGameObjectWithTag("Player");
-        if (player == null) Debug.Log("No Player Found!");
+        if (player == null) Debug.LogWarning("No Player Found!");
+
+        if (playerAudioListener == null) playerAudioListener = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<AudioListener>();
+        else if (playerAudioListener == null) playerAudioListener = player.GetComponentInChildren<AudioListener>();
+        else if (playerAudioListener == null) Debug.LogWarning("No playerAudioListener Found!");
 
         if (playerScript == null) playerScript = player.GetComponent<Player>();
         if (fpsController == null) fpsController = player.GetComponent<FirstPersonController>();
@@ -263,6 +268,9 @@ public class MenuController : MonoBehaviour
 
             if (isPaused)
             {
+                //Disable sounds
+                playerAudioListener.enabled = false;
+
                 Time.timeScale = 0f; // Pause game
                 fpsController.enabled = false;
                 characterController.enabled = false;
@@ -276,6 +284,9 @@ public class MenuController : MonoBehaviour
             }
             else
             {
+                //Enable sounds
+                playerAudioListener.enabled = true;
+
                 Time.timeScale = 1f; // Resume game
                 pauseMenuPanel.SetActive(false);
                 fpsController.enabled = true;
@@ -293,6 +304,9 @@ public class MenuController : MonoBehaviour
     public void ResumeGame()
     {
         LockCursor();
+
+        //Enable sounds
+        playerAudioListener.enabled = true;
 
         isPaused = false;
         Time.timeScale = 1f;

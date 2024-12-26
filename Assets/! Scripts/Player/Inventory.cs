@@ -32,12 +32,15 @@ public class Inventory : MonoBehaviour
 
     [Header("References (Auto)")]
     public GameObject player; // This game object
+    public Player playerScript; // This game object
     public List<InventorySlot> inventorySlots = new List<InventorySlot>();
    
 
     private void Start()
     {
         player = gameObject ?? GameObject.FindWithTag("Player");
+        if (player) playerScript = player.GetComponent<Player>();
+        else Debug.LogWarning("No Player!! Can't get script!");
 
         if (utilHandPos == null) utilHandPos = GameObject.FindWithTag("Util Hand").transform;
         if (mainHandPos == null) mainHandPos = GameObject.FindWithTag("Main Hand").transform;
@@ -145,6 +148,9 @@ public class Inventory : MonoBehaviour
             {
                 utilHand.Use(player); // Call the Use method on the equipped item
                 RemoveUtilHandObject();
+
+                //Sound
+                playerScript.audioSource.PlayOneShot(utilHand.useSound);
             }
             catch (System.Exception ex)
             {
@@ -157,7 +163,7 @@ public class Inventory : MonoBehaviour
         }
 
         UpdateItemPositions(); // Update Model Hand
-        UpdateItemCount(); // Update UI
+        UpdateItem(); // Update UI
     }
     void RemoveUtilHandObject()
     {
@@ -169,7 +175,7 @@ public class Inventory : MonoBehaviour
                 utilHand = null; // Clear the utilHand
                 holdingAmount = 0; // Ensure holdingAmount does not go below 0
 
-                UpdateItemCount();
+                UpdateItem();
             }
         }
     }
@@ -203,7 +209,7 @@ public class Inventory : MonoBehaviour
         slot.count = 0;
 
         UpdateItemPositions(); // Update Model Hand
-        UpdateItemCount(); // Update UI
+        UpdateItem(); // Update UI
         Debug.Log($"Equipped {holdingAmount}/{stackAmount} {utilHand.itemName}(s)");
     }
     bool AddToInventory(Item item, int amount = 1)
@@ -265,7 +271,7 @@ public class Inventory : MonoBehaviour
         }
 
         UpdateItemPositions(); // Update Model Hand
-        UpdateItemCount(); // Update UI
+        UpdateItem(); // Update UI
     }
 
     // MODELS
@@ -299,13 +305,17 @@ public class Inventory : MonoBehaviour
     }
 
     // UI
-    void UpdateItemCount()
+    void UpdateItem()
     {
         if (GameplayUIController.Instance.isActiveAndEnabled)
         {
-            if (holdingAmount > 0 && utilHand) GameplayUIController.Instance.UpdateEquippedImage(utilHand.itemImage);
-            else GameplayUIController.Instance.UpdateEquippedImage(null);
+            // Wheel
+            if (holdingAmount > 0 && utilHand) GameplayUIController.Instance.UpdateEquipped(utilHand.itemImage, utilHand.itemName);
+            else GameplayUIController.Instance.UpdateEquipped(null, null);
+
+            //Bottom left ammo count
             GameplayUIController.Instance.UpdateItemText(holdingAmount, stackAmount);
+
         }
         
     }
