@@ -49,7 +49,7 @@ public class PlayerAttack : MonoBehaviour
     public float ghostAttackCooldown = 0.25f; // adds to all angles
     public float ghostHeavyChargeTimePercentage = 0.5f; // charge 0.5 = 50% less time
     public float ghostStunRadius = 12f;
-    public float ghostStunDuration = 7.5f;
+    public float ghostStunDuration = 7f;
 
     [Header("Light")]
     public float meleeRange = 4f;

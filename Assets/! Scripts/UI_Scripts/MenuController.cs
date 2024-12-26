@@ -148,6 +148,7 @@ public class MenuController : MonoBehaviour
         if (fpsController == null) fpsController = player.GetComponent<FirstPersonController>();
         if (characterController == null) characterController = player.GetComponent<CharacterController>();
         if (rb == null) rb = player.GetComponent<Rigidbody>();
+
         if (playerScript == null) Debug.LogWarning("No playerScript Found!");
         if (fpsController == null) Debug.LogWarning("No fpsController Found!");
         if (characterController == null) Debug.LogWarning("No characterController Found!");
@@ -167,6 +168,9 @@ public class MenuController : MonoBehaviour
         if (SubtitleManager.Instance.isActiveAndEnabled) SubtitleManager.Instance.ClearAllSubtitles();
 
         LockCursor();
+
+        //Check for Cutscenes
+
     }
     // Open settings
     public void OpenSettings()
