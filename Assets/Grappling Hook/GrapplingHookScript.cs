@@ -6,10 +6,8 @@ using UnityStandardAssets.Characters.FirstPerson;
 public class GrapplingHookScript : MonoBehaviour
 {
     [Header("Game Objects")]
-    public ObiRope rope; // Reference to the Obi Rope for rendering
     public FirstPersonController fpsController;
     public CharacterController characterController;
-    public GameObject grapplingHook; // Reference to the grappling hook
     [Header("Values")]
     public float hookReachTime = 2f; // Time for the hook to reach the target
     public float hookRange = 10f;
@@ -34,6 +32,8 @@ public class GrapplingHookScript : MonoBehaviour
     public CursorTipsManager.Tip tip;
 
     [Header("References (Auto)")]
+    public ObiRope rope; // Reference to the Obi Rope for rendering
+    public GameObject grapplingHook; // Reference to the grappling hook
     public Player playerScript;
 
     private string grappleTag = "Grappable";
@@ -52,6 +52,12 @@ public class GrapplingHookScript : MonoBehaviour
         cam = Camera.main;
         isHooking = false;
         timer = 0f;
+
+        if (rope == null) rope = GameObject.FindGameObjectWithTag("ObiSolver").GetComponentInChildren<ObiRope>();
+        if (rope == null) Debug.LogWarning("Failed to find Rope!!");
+
+        if (grapplingHook == null) grapplingHook = GameObject.FindGameObjectWithTag("GrapplingHook");
+        if (grapplingHook == null) Debug.LogWarning("Failed to find grapplingHook!!");
 
         if (playerScript == null) playerScript = GetComponent<Player>();
         if (playerScript == null) Debug.LogWarning("No playerScript found!");

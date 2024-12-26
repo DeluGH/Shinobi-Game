@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6892452854042249591}
   m_Layer: 0
   m_Name: Obi Solver
-  m_TagString: Untagged
+  m_TagString: ObiSolver
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -215,7 +215,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   solverIndices:
-    serializedContents: 000000000100000002000000030000000400000005000000
+    serializedContents: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a0000000b0000000c0000000d0000000e0000000f000000
     m_AlignBytes: 16
   groupID: 1
   m_CollisionMaterial: {fileID: 0}
@@ -225,22 +225,27 @@ MonoBehaviour:
   elements:
   - particle1: 0
     particle2: 1
-    restLength: 0.499223
+    restLength: 0.39985824
     constraintForce: 0
     tearResistance: 1
   - particle1: 1
     particle2: 2
-    restLength: 0.50077814
+    restLength: 0.40002018
     constraintForce: 0
     tearResistance: 1
   - particle1: 2
     particle2: 3
-    restLength: 0.5007447
+    restLength: 0.40024018
     constraintForce: 0
     tearResistance: 1
   - particle1: 3
     particle2: 4
-    restLength: 0.49925417
+    restLength: 0.40001124
+    constraintForce: 0
+    tearResistance: 1
+  - particle1: 4
+    particle2: 5
+    restLength: 0.39987016
     constraintForce: 0
     tearResistance: 1
   _aerodynamicsEnabled: 1
