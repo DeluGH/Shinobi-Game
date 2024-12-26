@@ -233,9 +233,6 @@ public class PlayerAttack : MonoBehaviour
                 {
                     Swing(false);
                 }
-
-                chargeTime = 0f;
-                meleeTimer = 0f;
             }
         }
 
@@ -661,6 +658,9 @@ public class PlayerAttack : MonoBehaviour
                 }
             }
         }
+
+        chargeTime = 0f;
+        meleeTimer = 0f;
 
         drawSwingGizmo = true;
         StartCoroutine(ResetSwingGizmo()); //DISABLE-ABLE disableable disable
