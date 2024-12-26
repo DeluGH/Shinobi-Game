@@ -57,6 +57,9 @@ public class Cutscene : MonoBehaviour
         //Play Cutscene
         animator.SetTrigger("PlayCutscene");
 
+        //Song
+        audioSource.PlayOneShot(cutsceneMusic);
+
         //Get cutscene duration
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
         while (stateInfo.IsName(cutsceneName) && stateInfo.normalizedTime < 1.0f)
