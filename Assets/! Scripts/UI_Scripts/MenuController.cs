@@ -326,6 +326,7 @@ public class MenuController : MonoBehaviour
         //mainMenuCamera.gameObject.SetActive(true);
         //playerController.gameObject.SetActive(false);
         pauseMenuPanel.SetActive(false);
+        gameOverPanel.SetActive(false);
         settingsPanel.SetActive(false); // Ensure settings panel is hidden
         currentMenuState = MenuState.MainMenu;
         isPaused = false; // Reset pause state

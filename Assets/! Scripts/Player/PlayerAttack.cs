@@ -192,7 +192,7 @@ public class PlayerAttack : MonoBehaviour
                 if (startedCharging) chargeTime = Time.time - chargeStartTime;
 
                 //Animation checker
-                if (chargeTime >= 0.125f)
+                if (chargeTime >= 0.125f && isCharging == true)
                 {
                     Animator anim = MainHandObject.GetComponentInChildren<Animator>();
                     if (anim != null) anim.SetBool("isCharging", true);

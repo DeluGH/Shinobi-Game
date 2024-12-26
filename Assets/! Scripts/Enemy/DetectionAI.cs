@@ -273,13 +273,13 @@ public class DetectionAI : MonoBehaviour
         {
             RotateTowardsPlayer(); //Aware ++
         }
+        else if (!enemyScript.combatMode && susMeter >= awareMeter && susMeter <= inveMeter && !enemyScript.playerInDetectionArea && !enemyScript.HasLineOfSight(enemyScript.player))
+        {
+            RotateTowardsLastKnown(); //Aware, but no sight of Player
+        }
         else if (enemyScript.combatMode)
         {
             RotateTowardsPlayer();
-        }
-        else if (susMeter >= awareMeter && susMeter <= inveMeter && !enemyScript.playerInDetectionArea && !enemyScript.HasLineOfSight(enemyScript.player))
-        {
-            RotateTowardsLastKnown(); //Aware, but no sight of Player
         }
 
 

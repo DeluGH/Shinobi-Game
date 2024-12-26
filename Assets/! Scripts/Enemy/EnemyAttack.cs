@@ -129,24 +129,30 @@ public class EnemyAttack : MonoBehaviour
     {
         while (Vector3.Distance(attackPosition, transform.position) > attackRange)
         {
-            if (enemyScript.agent.isActiveAndEnabled)
+            if (!enemyScript.agent.isActiveAndEnabled)
+                break;
+
+            Vector3 validatedPosition = ValidateNavMeshPosition(attackPosition);
+            if (validatedPosition == Vector3.zero)
             {
-                Vector3 validatedPosition = ValidateNavMeshPosition(attackPosition);
-                if (validatedPosition != Vector3.zero)
-                {
-                    enemyScript.agent.SetDestination(validatedPosition);
-                }
-                else
-                {
-                    Debug.LogWarning("Invalid target position on NavMesh!");
-                }
+                Debug.LogWarning("Invalid target position on NavMesh!");
+                break; // Exit the loop to prevent an infinite loop
             }
-            else break;
+
+            enemyScript.agent.SetDestination(validatedPosition);
+
             //MOVEMENT ANIMATION
             enemyScript.SetMovementAnimation();
 
+            // Safeguard: Timeout after 5 seconds
             attackGoToTimer += Time.deltaTime;
-            if (attackGoToTimer < 3f) yield return null;
+            if (attackGoToTimer >= 5f) break;
+
+            // Yield control to avoid freezing Unity
+            yield return null;
+
+            if (!enemyScript.agent.pathPending && enemyScript.agent.remainingDistance <= attackRange)
+                break;
         }
 
         //ANIMATE
