@@ -1,5 +1,6 @@
 using Obi;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityStandardAssets.Characters.FirstPerson;
 
@@ -61,6 +62,28 @@ public class GrapplingHookScript : MonoBehaviour
 
         if (playerScript == null) playerScript = GetComponent<Player>();
         if (playerScript == null) Debug.LogWarning("No playerScript found!");
+
+        if (rope && grapplingHook) MoveObiSolverAndTheUhhhWhatsitCalledAgain();
+    }
+
+    void MoveObiSolverAndTheUhhhWhatsitCalledAgain()
+    {
+        //Step 1 : copy the position of the player to ObiSolver's position
+        Transform ropeTransform = rope.transform;
+        ropeTransform = playerScript.transform;
+
+        //Step 2 : set ObiSolver to 0,-90,0 rotation
+        ropeTransform.rotation = Quaternion.Euler(0, -90, 0);
+
+        //Step 3 : copy the position of the player
+        //Step 4 : paste that into the grappling hook position
+        Transform grapplingHookTransform = grapplingHook.transform;
+        grapplingHookTransform = playerScript.transform;
+
+        //Step 5 : subtract 2 from the grappling hook z position
+        Vector3 grapplingHookPosition = grapplingHookTransform.position;
+        grapplingHookPosition.z -= 2;
+        grapplingHookTransform.position = grapplingHookPosition;
     }
 
     void Update()
