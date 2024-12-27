@@ -173,7 +173,7 @@ public class PlayerAttack : MonoBehaviour
         if (meleeTimer < currentAttackCooldown && !isSwinging && !playerScript.isAssassinating && !playerScript.isDead && !playerScript.isBlocking) meleeTimer += Time.deltaTime;
         // Check for holding left click
         //CHARGING ONLY
-        if (meleeTimer >= currentAttackCooldown && !playerScript.isDead && !playerScript.isBlocking)
+        if (meleeTimer >= currentAttackCooldown && !playerScript.isDead && !playerScript.isBlocking && !isSwinging)
         {
             if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Attack"]))
             {
@@ -201,6 +201,7 @@ public class PlayerAttack : MonoBehaviour
                 }
                 if (chargeTime >= heavyChargeTime)
                 {
+                    //CHARGE DONE
                     Animator anim = MainHandObject.GetComponentInChildren<Animator>();
                     if (anim != null) anim.SetTrigger("ChargeDone");
                 }
@@ -218,7 +219,7 @@ public class PlayerAttack : MonoBehaviour
                 else Debug.LogWarning("No Sword Anim detected!");
 
                 //ATTACK
-                if (canAssassinate && assEnemyTarget != null)
+                if (canAssassinate && assEnemyTarget != null && chargeTime < heavyChargeTime)
                 {
                     Assassinate(isAirAss(), playerScript.fpsController.m_IsWalking);
                 }
@@ -608,6 +609,7 @@ public class PlayerAttack : MonoBehaviour
     }
     public IEnumerator StartSwing(bool isHeavy)
     {
+        
         float waitTime = isHeavy ? heavyAnimTime : meleeAnimTime;
         float attackRange = (isHeavy ? heavyRange : meleeRange) + (ghostMode ? ghostRangeBuff : 0);
         float attackAngle = (isHeavy ? heavyAngle : meleeAngle) + (ghostMode ? ghostAngleBuff : 0);
@@ -616,7 +618,13 @@ public class PlayerAttack : MonoBehaviour
 
         yield return new WaitForSeconds(waitTime);
 
+        //ATTACK IS HERE
+
         isSwinging = false;
+
+        // Use the player's camera direction to calculate the swing area
+        Vector3 cameraForward = playerScript.cameraFacing.forward;
+        Vector3 swingPosition = transform.position; // The origin of the swing
 
         Collider[] hitEnemies = Physics.OverlapSphere(transform.position, attackRange, playerScript.enemyLayer);
         HashSet<Enemy> hitEnemySet = new HashSet<Enemy>(); // Prevent duplicate hits
@@ -626,8 +634,8 @@ public class PlayerAttack : MonoBehaviour
             Enemy enemyScript = enemy.GetComponent<Enemy>();
             if (enemyScript != null && !hitEnemySet.Contains(enemyScript) && !enemyScript.isDead)
             {
-                Vector3 toEnemy = (enemy.transform.position - transform.position).normalized;
-                if (Vector3.Angle(transform.forward, toEnemy) <= attackAngle / 2)
+                Vector3 toEnemy = (enemy.transform.position - swingPosition).normalized;
+                if (Vector3.Angle(cameraForward, toEnemy) <= attackAngle / 2)
                 {
                     hitEnemySet.Add(enemyScript);
 

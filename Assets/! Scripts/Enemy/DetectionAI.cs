@@ -17,6 +17,7 @@ public class DetectionAI : MonoBehaviour
     public float sliderTimer = 0f;
     public Slider slider;
     public Image sliderColorImage;
+    public Color alertColor = new Color(1.0f, 0.259f, 0.212f); //red
     public Color inveColor = new Color(0.851f, 0.620f, 0.341f); //red
     public Color awareColor = new Color(1.0f, 0.992f, 0.459f); // yellow
     public Color normalColor = new Color(0.443f, 0.792f, 0.431f); //green
@@ -232,7 +233,7 @@ public class DetectionAI : MonoBehaviour
     {
         //SLIDER
         float distanceToPlayer = Vector3.Distance(transform.position, enemyScript.player.position);
-        if (enemyScript && enemyScript.playerInDetectionArea && !showSlider && enemyScript.isDead) showSlider = true;
+        if (enemyScript && enemyScript.playerInDetectionArea && !showSlider && !enemyScript.isDead) showSlider = true;
         else if (distanceToPlayer >= GetCurrentDetectionDistance() || enemyScript.isDead) showSlider = false;
 
         if (slider)
@@ -363,12 +364,9 @@ public class DetectionAI : MonoBehaviour
                     if (enemyScript.soundScript) enemyScript.soundScript.PlayAlerted();
                     if (GameStats.Instance) GameStats.Instance.IncreaseAlerted();
                     break;
-
                 case DetectionState.Investigating:
                     if (enemyScript.soundScript) enemyScript.soundScript.PlayInvestigate();
-                    sliderColorImage.color = inveColor;
                     break;
-
                 case DetectionState.Aware:
                     if (enemyScript.soundScript)
                     {
@@ -376,12 +374,10 @@ public class DetectionAI : MonoBehaviour
                         enemyScript.audioSource.PlayOneShot(detectedSound);
                         enemyScript.soundScript.PlayAware();
                     }
-                    sliderColorImage.color = awareColor;
                     break;
 
                 case DetectionState.Normal:
                     if (enemyScript.soundScript) enemyScript.soundScript.PlayBackToNormal();
-                    sliderColorImage.color = normalColor;
                     break;
             }
         }
@@ -396,6 +392,7 @@ public class DetectionAI : MonoBehaviour
         {
             case DetectionState.Alerted:
                 enemyScript.PauseActivity();
+                sliderColorImage.color = alertColor; //Slider
                 if (alertTimer < alertModePeriod) AlertMode();
                 speedMult += (alertMoveSpeedMult - 1);
                 rotationMult += alertRotationSpeedMult;
@@ -424,16 +421,19 @@ public class DetectionAI : MonoBehaviour
                 break;
             case DetectionState.Investigating:
                 enemyScript.PauseActivity();
+                sliderColorImage.color = inveColor; //Slider
                 rotationMult += (inveRotationSpeedMult - 1);
                 if (enemyScript.playerInDetectionArea && enemyScript.HasLineOfSight(enemyScript.player)) GoTo(enemyScript.player.position); // Follow player if in vision
                 else if (!enemyScript.inSmoke) GoTo(lastKnownPosition); // If player disappears, go to last known location
                 break;
             case DetectionState.Aware:
                 enemyScript.PauseActivity();
+                sliderColorImage.color = awareColor; //Slider
                 if (enemyScript.agent.isActiveAndEnabled) enemyScript.agent.isStopped = true; // bug fix: AI still moving after entering aware mode
                 rotationMult += (awareRotationSpeedMult - 1);
                 break;
             case DetectionState.Normal:
+                sliderColorImage.color = normalColor; //Slider
                 enemyScript.ContinueActivity(); // Resume normal activities
                 break;
         }
@@ -955,8 +955,9 @@ public class DetectionAI : MonoBehaviour
         }
     }
     public void RotateTowardsPlayer()
-    {   
-        if (enemyScript.canEnemyPerform() == false || enemyScript.isAttacking) return; //can rotate if attacking is the exception
+    {
+        // Allow rotation if the enemy is attacking, even if canEnemyPerform() returns false
+        if (!enemyScript.isAttacking && !enemyScript.canEnemyPerform()) return;
 
         Vector3 directionToPlayer = (enemyScript.player.position - transform.position).normalized;
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
