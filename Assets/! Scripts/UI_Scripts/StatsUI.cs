@@ -32,7 +32,7 @@ public class StatsUI : MonoBehaviour
     {
         alertedText.text = GameStats.Instance.alertedEnemies.ToString();
         killText.text = GameStats.Instance.killCount.ToString();
-        suspicionText.text = GameStats.Instance.totalSuspcion.ToString();
+        suspicionText.text = GameStats.Instance.totalSuspicion.ToString();
         timeText.text = GetFormattedTime();
 
         if (GameStats.Instance.alertedEnemies <= 0) statusText.text = "Stealthy";

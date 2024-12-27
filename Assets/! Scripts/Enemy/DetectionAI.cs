@@ -862,6 +862,7 @@ public class DetectionAI : MonoBehaviour
     }
     private void IncreaseSusMeter(float rate)
     {
+        if (GameStats.Instance) GameStats.Instance.IncreaseSuspicion(rate * Time.deltaTime);
         susMeter = Mathf.Min(susMeter + rate * Time.deltaTime, alertMeter);
     }
     private void DecreaseSuspicion()

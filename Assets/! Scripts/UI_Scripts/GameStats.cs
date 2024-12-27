@@ -5,7 +5,7 @@ public class GameStats : MonoBehaviour
     [Header("Stats")]
     public int killCount;
     public int alertedEnemies;
-    public float totalSuspcion;
+    public float totalSuspicion;
 
     [Header("Timer")]
     public bool isGameRunning;
@@ -54,7 +54,7 @@ public class GameStats : MonoBehaviour
 
     public void IncreaseSuspicion(float suspicion)
     {
-        totalSuspcion += suspicion;
+        totalSuspicion += suspicion;
     }
 
     public void ResumeTimer() // game load
@@ -71,5 +71,12 @@ public class GameStats : MonoBehaviour
     {
         seconds = 0;
         timer = 0f;
+    }
+
+    public void ResetStats()
+    {
+        killCount = 0;
+        alertedEnemies = 0;
+        totalSuspicion = 0;
     }
 }

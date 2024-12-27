@@ -458,9 +458,11 @@ public class MenuController : MonoBehaviour
             //Game stats
             if (GameStats.Instance)
             {
+                GameStats.Instance.ResetStats();
                 GameStats.Instance.ResetTimer();
                 GameStats.Instance.ResumeTimer();
             }
+            else Debug.LogWarning("NO GAMESTATS");
 
             InitializePlayerVariables();
         }
