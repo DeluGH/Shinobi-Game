@@ -36,7 +36,7 @@ public class PlayerAttack : MonoBehaviour
     public float currentAttackCooldown = 0f;
 
     [Header("Swinging with Sword")]
-    public float attackCooldown = 0.75f;           // Time taken to attack + assassinate after Swing
+    public float attackCooldown = 0.6f;           // Time taken to attack + assassinate after Swing
     public bool isSwinging = false;
     public GameObject MainHandObject;
 
@@ -227,12 +227,14 @@ public class PlayerAttack : MonoBehaviour
                 else if (chargeTime >= heavyChargeTime * (ghostMode ? ghostHeavyChargeTimePercentage : 1f)) // Heavy
                 {
                     Swing(true); //isHeavy
-                    
                 }
                 else
                 {
                     Swing(false);
+                    
                 }
+                chargeTime = 0f;
+                meleeTimer = 0f;
             }
         }
 
@@ -659,11 +661,8 @@ public class PlayerAttack : MonoBehaviour
             }
         }
 
-        chargeTime = 0f;
-        meleeTimer = 0f;
-
         drawSwingGizmo = true;
-        StartCoroutine(ResetSwingGizmo()); //DISABLE-ABLE disableable disable
+        //StartCoroutine(ResetSwingGizmo()); //DISABLE-ABLE disableable disable
     }
     public void NotifyEnemiesOfAttack(float angle, float range)
     {
@@ -703,54 +702,54 @@ public class PlayerAttack : MonoBehaviour
         Destroy(currentHighlight);
     }
 
-    private IEnumerator ResetSwingGizmo() //DISABLE-ABLE disableable disable
-    {
-        yield return new WaitForSeconds(0.25f);
-        drawSwingGizmo = false;
-    }
+    //private IEnumerator ResetSwingGizmo() //DISABLE-ABLE disableable disable
+    //{
+    //    yield return new WaitForSeconds(0.25f);
+    //    drawSwingGizmo = false;
+    //}
 
-    private void OnDrawGizmos() //DISABLE-ABLE disableable disable
-    {
-        drawFacingGizmos();
+    //private void OnDrawGizmos() //DISABLE-ABLE disableable disable
+    //{
+    //    drawFacingGizmos();
 
-        if (drawSwingGizmo)
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(transform.position, meleeRange);
+    //    if (drawSwingGizmo)
+    //    {
+    //        Gizmos.color = Color.yellow;
+    //        Gizmos.DrawWireSphere(transform.position, meleeRange);
 
-            // Draw angle cone
-            Vector3 leftBoundary = Quaternion.Euler(0, -meleeAngle / 2, 0) * transform.forward * meleeRange;
-            Vector3 rightBoundary = Quaternion.Euler(0, meleeAngle / 2, 0) * transform.forward * meleeRange;
+    //        // Draw angle cone
+    //        Vector3 leftBoundary = Quaternion.Euler(0, -meleeAngle / 2, 0) * transform.forward * meleeRange;
+    //        Vector3 rightBoundary = Quaternion.Euler(0, meleeAngle / 2, 0) * transform.forward * meleeRange;
 
-            Gizmos.color = Color.gray;
-            Gizmos.DrawLine(transform.position, transform.position + leftBoundary);
-            Gizmos.DrawLine(transform.position, transform.position + rightBoundary);
+    //        Gizmos.color = Color.gray;
+    //        Gizmos.DrawLine(transform.position, transform.position + leftBoundary);
+    //        Gizmos.DrawLine(transform.position, transform.position + rightBoundary);
 
-        }
-    }
+    //    }
+    //}
 
-    private void drawFacingGizmos() //DISABLE-ABLE disableable disable
-    {
-        if (playerScript.cameraFacing == null) return;
+    //private void drawFacingGizmos() //DISABLE-ABLE disableable disable
+    //{
+    //    if (playerScript.cameraFacing == null) return;
 
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(playerScript.cameraFacing.position, maxRaycastRange); // Draw the detection sphere
+    //    Gizmos.color = Color.blue;
+    //    Gizmos.DrawWireSphere(playerScript.cameraFacing.position, maxRaycastRange); // Draw the detection sphere
 
-        // Draw cone boundaries
-        Vector3 leftBoundary = Quaternion.Euler(0, -assScanAngle / 2, 0) * playerScript.cameraFacing.forward * maxRaycastRange;
-        Vector3 rightBoundary = Quaternion.Euler(0, assScanAngle / 2, 0) * playerScript.cameraFacing.forward * maxRaycastRange;
+    //    // Draw cone boundaries
+    //    Vector3 leftBoundary = Quaternion.Euler(0, -assScanAngle / 2, 0) * playerScript.cameraFacing.forward * maxRaycastRange;
+    //    Vector3 rightBoundary = Quaternion.Euler(0, assScanAngle / 2, 0) * playerScript.cameraFacing.forward * maxRaycastRange;
 
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawLine(playerScript.cameraFacing.position, playerScript.cameraFacing.position + leftBoundary);
-        Gizmos.DrawLine(playerScript.cameraFacing.position, playerScript.cameraFacing.position + rightBoundary);
+    //    Gizmos.color = Color.cyan;
+    //    Gizmos.DrawLine(playerScript.cameraFacing.position, playerScript.cameraFacing.position + leftBoundary);
+    //    Gizmos.DrawLine(playerScript.cameraFacing.position, playerScript.cameraFacing.position + rightBoundary);
 
-        // Draw a line to the closest enemy, if any
-        if (lookingAtEnemy != null)
-        {
-            Gizmos.color = Color.black;
-            Gizmos.DrawLine(playerScript.cameraFacing.position, lookingAtEnemy.transform.position); // Line to closest enemy
-            Gizmos.DrawSphere(lookingAtEnemy.transform.position, 0.2f); // Mark closest enemy
-        }
-    }
+    //    // Draw a line to the closest enemy, if any
+    //    if (lookingAtEnemy != null)
+    //    {
+    //        Gizmos.color = Color.black;
+    //        Gizmos.DrawLine(playerScript.cameraFacing.position, lookingAtEnemy.transform.position); // Line to closest enemy
+    //        Gizmos.DrawSphere(lookingAtEnemy.transform.position, 0.2f); // Mark closest enemy
+    //    }
+    //}
 
 }

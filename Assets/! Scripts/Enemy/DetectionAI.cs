@@ -14,18 +14,18 @@ public enum DetectionState { Normal, AwarePause, Aware, Investigating, Alerted }
 public class DetectionAI : MonoBehaviour
 {
     [Header("Sus Slider")]
-    public bool sliderShowing = false;
+    public bool showSlider = false;
     public float sliderHideAfter = 5f;
     public float sliderTimer = 0f;
     public Slider slider;
     public Image sliderColorImage;
-    public Color alertedColor = new Color(1.0f, 0.259f, 0.212f); //red
-    public Color inveColor = new Color(0.851f, 0.620f, 0.341f); //orang
-    public Color awareColor  = new Color(1.0f, 0.992f, 0.459f); // yellow
+    public Color inveColor = new Color(0.851f, 0.620f, 0.341f); //red
+    public Color awareColor = new Color(1.0f, 0.992f, 0.459f); // yellow
     public Color normalColor = new Color(0.443f, 0.792f, 0.431f); //green
 
     [Header("Sound")]
     public AudioClip detectedSound;
+    public AudioClip susIncrease;
 
     [Header("Current Values (Debug/Auto)")]
     [Tooltip("Current suspicion level.\nIncreases when player is within Yellow or Green zones.")]
@@ -217,6 +217,7 @@ public class DetectionAI : MonoBehaviour
             slider.maxValue = alertMeter;
             sliderColorImage = slider.fillRect.GetComponent<Image>();
             if (sliderColorImage == null) Debug.LogWarning("sliderColorImage reference is missing!");
+            sliderColorImage.color = normalColor;
         }
     }
 
@@ -227,15 +228,22 @@ public class DetectionAI : MonoBehaviour
             HandleDetection();
             HandleCurrentState();
         }
+    }
 
+    private void HandleDetection()
+    {
         //SLIDER
-        if (enemyScript && enemyScript.playerInDetectionArea) sliderShowing = true;
-        else sliderShowing = false;
+        float distanceToPlayer = Vector3.Distance(transform.position, enemyScript.player.position);
+        if (enemyScript && enemyScript.playerInDetectionArea && !showSlider) showSlider = true;
+        else if (distanceToPlayer <= GetCurrentDetectionDistance()) showSlider = false;
         if (slider)
         {
-            if (sliderShowing)
+            if (showSlider && currentState != DetectionState.Alerted)
             {
-                sliderShowing = true;
+                //Slider
+                if (slider) slider.value = susMeter;
+
+                showSlider = true;
                 sliderTimer = 0f;
                 slider.gameObject.SetActive(true);
             }
@@ -249,10 +257,7 @@ public class DetectionAI : MonoBehaviour
                 }
             }
         }
-    }
 
-    private void HandleDetection()
-    {
         if (enemyScript.canEnemyPerform())
         {
             // Detect Corpses - No point verifying if there's corpses in range since we need to use Overlapsphere anyway
@@ -260,7 +265,7 @@ public class DetectionAI : MonoBehaviour
             DetectSmokebomb();
 
             // DetectPlayer only if player is within range
-            float distanceToPlayer = Vector3.Distance(transform.position, enemyScript.player.position);
+            
             if (distanceToPlayer <= GetCurrentDetectionDistance())
             { // IN RANGE
                 DetectPlayer();
@@ -355,7 +360,7 @@ public class DetectionAI : MonoBehaviour
             {
                 case DetectionState.Alerted:
                     if (enemyScript.soundScript) enemyScript.soundScript.PlayAlerted();
-                    sliderColorImage.color = alertedColor;
+                    
                     break;
 
                 case DetectionState.Investigating:
@@ -797,9 +802,9 @@ public class DetectionAI : MonoBehaviour
             else if (isTypeNoise) IncreaseSuspicionNoise(multiplier, rate);
 
             //Sound
-
-            //Slider
-            if (slider && slider.isActiveAndEnabled) slider.value = susMeter;
+            float pitch = Mathf.Lerp(1f, 2f, Mathf.InverseLerp(0f, 150f, susMeter));
+            enemyScript.soundScript.pitchChangingAudioSource.pitch = pitch;
+            enemyScript.soundScript.pitchChangingAudioSource.PlayOneShot(susIncrease);
 
             //Debug.Log($"Suspicion Increased: {susMeter} | Rate: {rate} | Multiplier: {multiplier}");
         }
@@ -995,11 +1000,13 @@ public class DetectionAI : MonoBehaviour
     {
         lastKnownPosition = enemyScript.player.position;
         susMeter = alertMeter;
+
     }
     public void InstantAggroRange()
     {
         lastKnownPosition = transform.position;
         susMeter = alertMeter;
+
     }
 
     //private void OnDrawGizmosSelected() // DISABLE-ABLE disable disablable

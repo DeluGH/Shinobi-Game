@@ -978,7 +978,7 @@ MonoBehaviour:
   lookingAtEnemy: {fileID: 0}
   ghostCurrentChargeAmount: 0
   currentAttackCooldown: 0
-  attackCooldown: 0.75
+  attackCooldown: 0.6
   isSwinging: 0
   MainHandObject: {fileID: 0}
   ghostMode: 0

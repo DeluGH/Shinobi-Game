@@ -46,7 +46,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -220,6 +220,7 @@ MonoBehaviour:
     subtitles: '[Enemy yapping] I cannot wait to retire tomorrow!'
   - audioClip: {fileID: 8300000, guid: 367e812b18e612e4f8e06e39fe73366b, type: 3}
     subtitles: '[Enemy whistles]'
+  pitchChangingAudioSource: {fileID: 0}
   enemyScript: {fileID: 0}
   currentVoiceline:
     audioClip: {fileID: 0}
