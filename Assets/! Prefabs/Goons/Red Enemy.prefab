@@ -472,7 +472,6 @@ MonoBehaviour:
   sliderTimer: 5
   slider: {fileID: 0}
   sliderColorImage: {fileID: 0}
-  alertedColor: {r: 1, g: 0.25882354, b: 0.21176471, a: 1}
   inveColor: {r: 0.851, g: 0.62, b: 0.341, a: 1}
   awareColor: {r: 1, g: 0.99215686, b: 0.45882353, a: 1}
   normalColor: {r: 0.443, g: 0.792, b: 0.431, a: 1}
@@ -499,11 +498,11 @@ MonoBehaviour:
   susDecayDelay: 3
   susAffectedByDistance: 1
   maxSusDistancePercent: 360
-  noiseWalkSusInc: 40
-  noiseRunSusInc: 65
+  noiseWalkSusInc: 60
+  noiseRunSusInc: 85
   noiseHeardDecay: 3
   noiseAffectedByDistance: 1
-  noiseMaxSusDistancePercent: 600
+  noiseMaxSusDistancePercent: 750
   awareMeter: 50
   awareDetectDistanceInc: 3
   awareGreenAngleInc: 10
@@ -836,6 +835,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
+  rotateYOffset: 180
 --- !u!1001 &4079513913487847453
 PrefabInstance:
   m_ObjectHideFlags: 0

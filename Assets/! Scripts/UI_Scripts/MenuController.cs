@@ -18,6 +18,7 @@ public class MenuController : MonoBehaviour
         Volume,
         Gameplay,
         Gameover,
+        Victory,
         MissionSelect,
     }
 
@@ -30,6 +31,7 @@ public class MenuController : MonoBehaviour
     public GameObject keybindsPanel;
     public GameObject volumePanel;
     public GameObject gameOverPanel;
+    public GameObject victoryPanel;
     public GameObject missionSelectPanel; // mission selection
 
     [Header("Others")]
@@ -44,6 +46,7 @@ public class MenuController : MonoBehaviour
     public AudioClip MainMenuSong;
     public AudioClip menuOpen;
     public AudioClip gameOverSong;
+    public AudioClip victorySong;
 
     [Header("Auto")]
     public GameObject player;
@@ -271,6 +274,8 @@ public class MenuController : MonoBehaviour
                 //Disable sounds
                 playerAudioListener.enabled = false;
 
+                if (GameStats.Instance) GameStats.Instance.StopTimer();
+
                 Time.timeScale = 0f; // Pause game
                 fpsController.enabled = false;
                 characterController.enabled = false;
@@ -286,6 +291,8 @@ public class MenuController : MonoBehaviour
             {
                 //Enable sounds
                 playerAudioListener.enabled = true;
+
+                if (GameStats.Instance) GameStats.Instance.ResumeTimer();
 
                 Time.timeScale = 1f; // Resume game
                 pauseMenuPanel.SetActive(false);
@@ -307,6 +314,8 @@ public class MenuController : MonoBehaviour
 
         //Enable sounds
         playerAudioListener.enabled = true;
+
+        if (GameStats.Instance) GameStats.Instance.ResumeTimer();
 
         isPaused = false;
         Time.timeScale = 1f;
@@ -446,8 +455,16 @@ public class MenuController : MonoBehaviour
             gameOverPanel.SetActive(false);
             gameplayPanel.SetActive(true);
 
+            //Game stats
+            if (GameStats.Instance)
+            {
+                GameStats.Instance.ResetTimer();
+                GameStats.Instance.ResumeTimer();
+            }
+
             InitializePlayerVariables();
         }
+
         loadingScreen.SetActive(false);
     }
 
@@ -455,6 +472,9 @@ public class MenuController : MonoBehaviour
     public void GameOver()
     {
         currentMenuState = MenuState.Gameover;
+
+        //game stats
+        if (GameStats.Instance) GameStats.Instance.StopTimer();
 
         //failed song
         musicSource.PlayOneShot(gameOverSong);
@@ -466,10 +486,27 @@ public class MenuController : MonoBehaviour
         characterController.enabled = false;
 
         ReanimateCursor();
-
-        Debug.Log("Game paused.");
     }
+    //VICTORY
+    public void Victory()
+    {
+        currentMenuState = MenuState.Victory;
 
+        //game stats
+        if (GameStats.Instance) GameStats.Instance.StopTimer();
+
+        //failed song
+        musicSource.PlayOneShot(victorySong);
+
+        gameOverPanel.SetActive(false);
+        victoryPanel.SetActive(true);
+        gameplayPanel.SetActive(false);
+
+        fpsController.enabled = false;
+        characterController.enabled = false;
+
+        ReanimateCursor();
+    }
     //Lex's simple functions
     public void ReanimateCursor()
     {

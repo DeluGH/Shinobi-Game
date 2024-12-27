@@ -367,6 +367,12 @@ public class Enemy : MonoBehaviour
     // Dying
     public void Die(bool assed)
     {
+        //game stats
+        if (GameStats.Instance) GameStats.Instance.IncreaseKill();
+
+        //disable slider
+        detectionScript.slider.gameObject.SetActive(false);
+
         //Sound
         if (!assed) soundScript.PlayDyingSound();
         else if (assed) soundScript.PlayAssedSound();

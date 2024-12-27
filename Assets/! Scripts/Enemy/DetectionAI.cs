@@ -232,8 +232,9 @@ public class DetectionAI : MonoBehaviour
     {
         //SLIDER
         float distanceToPlayer = Vector3.Distance(transform.position, enemyScript.player.position);
-        if (enemyScript && enemyScript.playerInDetectionArea && !showSlider) showSlider = true;
-        else if (distanceToPlayer <= GetCurrentDetectionDistance()) showSlider = false;
+        if (enemyScript && enemyScript.playerInDetectionArea && !showSlider && enemyScript.isDead) showSlider = true;
+        else if (distanceToPlayer >= GetCurrentDetectionDistance() || enemyScript.isDead) showSlider = false;
+
         if (slider)
         {
             if (showSlider && currentState != DetectionState.Alerted)
@@ -322,7 +323,7 @@ public class DetectionAI : MonoBehaviour
         {
             RotateTowardsPlayer(); //Aware ++
         }
-        else if (!enemyScript.combatMode && susMeter >= awareMeter && susMeter <= inveMeter && !enemyScript.playerInDetectionArea && !enemyScript.HasLineOfSight(enemyScript.player))
+        else if (!enemyScript.combatMode && susMeter >= awareMeter && susMeter <= inveMeter && !enemyScript.playerInDetectionArea)
         {
             RotateTowardsLastKnown(); //Aware, but no sight of Player
         }
@@ -350,7 +351,9 @@ public class DetectionAI : MonoBehaviour
         // Manages buffs, states, etc
         currentState = state;
 
-        //Sounds
+        //Previous state not current state?
+        // Play Sound
+        // Update game stats
         if (currentState != previousState)
         {
             previousState = currentState;
@@ -358,7 +361,7 @@ public class DetectionAI : MonoBehaviour
             {
                 case DetectionState.Alerted:
                     if (enemyScript.soundScript) enemyScript.soundScript.PlayAlerted();
-                    
+                    if (GameStats.Instance) GameStats.Instance.IncreaseAlerted();
                     break;
 
                 case DetectionState.Investigating:
@@ -757,11 +760,14 @@ public class DetectionAI : MonoBehaviour
 
     public void HeardNoise(Transform playerTransform, bool isWalking) // Called by Enemy Script
     {
+        //show slider
+        showSlider = true;
+
         float baseRate = isWalking ? noiseWalkSusInc : noiseRunSusInc;
 
         // If player isn't spotted, but hears the player, increase
         // Fixes: Doubling suspicion increase if player is getting chased
-        if (!enemyScript.playerInDetectionArea) IncreaseSuspicion(baseRate, isTypeNoise: true);
+        if (!enemyScript.playerInDetectionArea) IncreaseSuspicion(baseRate, true);
         
         noiseHeardTimer = 0f;
 
@@ -818,20 +824,11 @@ public class DetectionAI : MonoBehaviour
             // Calculate the distance-based multiplier (1.0 at max distance, 2.0 at the AI's position)
             float distanceMultiplier = 1 + (noiseMaxSusDistancePercent / 100f - 1) * (1 - clampedDistance / GetCurrentDetectionDistance());
 
-            multiplier += (distanceMultiplier - 1);
-
-            // Calculate the suspicion increase, factoring in the distance multiplier
-            rate *= multiplier;
-
-            susMeter = Mathf.Min(susMeter + rate * Time.deltaTime, alertMeter);
-        }
-        else // Not affected by distance is false
-        {
-            rate *= multiplier;
-            susMeter = Mathf.Min(susMeter + rate * Time.deltaTime, alertMeter);
+            multiplier += (distanceMultiplier - 1);   
         }
 
-        Debug.Log($"Increased Sus By {rate * Time.deltaTime} | Mutliplier: {multiplier}");
+        rate *= multiplier;
+        IncreaseSusMeter(rate);
     }
     private void IncreaseSuspicionLooking(float multiplier, float rate)
     {
@@ -845,11 +842,6 @@ public class DetectionAI : MonoBehaviour
             float distanceMultiplier = 1 + (maxSusDistancePercent / 100f - 1) * (1 - clampedDistance / GetCurrentDetectionDistance());
 
             multiplier += (distanceMultiplier - 1);
-
-            // Calculate the suspicion increase, factoring in the distance multiplier
-            rate *= multiplier;
-
-            susMeter = Mathf.Min(susMeter + rate * Time.deltaTime, alertMeter);
         }
         else if (susAffectedByDistance && corpseInDetectionArea)
         {
@@ -861,21 +853,17 @@ public class DetectionAI : MonoBehaviour
             float distanceMultiplier = 1 + (maxSusDistancePercent / 100f - 1) * (1 - clampedDistance / GetCurrentDetectionDistance());
 
             multiplier += (distanceMultiplier - 1);
-
-            // Calculate the suspicion increase, factoring in the distance multiplier
-            rate *= multiplier;
-
-            susMeter = Mathf.Min(susMeter + rate * Time.deltaTime, alertMeter);
         }
-        else // Not affected by distance is false
-        {
-            rate *= multiplier;
-            susMeter = Mathf.Min(susMeter + rate * Time.deltaTime, alertMeter);
-        }
+
+        rate *= multiplier;
+        IncreaseSusMeter(rate);
 
         //Debug.Log($"Increased Sus By {rate * Time.deltaTime} | Mutliplier: {multiplier}");
     }
-
+    private void IncreaseSusMeter(float rate)
+    {
+        susMeter = Mathf.Min(susMeter + rate * Time.deltaTime, alertMeter);
+    }
     private void DecreaseSuspicion()
     {
         if (!isSusPause)
@@ -968,7 +956,7 @@ public class DetectionAI : MonoBehaviour
     }
     public void RotateTowardsPlayer()
     {   
-        if (enemyScript.canEnemyPerform() == false) return;
+        if (enemyScript.canEnemyPerform() == false || enemyScript.isAttacking) return; //can rotate if attacking is the exception
 
         Vector3 directionToPlayer = (enemyScript.player.position - transform.position).normalized;
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
@@ -985,13 +973,9 @@ public class DetectionAI : MonoBehaviour
         if (enemyScript.canEnemyPerform() == false) return;
 
         Vector3 direction = (lastKnownPosition - transform.position).normalized;
-        float angle = Vector3.Angle(transform.forward, direction);
 
-        if (angle <= GetCurrentGreenAngle() / 2 || angle <= GetCurrentYellowAngle() / 2)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, enemyScript.rotationSpeed * Time.deltaTime); // Smooth rotation
-        }
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, enemyScript.rotationSpeed * Time.deltaTime); // Smooth rotation
     }
 
     public void InstantAggroMelee()

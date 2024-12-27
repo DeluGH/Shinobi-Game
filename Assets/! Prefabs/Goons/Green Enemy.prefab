@@ -255,7 +255,6 @@ MonoBehaviour:
   sliderTimer: 5
   slider: {fileID: 0}
   sliderColorImage: {fileID: 0}
-  alertedColor: {r: 1, g: 0.25882354, b: 0.21176471, a: 1}
   inveColor: {r: 0.851, g: 0.62, b: 0.341, a: 1}
   awareColor: {r: 1, g: 0.99215686, b: 0.45882353, a: 1}
   normalColor: {r: 0.443, g: 0.792, b: 0.431, a: 1}
@@ -282,11 +281,11 @@ MonoBehaviour:
   susDecayDelay: 3
   susAffectedByDistance: 1
   maxSusDistancePercent: 300
-  noiseWalkSusInc: 18
-  noiseRunSusInc: 42
+  noiseWalkSusInc: 20
+  noiseRunSusInc: 45
   noiseHeardDecay: 3
   noiseAffectedByDistance: 1
-  noiseMaxSusDistancePercent: 600
+  noiseMaxSusDistancePercent: 650
   awareMeter: 50
   awareDetectDistanceInc: 3
   awareGreenAngleInc: 10
@@ -766,6 +765,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
+  rotateYOffset: 180
 --- !u!1 &6158874613564215686
 GameObject:
   m_ObjectHideFlags: 0
