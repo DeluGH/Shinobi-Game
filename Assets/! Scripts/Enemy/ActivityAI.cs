@@ -43,7 +43,10 @@ public class ActivityAI : MonoBehaviour
             soundInSecondsTimer += Time.deltaTime;
         }
         // Can Play Sound?
-        if (soundInSecondsTimer >= soundInSeconds && activitiesCompleted >= activitiesToComplete && !enemyScript.isActivityPaused)
+        if (soundInSecondsTimer >= soundInSeconds && activitiesCompleted >= activitiesToComplete 
+            && !enemyScript.isActivityPaused
+            && !enemyScript.combatMode // not in combat
+            && enemyScript.detectionScript.susMeter < enemyScript.detectionScript.awareMeter) // less than aware
         {
             ResetIdleSoundRequirements();
             if (enemyScript.soundScript) enemyScript.soundScript.PlayAmbience();

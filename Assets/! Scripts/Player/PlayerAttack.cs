@@ -17,6 +17,7 @@ public class PlayerAttack : MonoBehaviour
     public GameObject blockParticle;
     public GameObject heavySwingAffect;
     public GameObject heavyGhostSwingAffect;
+    public GameObject dashAssSwingAffect;
 
     [Header("Sounds (Assign pls)")]
     public AudioClip swordsClash;   // Enemy blocked
@@ -26,6 +27,8 @@ public class PlayerAttack : MonoBehaviour
     public AudioClip assSound;
     public AudioClip fallingSound;
     public AudioClip assHighlightSound;
+    public AudioClip ghostModeEnabled;
+    public AudioClip ghostModeDisabled;
 
     [Header("Debug References")]
     public GameObject lookingAtEnemy; // Enemy player is looking at
@@ -40,13 +43,13 @@ public class PlayerAttack : MonoBehaviour
     [Header("Ghost Mode")]
     public bool ghostMode = false;
     public int ghostChargeAmount = 7; // needed to charge
-    public float ghostDuration = 7.5f;
+    public float ghostDuration = 10f;
     public float ghostRangeBuff = 1f; // adds to all range
     public float ghostAngleBuff = 20f; // adds to all angles
     public float ghostAttackCooldown = 0.25f; // adds to all angles
     public float ghostHeavyChargeTimePercentage = 0.5f; // charge 0.5 = 50% less time
     public float ghostStunRadius = 12f;
-    public float ghostStunDuration = 7.5f;
+    public float ghostStunDuration = 7f;
 
     [Header("Light")]
     public float meleeRange = 4f;
@@ -169,7 +172,7 @@ public class PlayerAttack : MonoBehaviour
         }
 
         // !! Set attackCooldown to 0 in Frenzy, or just change attackCooldown for anything
-        if (meleeTimer < currentAttackCooldown && !isSwinging && !playerScript.isAssassinating && !playerScript.isDead) meleeTimer += Time.deltaTime;
+        if (meleeTimer < currentAttackCooldown && !isSwinging && !playerScript.isAssassinating && !playerScript.isDead && !playerScript.isBlocking) meleeTimer += Time.deltaTime;
         // Check for holding left click
         //CHARGING ONLY
         if (meleeTimer >= currentAttackCooldown && !playerScript.isDead && !playerScript.isBlocking)
@@ -198,6 +201,11 @@ public class PlayerAttack : MonoBehaviour
                     if (anim != null) anim.SetBool("isCharging", true);
                     else Debug.LogWarning("No Sword Anim detected!");
                 }
+                if (chargeTime >= heavyChargeTime)
+                {
+                    Animator anim = MainHandObject.GetComponentInChildren<Animator>();
+                    if (anim != null) anim.SetTrigger("ChargeDone");
+                }
 
                 //if (chargeTime < heavyChargeTime) Debug.Log($"Charging... {chargeTime}");
                 //else Debug.Log($"Heavy Ready!");
@@ -214,7 +222,7 @@ public class PlayerAttack : MonoBehaviour
                 //ATTACK
                 if (canAssassinate && assEnemyTarget != null)
                 {
-                    Assassinate(isAirAss());
+                    Assassinate(isAirAss(), playerScript.fpsController.m_IsWalking);
                 }
                 else if (chargeTime >= heavyChargeTime * (ghostMode ? ghostHeavyChargeTimePercentage : 1f)) // Heavy
                 {
@@ -225,9 +233,6 @@ public class PlayerAttack : MonoBehaviour
                 {
                     Swing(false);
                 }
-
-                chargeTime = 0f;
-                meleeTimer = 0f;
             }
         }
 
@@ -274,6 +279,9 @@ public class PlayerAttack : MonoBehaviour
 
             GameplayUIController.Instance.UpdateGhostSlider(ghostCurrentChargeAmount, ghostChargeAmount);
             RendererToggleManager.Instance.ToggleRendererFeature("Kurosawa Filter", true);
+
+            // Sound
+            playerScript.audioSource.PlayOneShot(ghostModeEnabled);
         }
         else
         {
@@ -286,6 +294,9 @@ public class PlayerAttack : MonoBehaviour
 
                 GameplayUIController.Instance.UpdateGhostSlider(ghostCurrentChargeAmount, ghostChargeAmount);
                 RendererToggleManager.Instance.ToggleRendererFeature("Kurosawa Filter", false);
+                
+                //Sound
+                playerScript.audioSource.PlayOneShot(ghostModeDisabled);
             }
         }
     }
@@ -428,7 +439,7 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
-    public void Assassinate(bool isAirAssassinate)
+    public void Assassinate(bool isAirAssassinate, bool isWalking)
     {
         if (assEnemyTarget != null)
         {
@@ -454,20 +465,26 @@ public class PlayerAttack : MonoBehaviour
                 Animator anim = MainHandObject.GetComponentInChildren<Animator>();
                 if (anim != null)
                 {
-                    if (isAirAssassinate) anim.SetTrigger("Air Ass");
-                    else anim.SetTrigger("Ass");
+                    if (isAirAssassinate) anim.SetTrigger("Air Ass"); //air ass
+                    else if (!isWalking)
+                    {
+                        anim.SetTrigger("Dash Ass"); // Running dash ass
+                        GameObject swingEffect = Instantiate(dashAssSwingAffect, playerScript.cameraFacing.transform.position, Quaternion.identity, playerScript.cameraFacing.transform);
+                        swingEffect.transform.localRotation = Quaternion.identity;
+                    }
+                    else anim.SetTrigger("Ass"); // normal ass
                 }
                 else Debug.LogWarning("No Sword Anim detected!");
             }
             else Debug.LogWarning("NO ENEMY SCRIPT!!");
 
             //mving to Enemy Animation
-            StartCoroutine(MoveToEnemy(isAirAssassinate));
+            StartCoroutine(MoveToEnemy(isAirAssassinate, isWalking));
         }
         else Debug.LogWarning("NO assEnemyTarget!!");
     }
 
-    public IEnumerator MoveToEnemy(bool isAirAssassinate)
+    public IEnumerator MoveToEnemy(bool isAirAssassinate, bool isWalking)
     {
         Vector3 startPosition = playerScript.transform.position;
         Vector3 endPosition = currentAssEnemyTarget.transform.position;
@@ -492,11 +509,13 @@ public class PlayerAttack : MonoBehaviour
                 yield return null;
             }
         }
-        else
+        else // NON AIR (dash / normal)
         {
             //Distance/Position Player will be
             Vector3 directionToEnemy = (endPosition - startPosition).normalized;
-            Vector3 targetPosition = endPosition - directionToEnemy * (assLerpMinDistance + 0.75f); //+value cuz of playerRadius and enemyRadius
+            Vector3 targetPosition;
+            if (!isWalking) targetPosition = endPosition + directionToEnemy * (assLerpMinDistance + 1.5f); //+value cuz of playerRadius and enemyRadius
+            else targetPosition = endPosition - directionToEnemy * (assLerpMinDistance + 0.75f); //+value cuz of playerRadius and enemyRadius
 
             // Calculate distance to cover and speed (we'll use the time to get there)
             float journeyLength = Vector3.Distance(startPosition, targetPosition);  // Total distance to target position
@@ -529,7 +548,7 @@ public class PlayerAttack : MonoBehaviour
         Enemy enemyScript = currentAssEnemyTarget.GetComponent<Enemy>();
         if (enemyScript)
         {
-            enemyScript.Die();
+            enemyScript.Die(true);
         }
         else Debug.LogWarning("NO ENEMY SCRIPT!!");
     }
@@ -639,6 +658,9 @@ public class PlayerAttack : MonoBehaviour
                 }
             }
         }
+
+        chargeTime = 0f;
+        meleeTimer = 0f;
 
         drawSwingGizmo = true;
         StartCoroutine(ResetSwingGizmo()); //DISABLE-ABLE disableable disable

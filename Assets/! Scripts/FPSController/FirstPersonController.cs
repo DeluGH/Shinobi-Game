@@ -14,7 +14,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
     public class FirstPersonController : MonoBehaviour
     {
         
-        [SerializeField] private bool m_IsWalking;
+        [SerializeField] public bool m_IsWalking;
         [SerializeField] private bool m_IsCrouched;
         public bool m_IsGrappling;
         [SerializeField] private float m_CrouchHeight;

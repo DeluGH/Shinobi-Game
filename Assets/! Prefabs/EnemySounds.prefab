@@ -50,6 +50,13 @@ MonoBehaviour:
     subtitles: '[Enemy dies] AAUGH!'
   - audioClip: {fileID: 8300000, guid: 4eb637b792660b04ea2437653ed15348, type: 3}
     subtitles: '[Enemy dies] OO-'
+  - audioClip: {fileID: 8300000, guid: 6a10a17d63aa2764c98571bd2b6ef1e5, type: 3}
+    subtitles: '[Enemy dies] Mommy!'
+  assedSounds:
+  - audioClip: {fileID: 8300000, guid: 34ec29333f3cf4d468dc3cc806e9c370, type: 3}
+    subtitles: '[Enemy Chokes on Blood]'
+  - audioClip: {fileID: 8300000, guid: 261014732c22d454ba56f8ad242891a3, type: 3}
+    subtitles: '[Enemy Chokes on Blood]'
   hitSounds:
   - audioClip: {fileID: 8300000, guid: dde0b1afb8a8f8e4dada58487480b4c4, type: 3}
     subtitles: '[Enemy gets hit] ugh!'
@@ -57,24 +64,64 @@ MonoBehaviour:
     subtitles: '[Enemy gets hit] ouch!'
   - audioClip: {fileID: 8300000, guid: 86ea85a6b1fb2f445882303e988fbe00, type: 3}
     subtitles: '[Enemy gets hit] egh!'
-  finalHitSounds: []
+  finalHitSounds:
+  - audioClip: {fileID: 8300000, guid: 41a75e5d88aa0a5499e6946fd4bcba3f, type: 3}
+    subtitles: '[Enemy is injured] Ah- "shit!"'
+  - audioClip: {fileID: 8300000, guid: 7a115cd33676be548bc79ed2c19d9ccf, type: 3}
+    subtitles: '[Enemy is injured] I''m amost dead!'
+  - audioClip: {fileID: 8300000, guid: 52cffa83fa5cb6a459fd9de24d50fa28, type: 3}
+    subtitles: '[Enemy is injured] I''m 1HP-!!'
+  - audioClip: {fileID: 8300000, guid: 1e9f805373d264645a6d8a74db07dfab, type: 3}
+    subtitles: '[Enemy is injured] I will not die here!'
+  chokingSounds:
+  - audioClip: {fileID: 8300000, guid: bd6006eff224bde418ec24e90cba675f, type: 3}
+    subtitles: '[Enemy coughing]'
+  - audioClip: {fileID: 8300000, guid: 99da84841f13d864a9ac4fb79191817e, type: 3}
+    subtitles: '[Enemy coughing]'
   aware:
   - audioClip: {fileID: 8300000, guid: fd043b9edb3e1164b826bc296fda5936, type: 3}
-    subtitles: Huh?
+    subtitles: '[Enemy Aware] Huh?'
   - audioClip: {fileID: 8300000, guid: 714cf1dddd05e614fb10c6dedffa7fce, type: 3}
-    subtitles: Hm?
+    subtitles: '[Enemy Aware] Hm?'
   investigate:
   - audioClip: {fileID: 8300000, guid: fceb106d0618a8a4184a43c825e36b1a, type: 3}
-    subtitles: '[japanese accent] I am going to check that out-'
+    subtitles: '[Enemy Investigates] I am going to check that out-'
+  - audioClip: {fileID: 8300000, guid: 2cf3b26b7f0376541b51f886aa09b869, type: 3}
+    subtitles: '[Enemy Investigates] That is very suspicious-'
+  - audioClip: {fileID: 8300000, guid: a6497b890ae11aa4ca88871fa3ddc65f, type: 3}
+    subtitles: '[Enemy Investigates] That is strange... I must check that out!'
+  - audioClip: {fileID: 8300000, guid: d02c0a463042e5b4e8fef28eacf627e5, type: 3}
+    subtitles: '[Enemy Investigates] Weird, I must get closer.'
   alerted:
   - audioClip: {fileID: 8300000, guid: 9750e27248c732946b6dc986c9889d3c, type: 3}
-    subtitles: Oi!
+    subtitles: '[Enemy Alerted] Oi!'
+  - audioClip: {fileID: 8300000, guid: 0ed1b303b3a7fde47bbbb17849ddde78, type: 3}
+    subtitles: '[Enemy Alerted] Stop right there!'
+  - audioClip: {fileID: 8300000, guid: 0c4ec7f4497d88f418d44c03f84827fe, type: 3}
+    subtitles: '[Enemy Alerted] Stop right there-'
+  - audioClip: {fileID: 8300000, guid: 5f9241c47014cac4c8798c4cee825fba, type: 3}
+    subtitles: '[Enemy Alerted] Oi! Omae! (You!)'
   backToNormal:
   - audioClip: {fileID: 8300000, guid: b42bdf81f688b2a4b877af1d7289633d, type: 3}
-    subtitles: '[japanese accent] I think I drank too much sake...'
+    subtitles: '[Enemy no longer aware] I think I drank too much sake...'
+  - audioClip: {fileID: 8300000, guid: fe614aead3900f44eb2d5e6f9d1c8342, type: 3}
+    subtitles: '[Enemy no longer aware] Huh. Must have been the wind!'
+  - audioClip: {fileID: 8300000, guid: 8e6bcf7210ac31b4388513367712f4b8, type: 3}
+    subtitles: '[Enemy no longer aware] Hmm. Must''ve been the wind.'
   ambience:
   - audioClip: {fileID: 8300000, guid: 9833d7f2c0f7aba46b58430221105207, type: 3}
     subtitles: '[suspicious humming]'
+  - audioClip: {fileID: 8300000, guid: 92eb6bb87f16266419c554dcbd50f6c7, type: 3}
+    subtitles: '[shark song]'
+  - audioClip: {fileID: 8300000, guid: 035ba1f43eaf211458638732135ac6a1, type: 3}
+    subtitles: '[Enemy yapping] If i had a penny for everytime I circle around this
+      area-
+
+      I would have 5 pennies.'
+  - audioClip: {fileID: 8300000, guid: 37b543a36fb6a9e47b30e09a8d45ac63, type: 3}
+    subtitles: '[Enemy yapping] I cannot wait to retire tomorrow!'
+  - audioClip: {fileID: 8300000, guid: 367e812b18e612e4f8e06e39fe73366b, type: 3}
+    subtitles: '[Enemy whistles]'
   enemyScript: {fileID: 0}
   currentVoiceline:
     audioClip: {fileID: 0}

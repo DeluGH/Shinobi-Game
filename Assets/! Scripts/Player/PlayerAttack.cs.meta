@@ -10,6 +10,7 @@ MonoImporter:
   - blockParticle: {fileID: 4914658440447471751, guid: 9ca92957e88009548950b81d6481584e, type: 3}
   - heavySwingAffect: {fileID: 4919092195301282347, guid: c14de2da31917a44795f70b2bef4eb46, type: 3}
   - heavyGhostSwingAffect: {fileID: 4919092195301282347, guid: c1b8352fbe47837478525597a1884366, type: 3}
+  - dashAssSwingAffect: {fileID: 4919092195301282347, guid: 3e550b23b76aa68448c919248c74f692, type: 3}
   - swordsClash: {fileID: 8300000, guid: 30c4d096fd3484c4998bb095db6cd476, type: 3}
   - enemyHit: {fileID: 8300000, guid: 451876c21bdadde4394ee9e64e4b03e4, type: 3}
   - swordSwing: {fileID: 8300000, guid: 7fe44c6e3b3f98844bb41ddd2aa502b0, type: 3}
@@ -17,6 +18,8 @@ MonoImporter:
   - assSound: {fileID: 8300000, guid: e883a80fadaeeae41a872c3022f88f14, type: 3}
   - fallingSound: {fileID: 8300000, guid: 18eddb5dd01f35149bdb0337e73d698f, type: 3}
   - assHighlightSound: {fileID: 8300000, guid: c37fe8274bfa8a04ab2a8cf0e242d315, type: 3}
+  - ghostModeEnabled: {fileID: 8300000, guid: 969498ffc9aa73a47baae8f37e58af1e, type: 3}
+  - ghostModeDisabled: {fileID: 8300000, guid: 5fd22a9b950caee4ab0e9b475eb92ea7, type: 3}
   - lookingAtEnemy: {instanceID: 0}
   - MainHandObject: {instanceID: 0}
   - currentHighlight: {instanceID: 0}

@@ -326,8 +326,8 @@ public class Inventory : MonoBehaviour
             else GameplayUIController.Instance.UpdateEquipped(null, null);
 
             //Bottom left ammo count
-            GameplayUIController.Instance.UpdateItemText(holdingAmount, stackAmount);
-
+            if (utilHand != null) GameplayUIController.Instance.UpdateItemText(holdingAmount, stackAmount);
+            else GameplayUIController.Instance.UpdateItemText(0, 0);
         }
     }
 

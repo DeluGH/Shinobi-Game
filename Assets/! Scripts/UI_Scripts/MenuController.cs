@@ -148,6 +148,7 @@ public class MenuController : MonoBehaviour
         if (fpsController == null) fpsController = player.GetComponent<FirstPersonController>();
         if (characterController == null) characterController = player.GetComponent<CharacterController>();
         if (rb == null) rb = player.GetComponent<Rigidbody>();
+
         if (playerScript == null) Debug.LogWarning("No playerScript Found!");
         if (fpsController == null) Debug.LogWarning("No fpsController Found!");
         if (characterController == null) Debug.LogWarning("No characterController Found!");
@@ -167,6 +168,9 @@ public class MenuController : MonoBehaviour
         if (SubtitleManager.Instance.isActiveAndEnabled) SubtitleManager.Instance.ClearAllSubtitles();
 
         LockCursor();
+
+        //Check for Cutscenes
+
     }
     // Open settings
     public void OpenSettings()
@@ -378,6 +382,12 @@ public class MenuController : MonoBehaviour
     {
         uiSource.Stop();
         musicSource.Stop();
+
+        //Clear subtitles
+        //Clear tips
+        if (CursorTipsManager.Instance && CursorTipsManager.Instance.enabled == true) CursorTipsManager.Instance.ClearTips();
+        if (SubtitleManager.Instance && SubtitleManager.Instance.enabled == true) SubtitleManager.Instance.ClearAllSubtitles();
+        if (RendererToggleManager.Instance && RendererToggleManager.Instance.enabled == true) RendererToggleManager.Instance.ResetRendererFeatures();
 
         missionSelectPanel.SetActive(false);
 
