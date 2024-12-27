@@ -7,11 +7,26 @@ using UnityEditor.Build;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 using static UnityEngine.GraphicsBuffer;
 public enum DetectionState { Normal, AwarePause, Aware, Investigating, Alerted }
 
 public class DetectionAI : MonoBehaviour
 {
+    [Header("Sus Slider")]
+    public bool sliderShowing = false;
+    public float sliderHideAfter = 5f;
+    public float sliderTimer = 0f;
+    public Slider slider;
+    public Image sliderColorImage;
+    public Color alertedColor = new Color(1.0f, 0.259f, 0.212f); //red
+    public Color inveColor = new Color(0.851f, 0.620f, 0.341f); //orang
+    public Color awareColor  = new Color(1.0f, 0.992f, 0.459f); // yellow
+    public Color normalColor = new Color(0.443f, 0.792f, 0.431f); //green
+
+    [Header("Sound")]
+    public AudioClip detectedSound;
+
     [Header("Current Values (Debug/Auto)")]
     [Tooltip("Current suspicion level.\nIncreases when player is within Yellow or Green zones.")]
     public float susMeter = 0f;             // Current suspicion level
@@ -194,6 +209,15 @@ public class DetectionAI : MonoBehaviour
     {
         if (enemyScript == null) enemyScript = GetComponent<Enemy>();
         if (enemyScript == null) Debug.LogWarning("Enemy Script reference is missing!");
+
+        if (slider == null) slider = GetComponentInChildren<Slider>();
+        if (slider == null) Debug.LogWarning("slider reference is missing!");
+        else //initialize slider
+        {
+            slider.maxValue = alertMeter;
+            sliderColorImage = slider.fillRect.GetComponent<Image>();
+            if (sliderColorImage == null) Debug.LogWarning("sliderColorImage reference is missing!");
+        }
     }
 
     private void Update()
@@ -202,6 +226,28 @@ public class DetectionAI : MonoBehaviour
         {
             HandleDetection();
             HandleCurrentState();
+        }
+
+        //SLIDER
+        if (enemyScript && enemyScript.playerInDetectionArea) sliderShowing = true;
+        else sliderShowing = false;
+        if (slider)
+        {
+            if (sliderShowing)
+            {
+                sliderShowing = true;
+                sliderTimer = 0f;
+                slider.gameObject.SetActive(true);
+            }
+            else
+            {
+                sliderTimer += Time.deltaTime;
+                if (sliderTimer > sliderHideAfter)
+                {
+                    slider.gameObject.SetActive(false);
+                    sliderTimer = 0f;
+                }
+            }
         }
     }
 
@@ -309,18 +355,27 @@ public class DetectionAI : MonoBehaviour
             {
                 case DetectionState.Alerted:
                     if (enemyScript.soundScript) enemyScript.soundScript.PlayAlerted();
+                    sliderColorImage.color = alertedColor;
                     break;
 
                 case DetectionState.Investigating:
                     if (enemyScript.soundScript) enemyScript.soundScript.PlayInvestigate();
+                    sliderColorImage.color = inveColor;
                     break;
 
                 case DetectionState.Aware:
-                    if (enemyScript.soundScript) enemyScript.soundScript.PlayAware();
+                    if (enemyScript.soundScript)
+                    {
+                        //Sound
+                        enemyScript.audioSource.PlayOneShot(detectedSound);
+                        enemyScript.soundScript.PlayAware();
+                    }
+                    sliderColorImage.color = awareColor;
                     break;
 
                 case DetectionState.Normal:
                     if (enemyScript.soundScript) enemyScript.soundScript.PlayBackToNormal();
+                    sliderColorImage.color = normalColor;
                     break;
             }
         }
@@ -740,6 +795,11 @@ public class DetectionAI : MonoBehaviour
 
             if (!isTypeNoise) IncreaseSuspicionLooking(multiplier, rate);
             else if (isTypeNoise) IncreaseSuspicionNoise(multiplier, rate);
+
+            //Sound
+
+            //Slider
+            if (slider && slider.isActiveAndEnabled) slider.value = susMeter;
 
             //Debug.Log($"Suspicion Increased: {susMeter} | Rate: {rate} | Multiplier: {multiplier}");
         }

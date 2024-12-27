@@ -1,16 +1,38 @@
 using UnityEngine;
+using System.Collections;
 
 public class LookAtPlayer : MonoBehaviour
 {
     public Transform player;
+    private const float updateInterval = 0.1f; // 10 times per second
 
-    private void Update()
+    private void Start()
     {
-        if (player != null) transform.LookAt(player);
-        else
+        StartCoroutine(LookAtPlayerRoutine());
+    }
+
+    private IEnumerator LookAtPlayerRoutine()
+    {
+        while (true)
         {
-            player = GameObject.FindGameObjectWithTag("Player").transform;
-            if (player == null) Debug.LogWarning("No Player Tagged!");
+            if (player != null)
+            {
+                transform.LookAt(player);
+            }
+            else
+            {
+                GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+                if (playerObject != null)
+                {
+                    player = playerObject.transform;
+                }
+                else
+                {
+                    Debug.LogWarning("No Player Tagged!");
+                }
+            }
+
+            yield return new WaitForSeconds(updateInterval);
         }
     }
 }

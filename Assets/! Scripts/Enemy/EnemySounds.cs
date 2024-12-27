@@ -31,6 +31,7 @@ public class EnemySounds : MonoBehaviour
     public Voiceline[] ambience;
 
     [Header("References (Auto)")]
+    public AudioSource pitchChangingAudioSource;
     public Enemy enemyScript;
     public Voiceline currentVoiceline;
 
@@ -38,12 +39,15 @@ public class EnemySounds : MonoBehaviour
     {
         if (enemyScript == null) enemyScript = GetComponentInParent<Enemy>();
         if (enemyScript == null) Debug.LogWarning("No enemyScript!!");
+
+        if (pitchChangingAudioSource == null) pitchChangingAudioSource = GetComponentInParent<AudioSource>();
+        if (pitchChangingAudioSource == null) Debug.LogWarning("No pitchChangingAudioSource!!");
     }
 
     public void StopSpeaking()
     {
         enemyScript.audioSource.Stop();
-        if (SubtitleManager.Instance.isActiveAndEnabled) SubtitleManager.Instance.RemoveSubtitle(currentVoiceline);
+        if (SubtitleManager.Instance && SubtitleManager.Instance.isActiveAndEnabled) SubtitleManager.Instance.RemoveSubtitle(currentVoiceline);
     }
 
     private void PlayVoiceline(Voiceline[] voicelines)
@@ -51,7 +55,7 @@ public class EnemySounds : MonoBehaviour
         StopSpeaking();
 
         if (enemyScript != null && !enemyScript.isDead && voicelines.Length > 0
-            && Vector3.Distance(enemyScript.transform.position, enemyScript.player.transform.position) <= audibleDistance)
+            && enemyScript.player && Vector3.Distance(enemyScript.transform.position, enemyScript.player.transform.position) <= audibleDistance)
         {
             int random = Random.Range(0, voicelines.Length);
             currentVoiceline = voicelines[random]; // Set the current voiceline
