@@ -18,7 +18,7 @@ public class Cutscene : MonoBehaviour
     public Camera playerCamera;
     public FirstPersonController fpsController;
     public CharacterController characterController;
-
+    public PlayerAttack playerAttack;
     private void Awake()
     {
         Instance = this;
@@ -39,6 +39,9 @@ public class Cutscene : MonoBehaviour
         if (characterController == null) characterController = player.GetComponent<CharacterController>();
         if (characterController == null) Debug.LogWarning("No characterController Found!");
 
+        if (playerAttack == null) playerAttack = player.GetComponentInChildren<PlayerAttack>();
+        if (playerAttack == null) Debug.LogWarning("No playerAttack Found!");
+
         if (cutsceneCamera == null) Debug.LogWarning("No CAMERA!!");
         StartCoroutine(DoCutscene());
     }
@@ -53,6 +56,7 @@ public class Cutscene : MonoBehaviour
         fpsController.enabled = false;
         characterController.enabled = false;
         playerCamera.enabled = false;
+        playerAttack.enabled = false;
 
         //Play Cutscene
         animator.SetTrigger("PlayCutscene");
@@ -73,6 +77,7 @@ public class Cutscene : MonoBehaviour
         fpsController.enabled = true;
         characterController.enabled = true;
         playerCamera.enabled = true;
+        playerAttack.enabled = true;
     }
 }
 

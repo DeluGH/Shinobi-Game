@@ -41,6 +41,12 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
+        //ghost mode check
+        if (!hasGhostSword)
+        {
+            if (Unlocked.Instance.IsGhostModeUnlocked()) hasGhostSword = true;
+        }
+
         if (cameraFacing == null) cameraFacing = GameObject.FindGameObjectWithTag("MainCamera").transform;
         if (cameraFacing == null) Debug.LogWarning("Unable to Find Main Camera!");
         if (cameraAnim == null) cameraAnim = GetComponentInChildren<Animator>();

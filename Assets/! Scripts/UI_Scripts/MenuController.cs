@@ -364,6 +364,7 @@ public class MenuController : MonoBehaviour
         //playerController.gameObject.SetActive(false);
         pauseMenuPanel.SetActive(false);
         gameOverPanel.SetActive(false);
+        victoryPanel.SetActive(false);
         settingsPanel.SetActive(false); // Ensure settings panel is hidden
         currentMenuState = MenuState.MainMenu;
         isPaused = false; // Reset pause state
@@ -488,6 +489,7 @@ public class MenuController : MonoBehaviour
                 GameStats.Instance.ResetStats();
                 GameStats.Instance.ResetTimer();
                 GameStats.Instance.ResumeTimer();
+                GameStats.Instance.ScanForTargets();
             }
             else Debug.LogWarning("NO GAMESTATS");
 

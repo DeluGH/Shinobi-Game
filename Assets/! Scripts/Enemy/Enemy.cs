@@ -17,6 +17,8 @@ public class Enemy : MonoBehaviour
     public float baseRotationSpeed = 120f;
     public float maxDistanceFromNodes = 2.5f; //Default: 3
     public float despawnTime = 300f;
+    public bool canBeAssed = true;
+    public bool canBeInstaKilled = true;
 
     [Header("Combat Settings")]
     public bool hitCauseAlert = true; //melee hits cause aggro
@@ -337,7 +339,7 @@ public class Enemy : MonoBehaviour
     // Range
     public void HitByRange(int hitPoints, bool canInstaKill)
     {
-        if (canInstaKill)
+        if (canInstaKill && canBeInstaKilled)
         {
             if (detectionScript.currentState == DetectionState.Alerted) DamangeTaken(hitPoints, true, false); //range is penetraing (not affected by block)
             else Die(false);
@@ -399,6 +401,9 @@ public class Enemy : MonoBehaviour
         //Disable collider
         capsuleCollider.excludeLayers = LayerMask.GetMask("Player");
         capsuleCollider.enabled = false;
+
+        //GameStats
+        CheckAndReportIfEnemyTarget();
 
         Destroy(gameObject, despawnTime);
     }
@@ -555,6 +560,22 @@ public class Enemy : MonoBehaviour
         else
         {
             //Debug.Log("No player detected within the specified range.");
+        }
+    }
+
+    // On death, check if im a target
+    public void CheckAndReportIfEnemyTarget()
+    {
+        // Check if the GameObject is tagged as "EnemyTarget"
+        if (gameObject.CompareTag("EnemyTarget"))
+        {
+            // Call the TargetKilled function in GameStats
+            GameStats.Instance.TargetKilled();
+            Debug.Log($"Target killed: {gameObject.name}");
+        }
+        else
+        {
+            Debug.Log($"{gameObject.name} is not tagged as EnemyTarget.");
         }
     }
 }

@@ -150,6 +150,7 @@ MonoBehaviour:
   baseRotationSpeed: 120
   maxDistanceFromNodes: 2.5
   despawnTime: 300
+  canBeAssed: 1
   hitCauseAlert: 1
   canBlock: 0
   isBlocking: 0
@@ -213,7 +214,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackRange: 3
   attackAngle: 70
-  attackAnimTime: 0.5
+  attackAnimTime: 0.6
   minAttackInterval: 6
   maxAttackInterval: 12
   blockTime: 2
@@ -255,6 +256,7 @@ MonoBehaviour:
   sliderTimer: 5
   slider: {fileID: 0}
   sliderColorImage: {fileID: 0}
+  alertColor: {r: 1, g: 0.259, b: 0.212, a: 1}
   inveColor: {r: 0.851, g: 0.62, b: 0.341, a: 1}
   awareColor: {r: 1, g: 0.99215686, b: 0.45882353, a: 1}
   normalColor: {r: 0.443, g: 0.792, b: 0.431, a: 1}

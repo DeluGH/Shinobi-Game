@@ -200,6 +200,11 @@ public class EnemyAttack : MonoBehaviour
         {
             StopCoroutine(attackCoroutine);
             attackCoroutine = null;
+            enemyScript.isAttacking = false;
+            attackAvailable = false;
+            attackWaitTimer = 0f;
+            attackGoToTimer = 0f;
+
         }
         Debug.Log("Attack interrupted because the enemy was hit!");
     }

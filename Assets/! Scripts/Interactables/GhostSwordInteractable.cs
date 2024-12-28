@@ -52,6 +52,9 @@ public class GhostSwordInteractable : Interactable
         Player player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         player.hasGhostSword = true;
 
+        //permanently unlock ghost mode
+        Unlocked.Instance.UnlockGhostMode();
+
         audioSource.PlayOneShot(pickUpClip);
 
         if (disappearOnInteract) Destroy(gameObject);

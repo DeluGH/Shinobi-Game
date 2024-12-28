@@ -11,6 +11,8 @@ public enum DetectionState { Normal, AwarePause, Aware, Investigating, Alerted }
 
 public class DetectionAI : MonoBehaviour
 {
+    public bool enemyContributesToAlertStat = true;
+
     [Header("Sus Slider")]
     public bool showSlider = false;
     public float sliderHideAfter = 5f;
@@ -362,7 +364,7 @@ public class DetectionAI : MonoBehaviour
             {
                 case DetectionState.Alerted:
                     if (enemyScript.soundScript) enemyScript.soundScript.PlayAlerted();
-                    if (GameStats.Instance) GameStats.Instance.IncreaseAlerted();
+                    if (GameStats.Instance && enemyContributesToAlertStat) GameStats.Instance.IncreaseAlerted();
                     break;
                 case DetectionState.Investigating:
                     if (enemyScript.soundScript) enemyScript.soundScript.PlayInvestigate();
@@ -963,11 +965,8 @@ public class DetectionAI : MonoBehaviour
         Vector3 directionToPlayer = (enemyScript.player.position - transform.position).normalized;
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
 
-        if (angleToPlayer <= GetCurrentGreenAngle() / 2 || angleToPlayer <= GetCurrentYellowAngle() / 2)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, enemyScript.rotationSpeed * Time.deltaTime); // Smooth rotation
-        }
+        Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, enemyScript.rotationSpeed * Time.deltaTime); // Smooth rotation
     }
 
     private void RotateTowardsLastKnown()

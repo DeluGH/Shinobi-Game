@@ -15,6 +15,7 @@ TagManager:
   - Global Volume
   - GrapplingHook
   - ObiSolver
+  - EnemyTarget
   layers:
   - Default
   - TransparentFX

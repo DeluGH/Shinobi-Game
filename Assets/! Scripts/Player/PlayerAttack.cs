@@ -374,6 +374,8 @@ public class PlayerAttack : MonoBehaviour
 
         Enemy enemyScript = lookingAtEnemy.GetComponent<Enemy>();
 
+        if (!enemyScript.canBeAssed) return false;
+
         if (isAirAss())
         {
             // AIR ASSASSINATION

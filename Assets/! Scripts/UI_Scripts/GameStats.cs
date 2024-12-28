@@ -2,6 +2,10 @@ using UnityEngine;
 
 public class GameStats : MonoBehaviour
 {
+    [Header("Target Manager")] //add EnemyTarget to target
+    public GameObject[] targets;
+    public int targetsLeft;
+
     [Header("Stats")]
     public int killCount;
     public int alertedEnemies;
@@ -40,6 +44,28 @@ public class GameStats : MonoBehaviour
                 timer = 0f; // Reset the internal timer
             }
         }
+    }
+
+    public void ScanForTargets()
+    {
+        // Find all GameObjects with the tag "EnemyTarget" and initialize targetsLeft
+        targets = GameObject.FindGameObjectsWithTag("EnemyTarget");
+        targetsLeft = targets.Length;
+    }
+
+    public void TargetKilled()
+    {
+        targetsLeft--;
+
+        if (targetsLeft == 0) AllTargetsEliminated();
+    }
+
+    private void AllTargetsEliminated()
+    {
+        Debug.Log("All targets eliminated! You win!");
+        StopTimer();
+
+        MenuController.Instance.Victory();
     }
 
     public void IncreaseKill()
