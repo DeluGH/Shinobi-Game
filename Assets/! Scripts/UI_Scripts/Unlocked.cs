@@ -1,10 +1,16 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Unlocked : MonoBehaviour
 {
     private const string GhostModeKey = "GhostModeUnlocked";
-
     public static Unlocked Instance;
+
+    public GameObject ContentHolder;
+    public GameObject imagePrefab;
+
+    [Header("GhostMode")]
+    public Sprite ghostImage;
 
     public bool isGhostMode = false;
 
@@ -18,6 +24,39 @@ public class Unlocked : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject); // Optional: keeps the singleton alive across scenes
+    }
+
+    private void Start()
+    {
+        if (IsGhostModeUnlocked()) isGhostMode = true;
+
+        LoadUnlocked();
+    }
+
+    public void LoadUnlocked()
+    {
+        //destroy all child objects first
+        foreach (Transform child in ContentHolder.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        if (IsGhostModeUnlocked())
+        {
+            // Instantiate the image prefab as a child of the ContentHolder
+            GameObject newImage = Instantiate(imagePrefab, ContentHolder.transform);
+
+            // Set the sprite of the Image component to ghostImage
+            Image imageComponent = newImage.GetComponent<Image>();
+            if (imageComponent != null)
+            {
+                imageComponent.sprite = ghostImage;
+            }
+            else
+            {
+                Debug.LogError("The prefab does not have an Image component!");
+            }
+        }
     }
 
     public void UnlockGhostMode()
@@ -34,8 +73,14 @@ public class Unlocked : MonoBehaviour
         return PlayerPrefs.GetInt(GhostModeKey, 0) == 1; // 0 (default) means false
     }
 
-    private void Start()
+    public void ResetAllUnlocks()
     {
-        if (IsGhostModeUnlocked()) isGhostMode = true;
+        PlayerPrefs.DeleteKey(GhostModeKey); // Remove the GhostModeUnlocked key
+        PlayerPrefs.Save(); // Save changes
+
+        isGhostMode = false; // Reset the local variable
+        Debug.Log("All unlocks have been reset!");
+
+        LoadUnlocked();
     }
 }

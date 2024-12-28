@@ -52,7 +52,6 @@ public class MenuController : MonoBehaviour
     public AudioClip victorySong;
 
     [Header("Auto")]
-    public LoadUnlockedImages unlockedLoader;
     public GameObject player;
     public Player playerScript;
     public AudioListener playerAudioListener;
@@ -82,8 +81,6 @@ public class MenuController : MonoBehaviour
 
     private void Start()
     {
-        unlockedLoader = GetComponentInChildren<LoadUnlockedImages>();
-
         //Fix toggle tick being wrong
         isFullscreen = Screen.fullScreen;
         if (isFullscreen) toggleStateText.text = "True";
@@ -220,6 +217,7 @@ public class MenuController : MonoBehaviour
         {
             mainMenuUI.SetActive(true);
             currentMenuState = MenuState.MainMenu;
+            Unlocked.Instance.LoadUnlocked();
         }
     }
     // Missions Panel
@@ -363,7 +361,7 @@ public class MenuController : MonoBehaviour
         Time.timeScale = 1f; // Resume game time
         
         mainMenuUI.SetActive(true);
-        unlockedLoader.LoadUnlocked();
+        Unlocked.Instance.LoadUnlocked();
 
         gameplayPanel.SetActive(false);
         pauseMenuPanel.SetActive(false);
