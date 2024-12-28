@@ -176,32 +176,38 @@ public class PlayerAttack : MonoBehaviour
         if (meleeTimer >= currentAttackCooldown && !playerScript.isDead && !playerScript.isBlocking && !isSwinging)
         {
             if (Input.GetKeyDown(KeybindManager.Instance.keybinds["Attack"]))
-            {
+            { //start charge
+                chargeTime = 0f;
                 chargeStartTime = Time.time; // Record when charging started
                 startedCharging = true;
-                isCharging = true;
+
             }
             if (Input.GetKey(KeybindManager.Instance.keybinds["Attack"]))
             {
+                //start charge
                 if (startedCharging == false) // bug fix chargeStartTime doesn't execute if you charge before attackcooldown
                 {
+                    chargeTime = 0f;
                     chargeStartTime = Time.time; // Record when charging started
                     startedCharging = true;
-                    isCharging = true;
+                }
 
+                //Charging
+                if (startedCharging)
+                {
+                    chargeTime = Time.time - chargeStartTime;
+                    isCharging = true;
                     if (GameplayUIController.Instance) GameplayUIController.Instance.UpdateAttackCharge(chargeTime, heavyChargeTime);
                 }
-                
-                if (startedCharging) chargeTime = Time.time - chargeStartTime;
 
                 //Animation checker
-                if (chargeTime >= 0.125f && isCharging == true)
+                if (chargeTime >= 0.125f && isCharging && startedCharging)
                 {
                     Animator anim = MainHandObject.GetComponentInChildren<Animator>();
                     if (anim != null) anim.SetBool("isCharging", true);
                     else Debug.LogWarning("No Sword Anim detected!");
                 }
-                if (chargeTime >= heavyChargeTime)
+                if (chargeTime >= heavyChargeTime && isCharging && startedCharging)
                 {
                     //CHARGE DONE
                     Animator anim = MainHandObject.GetComponentInChildren<Animator>();
