@@ -105,23 +105,6 @@ public class GameplayUIController : MonoBehaviour
         healthSlider.minValue = 0;
         healthSlider.maxValue = maxHealth;
         healthSlider.value = currentHealth;
-
-        StartCoroutine(LerpHealth(currentHealth));
-    }
-    private IEnumerator LerpHealth(int targetHealth)
-    {
-        float elapsed = 0f;
-        float duration = 0.5f; // Smooth transition duration
-        float startValue = healthSlider.value;
-
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            healthSlider.value = Mathf.Lerp(startValue, targetHealth, elapsed / duration);
-            yield return null;
-        }
-
-        healthSlider.value = targetHealth;
     }
 
     public void UpdateGhostSlider(int currentGhost, int maxGhost)
@@ -129,23 +112,6 @@ public class GameplayUIController : MonoBehaviour
         ghostSlider.minValue = 0;
         ghostSlider.maxValue = maxGhost;
         ghostSlider.value = currentGhost;
-
-        StartCoroutine(LerpGhost(currentGhost));
-    }
-    private IEnumerator LerpGhost(int targetGhost)
-    {
-        float elapsed = 0f;
-        float duration = 0.5f; // Smooth transition duration
-        float startValue = ghostSlider.value;
-
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            ghostSlider.value = Mathf.Lerp(startValue, targetGhost, elapsed / duration);
-            yield return null;
-        }
-
-        ghostSlider.value = targetGhost;
     }
 
     public void UpdateEquipped(Sprite image, string selectedText)
