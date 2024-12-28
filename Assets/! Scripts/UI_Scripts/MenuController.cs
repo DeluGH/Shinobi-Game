@@ -52,6 +52,7 @@ public class MenuController : MonoBehaviour
     public AudioClip victorySong;
 
     [Header("Auto")]
+    public LoadUnlockedImages unlockedLoader;
     public GameObject player;
     public Player playerScript;
     public AudioListener playerAudioListener;
@@ -81,6 +82,8 @@ public class MenuController : MonoBehaviour
 
     private void Start()
     {
+        unlockedLoader = GetComponentInChildren<LoadUnlockedImages>();
+
         //Fix toggle tick being wrong
         isFullscreen = Screen.fullScreen;
         if (isFullscreen) toggleStateText.text = "True";
@@ -358,18 +361,21 @@ public class MenuController : MonoBehaviour
     {
         Debug.Log("Returned to main menu from pause menu.");
         Time.timeScale = 1f; // Resume game time
+        
         mainMenuUI.SetActive(true);
+        unlockedLoader.LoadUnlocked();
+
         gameplayPanel.SetActive(false);
-        //mainMenuCamera.gameObject.SetActive(true);
-        //playerController.gameObject.SetActive(false);
         pauseMenuPanel.SetActive(false);
         gameOverPanel.SetActive(false);
         victoryPanel.SetActive(false);
-        settingsPanel.SetActive(false); // Ensure settings panel is hidden
+        settingsPanel.SetActive(false);
+
         currentMenuState = MenuState.MainMenu;
         isPaused = false; // Reset pause state
 
         ReanimateCursor();
+
 
         LoadScene(mainMenuSceneName);
     }
