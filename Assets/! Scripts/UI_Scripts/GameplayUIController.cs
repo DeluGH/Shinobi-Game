@@ -19,6 +19,10 @@ public class GameplayUIController : MonoBehaviour
     public int currentGhost;
     public int maxGhost;
 
+    [Header("Charges")]
+    public Slider itemCharge;
+    public Slider attackCharge;
+
     [Header("Util Count")]
     public TextMeshProUGUI itemText;
 
@@ -54,6 +58,9 @@ public class GameplayUIController : MonoBehaviour
         if (buttons.Length == 0) Debug.LogError("No Buttons set! Pls set them.");
         
         if (buttonIcons.Length == 0) Debug.LogError("No Buttons ICONS set! Pls set them.");
+
+        HideItemSlider();
+        HideAttackSlider();
     }
 
     
@@ -153,5 +160,46 @@ public class GameplayUIController : MonoBehaviour
         itemText.text = $"{currentItems}/{maxItems}";
 
         if (currentItems == 0 || maxItems == 0) itemText.text = $"";
+    }
+
+    //SLIDERS
+    public void UpdateItemCharge(float chargeValue, float maxValue)
+    {
+        if (itemCharge)
+        {
+            itemCharge.gameObject.SetActive(true);
+            itemCharge.maxValue = maxValue;
+            itemCharge.value = chargeValue;
+        }
+        
+    }
+    public void HideItemSlider()
+    {
+        if (itemCharge)
+        {
+            itemCharge.value = 0;
+            itemCharge.gameObject.SetActive(false);
+        }
+            
+    }
+
+    public void UpdateAttackCharge(float chargeValue, float maxValue)
+    {
+        if (attackCharge)
+        {
+            attackCharge.gameObject.SetActive(true);
+            attackCharge.maxValue = maxValue;
+            attackCharge.value = chargeValue;
+        }
+        
+    }
+    public void HideAttackSlider()
+    {
+        if (attackCharge)
+        {
+            attackCharge.value = 0;
+            attackCharge.gameObject.SetActive(false);
+        }
+        
     }
 }

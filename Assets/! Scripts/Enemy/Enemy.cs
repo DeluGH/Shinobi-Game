@@ -173,7 +173,7 @@ public class Enemy : MonoBehaviour
         if (!canEnemyPerform()) return;
 
         // GET DIRECTION 
-        if (HasReachedDestination())
+        if (HasReachedDestination() || !canEnemyPerform()) // RESET ANIMATION STATE
         {
             isWalking = false;
             isRunning = false;
@@ -186,23 +186,23 @@ public class Enemy : MonoBehaviour
             // WALKING OR RUNNING?
             if (movementSpeed <= baseMovementSpeed + 1f) // walking
             {
+                if (isWalking == false) anim.SetTrigger("Walk");
+
                 isWalking = true;
                 isRunning = false;
                 anim.SetBool("isWalking", true);
                 anim.SetBool("isRunning", false);
                 anim.SetBool("isBackingUp", false);
-
-                anim.SetTrigger("Walk");
             }
             else // running
             {
+                if (isRunning == false) anim.SetTrigger("Run");
+
                 isWalking = false;
                 isRunning = true;
                 anim.SetBool("isWalking", false);
                 anim.SetBool("isRunning", true);
                 anim.SetBool("isBackingUp", false);
-
-                anim.SetTrigger("Run");
             }
 
             Vector3 toDestination = agent.destination - transform.position;
@@ -210,6 +210,8 @@ public class Enemy : MonoBehaviour
             if (localDirection.z < -0.5f) // back
             {
                 anim.SetBool("isBackingUp", true);
+                anim.SetBool("isWalking", false);
+                anim.SetBool("isRunning", false);
                 anim.SetTrigger("Back");
             }
         }
@@ -247,8 +249,12 @@ public class Enemy : MonoBehaviour
     public void EnterCombatMode()
     {
         Debug.Log("Combat ON");
-        if (agent.isActiveAndEnabled) agent.isStopped = true; //Stop moving
-        agent.updateRotation = false;
+        if (agent.isActiveAndEnabled)
+        {
+            agent.isStopped = true; //Stop moving
+            agent.updateRotation = false;
+        }
+        
         detectionScript.isLookingAround = false; //bug fix 
 
         if (agent.isActiveAndEnabled) agent.isStopped = false; //Reenable to reposition
@@ -256,7 +262,7 @@ public class Enemy : MonoBehaviour
         combatMode = true;
         combatModeTimer = 0f;
 
-        attackScript.Reposition();
+        if (canEnemyPerform()) attackScript.Reposition();
     }
     public void DisableCombatMode()
     {

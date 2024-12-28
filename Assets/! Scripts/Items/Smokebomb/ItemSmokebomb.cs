@@ -5,10 +5,6 @@ public class ItemSmokebomb : Item
 {
     [Header("SmokeBomb Settings")]
     public GameObject smokeEffectPrefab;
-    public float minCharge = 1f;
-    public float maxCharge = 20f;
-    public float chargePerSecond = 20f;
-    public float chargeForce = 0f;
 
     public override void Use(GameObject player)
     {
@@ -24,12 +20,12 @@ public class ItemSmokebomb : Item
                 Rigidbody rb = smokeBomb.GetComponent<Rigidbody>();
                 if (rb != null)
                 {
-                    rb.AddForce(player.GetComponent<Inventory>().instantitatePosition.forward * chargeForce, ForceMode.Impulse);
+                    rb.AddForce(player.GetComponent<Inventory>().instantitatePosition.forward * currentChargeForce, ForceMode.Impulse);
                 }
             }
 
             // Reset chargeForce after use
-            chargeForce = minCharge;
+            currentChargeForce = minCharge;
         }
     }
 
@@ -38,7 +34,7 @@ public class ItemSmokebomb : Item
         if (!canHoldCharge) return;
 
         // Calculate and clamp chargeForce
-        chargeForce = Mathf.Clamp(chargeTime * chargePerSecond, minCharge, maxCharge);
-        Debug.Log($"Charging {itemName}. Current force: {chargeForce}");
+        currentChargeForce = Mathf.Clamp(chargeTime * chargePerSecond, minCharge, maxCharge);
+        Debug.Log($"Charging {itemName}. Current force: {currentChargeForce}");
     }
 }
