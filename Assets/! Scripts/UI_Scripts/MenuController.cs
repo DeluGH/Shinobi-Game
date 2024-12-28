@@ -19,6 +19,7 @@ public class MenuController : MonoBehaviour
         Gameplay,
         Gameover,
         Victory,
+        Credits,
         MissionSelect,
     }
 
@@ -32,6 +33,7 @@ public class MenuController : MonoBehaviour
     public GameObject volumePanel;
     public GameObject gameOverPanel;
     public GameObject victoryPanel;
+    public GameObject creditsPanel;
     public GameObject missionSelectPanel; // mission selection
 
     [Header("Others")]
@@ -39,6 +41,7 @@ public class MenuController : MonoBehaviour
     public Slider loadingSlider; // The slider representing the loading percentage
     public TextMeshProUGUI loadingText; // Optional: Text to display the percentage as a number (e.g., "50%")
     public Toggle fullscreenToggle;
+    public TextMeshProUGUI toggleStateText;
 
     [Header("Sounds")]
     public AudioSource uiSource;
@@ -80,6 +83,8 @@ public class MenuController : MonoBehaviour
     {
         //Fix toggle tick being wrong
         isFullscreen = Screen.fullScreen;
+        if (isFullscreen) toggleStateText.text = "True";
+        else toggleStateText.text = "False";
 
         if (!musicSource || !uiSource) Debug.LogError("Oi, no audiosources!! double check");
 
@@ -109,6 +114,9 @@ public class MenuController : MonoBehaviour
                 case MenuState.Volume:
                     ToggleVolumesMenu();
                     break;
+                case MenuState.Credits:
+                    CloseCredits();
+                    break;
                 case MenuState.MissionSelect:
                     CloseMissions();
                     break;
@@ -120,6 +128,10 @@ public class MenuController : MonoBehaviour
     public void PlayMainMenuSong()
     {
         PlayOneShotDelayed(musicSource, MainMenuSong, 0.5f);
+    }
+    public void PlayVictorySong()
+    {
+        musicSource.PlayOneShot(victorySong);
     }
     public void PlayOneShotDelayed(AudioSource audioSource, AudioClip clip, float delay)
     {
@@ -224,7 +236,19 @@ public class MenuController : MonoBehaviour
 
         mainMenuUI.SetActive(true);
     }
+    //Credits
+    public void OpenCredits()
+    {
+        PlayMenuOpen();
 
+        creditsPanel.SetActive(true);
+        currentMenuState = MenuState.Credits;
+    }
+    public void CloseCredits()
+    {
+        creditsPanel.SetActive(false);
+        currentMenuState = MenuState.Settings;
+    }
     //Keybinds menu
     public void ToggleKeybindsMenu()
     {
@@ -383,6 +407,9 @@ public class MenuController : MonoBehaviour
         isFullscreen = !isFullscreen;
 
         Screen.fullScreen = isFullscreen;
+        if (isFullscreen) toggleStateText.text = "True";
+        else toggleStateText.text = "False";
+
         Debug.Log($"Fullscreen mode set to: {isFullscreen}");
     }
 

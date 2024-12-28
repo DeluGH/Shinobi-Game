@@ -478,14 +478,26 @@ public class PlayerAttack : MonoBehaviour
                 Animator anim = MainHandObject.GetComponentInChildren<Animator>();
                 if (anim != null)
                 {
-                    if (isAirAssassinate) anim.SetTrigger("Air Ass"); //air ass
+                    if (isAirAssassinate)
+                    {
+                        anim.SetTrigger("Air Ass"); //air ass
+                        //camera animation
+                        playerScript.cameraAnim.SetTrigger("AirAss");
+                    }
                     else if (!isWalking)
                     {
                         anim.SetTrigger("Dash Ass"); // Running dash ass
                         GameObject swingEffect = Instantiate(dashAssSwingAffect, playerScript.cameraFacing.transform.position, Quaternion.identity, playerScript.cameraFacing.transform);
                         swingEffect.transform.localRotation = Quaternion.identity;
+                        //camera animation
+                        playerScript.cameraAnim.SetTrigger("DashAss");
                     }
-                    else anim.SetTrigger("Ass"); // normal ass
+                    else
+                    {
+                        anim.SetTrigger("Ass"); // normal ass
+                        //camera animation
+                        playerScript.cameraAnim.SetTrigger("Ass");
+                    }
                 }
                 else Debug.LogWarning("No Sword Anim detected!");
             }
@@ -590,6 +602,9 @@ public class PlayerAttack : MonoBehaviour
             if (anim != null) anim.SetTrigger("Attack");
             else Debug.LogWarning("No Sword Anim detected!");
 
+            //camera animation
+            playerScript.cameraAnim.SetTrigger("Heavy");
+
             //heavy sound
             playerScript.audioSource.PlayOneShot(swordSwing);
         }
@@ -614,6 +629,9 @@ public class PlayerAttack : MonoBehaviour
             Animator anim = MainHandObject.GetComponentInChildren<Animator>();
             if (anim != null) anim.SetTrigger("Attack");
             else Debug.LogWarning("No Sword Anim detected!");
+
+            //camera animation
+            playerScript.cameraAnim.SetTrigger("Attack");
         }
 
         isSwinging = true;

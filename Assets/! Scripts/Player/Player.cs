@@ -30,6 +30,7 @@ public class Player : MonoBehaviour
 
     [Header("References (Auto)")]
     public Transform cameraFacing; // Important for aiming
+    public Animator cameraAnim;
     public Inventory inventoryScript;
     public PlayerAttack attackScript;
     public FirstPersonController fpsController;
@@ -42,6 +43,8 @@ public class Player : MonoBehaviour
     {
         if (cameraFacing == null) cameraFacing = GameObject.FindGameObjectWithTag("MainCamera").transform;
         if (cameraFacing == null) Debug.LogWarning("Unable to Find Main Camera!");
+        if (cameraAnim == null) cameraAnim = GetComponentInChildren<Animator>();
+        if (cameraAnim == null) Debug.LogWarning("Unable to Find cameraAnim!");
 
         fpsController = GetComponent<FirstPersonController>();
         charController = GetComponent<CharacterController>();
