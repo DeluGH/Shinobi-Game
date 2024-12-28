@@ -67,6 +67,8 @@ public class Inventory : MonoBehaviour
         {
             float chargeTime = Time.time - chargeStartTime;
             utilHand.Charge(player, chargeTime); // charging - change values within smoke bomb
+
+            if (GameplayUIController.Instance) GameplayUIController.Instance.UpdateItemCharge(utilHand.currentChargeForce, utilHand.maxCharge);
         }
 
         //Lift Use Util key
@@ -75,6 +77,8 @@ public class Inventory : MonoBehaviour
             if (utilHand != null)
             {
                 UseEquippedUtilItem();
+
+                if (GameplayUIController.Instance) GameplayUIController.Instance.HideItemSlider();
             }
         }
 

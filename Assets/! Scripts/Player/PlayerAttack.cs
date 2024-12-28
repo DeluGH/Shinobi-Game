@@ -188,6 +188,8 @@ public class PlayerAttack : MonoBehaviour
                     chargeStartTime = Time.time; // Record when charging started
                     startedCharging = true;
                     isCharging = true;
+
+                    if (GameplayUIController.Instance) GameplayUIController.Instance.UpdateAttackCharge(chargeTime, heavyChargeTime);
                 }
                 
                 if (startedCharging) chargeTime = Time.time - chargeStartTime;
@@ -214,6 +216,9 @@ public class PlayerAttack : MonoBehaviour
                 startedCharging = false;
                 isCharging = false;
 
+                //Slider
+                if (GameplayUIController.Instance) GameplayUIController.Instance.HideAttackSlider();
+
                 Animator anim = MainHandObject.GetComponentInChildren<Animator>();
                 if (anim != null) anim.SetBool("isCharging", false);
                 else Debug.LogWarning("No Sword Anim detected!");
@@ -232,6 +237,7 @@ public class PlayerAttack : MonoBehaviour
                     Swing(false);
                     
                 }
+
                 chargeTime = 0f;
                 meleeTimer = 0f;
             }
