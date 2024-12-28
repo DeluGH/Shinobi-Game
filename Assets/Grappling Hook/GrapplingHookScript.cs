@@ -70,7 +70,7 @@ public class GrapplingHookScript : MonoBehaviour
     {
         //Step 1 : copy the position of the player to ObiSolver's position
         Transform ropeTransform = rope.transform;
-        ropeTransform = playerScript.transform;
+        ropeTransform.position = playerScript.transform.position;
 
         //Step 2 : set ObiSolver to 0,-90,0 rotation
         ropeTransform.rotation = Quaternion.Euler(0, -90, 0);
@@ -78,7 +78,15 @@ public class GrapplingHookScript : MonoBehaviour
         //Step 3 : copy the position of the player
         //Step 4 : paste that into the grappling hook position
         Transform grapplingHookTransform = grapplingHook.transform;
-        grapplingHookTransform = playerScript.transform;
+        grapplingHookTransform.position = playerScript.transform.position;
+
+        // Step 5: Rotate the grappling hook to -75° of the player's Y-axis rotation
+        float newYRotation = playerScript.transform.rotation.eulerAngles.y - 75;
+        grapplingHookTransform.rotation = Quaternion.Euler(
+            grapplingHookTransform.rotation.eulerAngles.x, // Keep the current X rotation
+            newYRotation,                                 // Adjust the Y rotation
+            grapplingHookTransform.rotation.eulerAngles.z  // Keep the current Z rotation
+        );
 
         //Step 5 : subtract 2 from the grappling hook z position
         Vector3 grapplingHookPosition = grapplingHookTransform.position;

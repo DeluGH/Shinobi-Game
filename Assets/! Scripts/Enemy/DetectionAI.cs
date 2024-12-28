@@ -341,7 +341,7 @@ public class DetectionAI : MonoBehaviour
         }
 
         // Handle looking around during investigation
-        if (isLookingAround)
+        if (isLookingAround && susMeter < alertMeter)
         {
             RotateTowardsLookDirection();
         }
@@ -958,7 +958,7 @@ public class DetectionAI : MonoBehaviour
     public void RotateTowardsPlayer()
     {
         // Allow rotation if the enemy is attacking, even if canEnemyPerform() returns false
-        if (!enemyScript.isAttacking && !enemyScript.canEnemyPerform()) return;
+        if (enemyScript.isDead || !enemyScript.isAttacking && !enemyScript.canEnemyPerform()) return;
 
         Vector3 directionToPlayer = (enemyScript.player.position - transform.position).normalized;
         float angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
