@@ -151,6 +151,7 @@ MonoBehaviour:
   maxDistanceFromNodes: 2.5
   despawnTime: 300
   canBeAssed: 1
+  canBeInstaKilled: 1
   hitCauseAlert: 1
   canBlock: 0
   isBlocking: 0
@@ -251,6 +252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32cb855860b4c634381f64693c1bf0d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyContributesToAlertStat: 1
   showSlider: 0
   sliderHideAfter: 5
   sliderTimer: 5
@@ -271,7 +273,7 @@ MonoBehaviour:
   yellowAngle: 50
   corpseInDetectionArea: 0
   corpseMultiplier: 1.4
-  smokeInDetectionArea: 0
+  lockInInveMode: 0
   smokeMultiplier: 1.2
   smokeDetectDistanceMult: 0.3
   smokeGreenAngleMult: 0.3
@@ -351,11 +353,6 @@ MonoBehaviour:
     idlePoint: {fileID: 0}
     idleLookAt: {fileID: 0}
     idleTime: 10
-  - Type: 1
-    pathPoints: []
-    idlePoint: {fileID: 0}
-    idleLookAt: {fileID: 0}
-    idleTime: 5
   currentActivityIndex: 0
   currentPathIndex: 0
   minimumSeconds: 10
