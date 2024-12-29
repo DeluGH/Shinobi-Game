@@ -111,12 +111,17 @@ public class Player : MonoBehaviour
 
     public void PlayerDie()
     {
-        isDead = true;
+        if (isDead == false)
+        {
+            currentHealth = 0;
 
-        fpsController.enabled = false;
-        charController.enabled = false;
+            isDead = true;
 
-        MenuController.Instance.GameOver();
+            fpsController.enabled = false;
+            charController.enabled = false;
+
+            MenuController.Instance.GameOver();
+        }
     }
 
     public void PlayerHealing(int amount)
