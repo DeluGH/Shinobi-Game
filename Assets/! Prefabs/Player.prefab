@@ -821,8 +821,8 @@ MonoBehaviour:
     count: 6
   - item: {fileID: 11400000, guid: 1163c1b6830c61e4fa9f67b576ab03b1, type: 2}
     count: 1
-  - item: {fileID: 0}
-    count: 0
+  - item: {fileID: 11400000, guid: e82c644591668f94488ff85896ed84f1, type: 2}
+    count: 3
 --- !u!1 &5702449688543919312
 GameObject:
   m_ObjectHideFlags: 0

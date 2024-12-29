@@ -54,7 +54,7 @@ public class DetectionAI : MonoBehaviour
 
     [Header("Smoke Detection Settings")]
     [Tooltip("True: Smoke is in Vision\nFalse: No Smoke is in AI Vision.")]
-    public bool smokeInDetectionArea = false;
+    public bool lockInInveMode = false;
     [Tooltip("Multilply suspicion increment by this amount when a Smoke Bomb is in Detection Zone.\nAdds on to  alertBuffs\nDefault: 1.2")]
     public float smokeMultiplier = 1.2f;    // Smoke sus multiplier
     [Tooltip("Multilply detectDistance by this amount when AI is in a Smoke Collider.\nSmoke Collider Objects must have Smoke LayerMask!!\nDefault: 0.4f (40%)")]
@@ -313,7 +313,7 @@ public class DetectionAI : MonoBehaviour
             // Gains perma buffs, for a short duration, gain a lot of buffs
             else if (susMeter >= alertMeter)
             {
-                if (!smokeInDetectionArea || enemyScript.playerInDetectionArea || corpseInDetectionArea)
+                if (!lockInInveMode || enemyScript.playerInDetectionArea || corpseInDetectionArea)
                 {
                     SetCurrentState(DetectionState.Alerted);
                 }
@@ -736,7 +736,7 @@ public class DetectionAI : MonoBehaviour
                 if (susMeter < alertMeter - 1f) IncreaseSuspicion(greenSusInc * corpseMultiplier, false);
                 SmokeDetected(hit);
             }
-            else smokeInDetectionArea = false;
+            else lockInInveMode = false;
 
         }
     }
@@ -755,7 +755,7 @@ public class DetectionAI : MonoBehaviour
             lastKnownPosition = hit.transform.position;
         }
 
-        smokeInDetectionArea = true;
+        lockInInveMode = true;
         //Debug.Log($"Smoke seen! {susMeter}");
     }
 
@@ -990,6 +990,15 @@ public class DetectionAI : MonoBehaviour
         lastKnownPosition = transform.position;
         susMeter = alertMeter;
 
+    }
+
+    public void InstantInvestigate(Transform targetToInvestigtate)
+    {
+        if (susMeter <= inveMeter && !enemyScript.playerInDetectionArea)
+        {
+            susMeter = inveMeter;
+            lastKnownPosition = targetToInvestigtate.position;
+        }
     }
 
     //private void OnDrawGizmosSelected() // DISABLE-ABLE disable disablable

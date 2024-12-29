@@ -92,6 +92,7 @@ public class SmokeBomb : MonoBehaviour
             yield return null;
         }
 
+        audioSource.Stop();
         enemyNotInSmoke();
         smokeCollider.enabled = false;
     }
