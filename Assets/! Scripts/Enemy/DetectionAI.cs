@@ -87,16 +87,16 @@ public class DetectionAI : MonoBehaviour
 
     [Header("Hearing Settings")]
     [Tooltip("Increase Sus Meter by this value whenever Player walks.\nAffectable by awareSusMultiplier and inveSusMultiplier.\nDefault: 6")]
-    public float noiseWalkSusInc = 18f;      // Walk
+    public float noiseWalkSusInc = 30f;      // Walk
     [Tooltip("Increase Sus Meter by this value whenever Player runs.\nAffectable by awareSusMultiplier and inveSusMultiplier.\nDefault: 12")]
-    public float noiseRunSusInc = 42f;      // Run
+    public float noiseRunSusInc = 60f;      // Run
     [Tooltip("Time taken before suspicion decreases after hearing Suspicios Noises from Player.\nDefault: 2.5")]
-    public float noiseHeardDecay = 3f;
+    public float noiseHeardDecay = 5f;
     [Tooltip("True: Closer player is from AI, the higher the suspicion increment.\nFalse: Distance between AI and Player do not affect suspicion increment values at all.")]
     public bool noiseAffectedByDistance = true;
     [Tooltip("The maximum value of which suspicion increments are multiplied by.\nExample:\t100% at max detectionDistance value." +
         "\n\t300% if player is at current position of the AI.\nBeing directly infront would be lesser than 300%.\nDefault: 300")]
-    public float noiseMaxSusDistancePercent = 600f;
+    public float noiseMaxSusDistancePercent = 700f;
 
     [Header("Aware Settings")]
     [Tooltip("Value suspicion meter needs to be to trigger Aware Mode.\n(Default: 50)")]

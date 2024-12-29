@@ -255,12 +255,12 @@ MonoBehaviour:
   enemyContributesToAlertStat: 1
   showSlider: 0
   sliderHideAfter: 5
-  sliderTimer: 5
+  sliderTimer: 0
   slider: {fileID: 0}
   sliderColorImage: {fileID: 0}
   alertColor: {r: 1, g: 0.259, b: 0.212, a: 1}
   inveColor: {r: 0.851, g: 0.62, b: 0.341, a: 1}
-  awareColor: {r: 1, g: 0.99215686, b: 0.45882353, a: 1}
+  awareColor: {r: 1, g: 0.992, b: 0.459, a: 1}
   normalColor: {r: 0.443, g: 0.792, b: 0.431, a: 1}
   detectedSound: {fileID: 8300000, guid: ddb1936e0244f314990ff3998fae0aaf, type: 3}
   susIncrease: {fileID: 8300000, guid: 09d1f675c94d1f84989c8f017bc91dd5, type: 3}
@@ -268,9 +268,9 @@ MonoBehaviour:
   currentState: 0
   isSusPause: 0
   isLookingAround: 0
-  detectDistance: 15
-  greenAngle: 100
-  yellowAngle: 50
+  detectDistance: 16.5
+  greenAngle: 110
+  yellowAngle: 65
   corpseInDetectionArea: 0
   corpseMultiplier: 1.4
   lockInInveMode: 0
@@ -285,11 +285,11 @@ MonoBehaviour:
   susDecayDelay: 3
   susAffectedByDistance: 1
   maxSusDistancePercent: 300
-  noiseWalkSusInc: 20
-  noiseRunSusInc: 45
-  noiseHeardDecay: 3
+  noiseWalkSusInc: 30
+  noiseRunSusInc: 60
+  noiseHeardDecay: 5
   noiseAffectedByDistance: 1
-  noiseMaxSusDistancePercent: 650
+  noiseMaxSusDistancePercent: 700
   awareMeter: 50
   awareDetectDistanceInc: 3
   awareGreenAngleInc: 10

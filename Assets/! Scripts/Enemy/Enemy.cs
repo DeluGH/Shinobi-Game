@@ -399,8 +399,8 @@ public class Enemy : MonoBehaviour
         if (agent.isActiveAndEnabled) agent.enabled = false;
 
         //Disable collider
-        capsuleCollider.excludeLayers = LayerMask.GetMask("Player");
-        capsuleCollider.enabled = false;
+        capsuleCollider.excludeLayers = LayerMask.GetMask("Everything");
+        capsuleCollider.includeLayers = LayerMask.GetMask("Enemy");
 
         //GameStats
         CheckAndReportIfEnemyTarget();

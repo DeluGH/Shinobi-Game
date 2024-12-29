@@ -142,7 +142,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a441251732f2b964b934b9aad5b8adc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audibleDistance: 24
+  audibleDistance: 32
   dieSounds:
   - audioClip: {fileID: 8300000, guid: 336d5816d7589d24f9091408b3465a43, type: 3}
     subtitles: '[Enemy dies] AAUGH!'
